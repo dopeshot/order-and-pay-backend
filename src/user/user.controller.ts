@@ -26,10 +26,8 @@ export class UserController {
 
   @Get("/verify/:code")
   @Render("MailVerify")
-  async verifyMail(@Param('code') code: string, @Res() res: Response): Promise<UserDocument | string> {
-    let result = await this.userService.veryfiyUser(code)
-    return 
-    
+  async verifyMail(@Param('code') code: string, @Res() res: Response): Promise<UserDocument> {
+    return await this.userService.veryfiyUser(code)
   }
 
   @Get('/profile')
