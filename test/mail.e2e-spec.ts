@@ -16,7 +16,10 @@ let token: string
 
 beforeEach( async () => {
 
+    // mockmailer should be reset and not throw artificial errors
     mock.reset()
+    mock.setShouldFail(false)
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -26,6 +29,7 @@ beforeEach( async () => {
 })
 
 describe("sendMail", () => {
+
     it("should return 201 to valid request", async () => {
 
         const res = await request(app.getHttpServer())
@@ -51,7 +55,7 @@ describe("sendMail", () => {
     })
 
     it("should send email with test content", async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
       .post('/mail')
       .set("Content-Type", "application/json")
       .send({
@@ -63,6 +67,17 @@ describe("sendMail", () => {
 
       expect(receivedMail.subject).toBe("test")
       expect(receivedMail.html).toBe("this is a dummy endpoint")
+    })
+
+    it("should return an error if Mail fails to send", async () => {
+      mock.setShouldFail(true)
+      await request(app.getHttpServer())
+      .post('/mail')
+      .set("Content-Type", "application/json")
+      .send({
+          recipient: "unit2@test.mock"
+      })
+      .expect(500)
     })
 })
 
@@ -77,9 +92,7 @@ describe("generateVerifyMail", () => {
       })
       .expect(201)
 
-      //This is not clean code but necessary to wait for mail to be received
       token = (await res).body.access_token
-      await new Promise(resolve => setTimeout(resolve, 1000));
 
       //checking send mail (content is ignored as this would make changing templates annoying)
       const sendMails =  mock.getSentMail()    
@@ -90,16 +103,13 @@ describe("generateVerifyMail", () => {
 
 describe("sendPasswordReset", () => {
   it('/user/password-reset (GET) should send password reset email', async () => {
-    const res = request(app.getHttpServer())
+    await request(app.getHttpServer())
       .get('/user/password-reset')
       .send({
         userMail: "dummy@unit.test"
       })
       .expect(200)
 
-      //This is not clean code but necessary to wait for mail to be received
-      await res
-      await new Promise(resolve => setTimeout(resolve, 1000));
       
       //checking send mail (content is ignored as this would make changing templates annoying)
       const sendMails =  mock.getSentMail()

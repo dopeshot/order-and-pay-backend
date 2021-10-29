@@ -33,7 +33,7 @@ export class UserService {
       })
       const result = await user.save()
 
-      this.createVerification(result)
+      await this.createVerification(result)
 
       return result
     } catch (error) {
@@ -62,9 +62,9 @@ export class UserService {
       userId: user._id,
       verificationCode: verifyCode
     })
-    const result = await verifyObject.save()
+    await verifyObject.save()
 
-    this.mailService.generateVerifyMail(user.username, user.email, verifyCode)
+    await this.mailService.generateVerifyMail(user.username, user.email, verifyCode)
   }
 
   /**
@@ -197,7 +197,7 @@ export class UserService {
    * @returns the updated user object
    */
 
-  async veryfiyUser(code: string) {
+  async veryfiyUser(code: string):Promise<UserDocument> {
 
     const verifyObject = await this.verifySchema.findOne({
       'verificationCode': code
@@ -208,7 +208,7 @@ export class UserService {
     }
 
     if (Date.now() - verifyObject._id.getTimestamp() > +process.env.VERIFY_TTL) {
-      return { "error": "Expired" }
+      throw new ConflictException("Code has expired")
     }
 
     const user = await this.userSchema.findById(verifyObject.userId)
@@ -243,9 +243,9 @@ export class UserService {
       userId: user._id,
       verificationCode: resetCode
     })
-    const result = await resetObject.save()
+    await resetObject.save()
 
-    this.mailService.sendPasswordReset(user.username, user.email, resetCode)
+    await this.mailService.sendPasswordReset(user.username, user.email, resetCode)
 
   }
 
