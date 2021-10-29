@@ -1,0 +1,10 @@
+POST http://localhost:3000/mail
+Content-Type: application/json
+
+{
+    "recipient": "test.test@test.test"
+}
+
+
+###
+GET http://localhost:3000/mail

@@ -1,0 +1,27 @@
+### Register User
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+    "username": "xyz",
+    "email": "tvsssst@gmail.de",
+    "password": "12345678"
+}
+
+### Login User
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email": "tvsssst@gmail.de",
+    "password": "12345678"
+}
+
+### Google Auth
+GET http://localhost:3000/auth/google
+
+### Facebook Auth
+GET http://localhost:3000/auth/facebook
+
+### Discord Auth
+GET http://localhost:3000/auth/discord
