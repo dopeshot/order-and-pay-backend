@@ -26,6 +26,9 @@ export class Dish {
 
     @Prop()
     labels: string[]
+
+    @Prop({ required: true })
+    price: number
 }
 
 export type DishDocument = Dish & Document
