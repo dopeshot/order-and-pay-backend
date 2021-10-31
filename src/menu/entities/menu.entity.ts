@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
-import { Document, ObjectId } from "mongoose"
+import { Document, ObjectId, SchemaTypes } from "mongoose"
 
 @Schema({ timestamps: true })
 export class Menu {
@@ -11,7 +11,7 @@ export class Menu {
     @Prop({})
     description: string
 
-    @Prop({ required: true })
+    @Prop({ required: true, type: [{ type: SchemaTypes.ObjectId, ref: 'Dish' }] })
     dishes: ObjectId[]
 
     @Prop( {required: true })
