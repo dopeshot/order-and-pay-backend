@@ -1,0 +1,26 @@
+### Create table
+POST http://localhost:3000/table
+Content-Type: application/json
+
+{
+    "tableNumber": 1,
+    "capacity": 4
+}
+
+### Get all tables
+GET http://localhost:3000/table
+
+### Get table by id
+GET http://localhost:3000/table/6182c71c97e30938282b69a9
+
+### Patch table information
+PATCH http://localhost:3000/table/6182c71c97e30938282b69a9
+Content-Type: application/json
+
+{
+    "tableNumber": 2,
+    "capacity": 3
+}
+
+### Delete table by id
+DELETE http://localhost:3000/table/6182c71c97e30938282b69a9
