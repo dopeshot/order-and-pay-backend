@@ -1,9 +1,9 @@
-import { Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
-import { Table, TableDocument } from './entities/table.entity';
+import { TableDocument } from './entities/table.entity';
 import { ResponseTable } from './types/response';
 
 @Injectable()
@@ -14,8 +14,14 @@ export class TableService {
 
   async create(createTableDto: CreateTableDto): Promise<ResponseTable> {
     try {
+      // Can't be a const since the table is set in a trycatch
+      let table: TableDocument;
+      try {
+        table = await this.tableSchema.create({ ...createTableDto })
 
-      const table: TableDocument = await this.tableSchema.create({ ...createTableDto })
+      } catch (error) {
+        throw new UnprocessableEntityException('This tableNumber is already taken')
+      }
 
       return {
         _id: table._id,
@@ -61,26 +67,21 @@ export class TableService {
 
   async update(id: string, updateTableDto: UpdateTableDto) {
     try {
-      const table: TableDocument = await this.tableSchema.findById(id)
-      
+      const table: TableDocument = await this.tableSchema.findByIdAndUpdate(id, updateTableDto)
+
       if (!table) {
         throw new NotFoundException()
       }
 
-      if(updateTableDto.hasOwnProperty('tableNumber')){
-        table.tableNumber = updateTableDto.tableNumber
-      }
-      if(updateTableDto.hasOwnProperty('capacity')){
-        table.capacity = updateTableDto.capacity
+      // FindByIdAndUpdate returns the match, not the updated version, thus I will have to request a second time to view the new data
+      const result = await this.tableSchema.findById(id, { _id: true, tableNumber: true, capacity: true })
+
+      if (!result) {
+        throw new UnprocessableEntityException()
       }
 
-      const result: TableDocument = await table.save()
-
-      return {
-        _id: result._id,
-        tableNumber: result.tableNumber,
-        capacity: result.capacity
-      }
+      // Casting here is fine since I already only request the parameters that are in type ResponseTable
+      return <ResponseTable>result
 
     } catch (error) {
       console.log(error)
@@ -92,8 +93,8 @@ export class TableService {
   async remove(id: string) {
     try {
       const table: TableDocument = await this.tableSchema.findByIdAndDelete(id)
-      
-      if(!table){
+
+      if (!table) {
         throw new NotFoundException()
       }
       return

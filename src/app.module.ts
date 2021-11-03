@@ -19,7 +19,8 @@ import { TableModule } from './table/table.module';
     useFactory: (configService: ConfigService) => ({
       uri: configService.get<string>('DB_URI'),
       useCreateIndex: true,
-      useFindAndModify: false
+      useFindAndModify: false,
+      autoIndex: true
     }),
     inject: [ConfigService]
   }),

@@ -11,14 +11,14 @@ Content-Type: application/json
 GET http://localhost:3000/table
 
 ### Get table by id
-GET http://localhost:3000/table/6182c71c97e30938282b69a9
+GET http://localhost:3000/table/6182de82f0befe1e44f5cdb6
 
 ### Patch table information
-PATCH http://localhost:3000/table/6182c71c97e30938282b69a9
+PATCH http://localhost:3000/table/6182de82f0befe1e44f5cdb6
 Content-Type: application/json
 
 {
-    "tableNumber": 2,
+    "tableNumber": 1,
     "capacity": 3
 }
 
