@@ -14,24 +14,22 @@ export class TableService {
 
   async create(createTableDto: CreateTableDto): Promise<ResponseTable> {
     try {
-      // Can't be a const since the table is set in a trycatch
-      let table: TableDocument;
-      try {
-        table = await this.tableSchema.create({ ...createTableDto })
-
-      } catch (error) {
-        throw new UnprocessableEntityException('This tableNumber is already taken')
-      }
+      const table = await this.tableSchema.create({ ...createTableDto })
 
       return {
         _id: table._id,
         tableNumber: table.tableNumber,
         capacity: table.capacity
       }
-
+      
     } catch (error) {
-      console.log(error)
-      throw error
+      if (error.code = '11000') {
+        throw new UnprocessableEntityException('This table number already exists')
+      }
+      else {
+        console.log(error)
+        throw error
+      }
     }
   }
 
@@ -56,6 +54,7 @@ export class TableService {
         throw new NotFoundException()
       }
 
+      // Casting here is fine since I already only request the parameters that are in type ResponseTable
       return <ResponseTable>table
 
     } catch (error) {
