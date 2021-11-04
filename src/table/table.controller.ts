@@ -5,8 +5,8 @@ import { UpdateTableDto } from './dto/update-table.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/strategies/jwt/jwt-auth.guard';
 
-@ApiTags('table')
-@Controller('table')
+@ApiTags('tables')
+@Controller('tables')
 export class TableController {
   constructor(private readonly tableService: TableService) { }
 

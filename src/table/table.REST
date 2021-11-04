@@ -1,5 +1,5 @@
 ### Create table
-POST http://localhost:3000/table
+POST http://localhost:3000/tables
 Content-Type: application/json
 
 {
@@ -8,13 +8,13 @@ Content-Type: application/json
 }
 
 ### Get all tables
-GET http://localhost:3000/table
+GET http://localhost:3000/tables
 
 ### Get table by id
-GET http://localhost:3000/table/6182de82f0befe1e44f5cdb6
+GET http://localhost:3000/tables/6182de82f0befe1e44f5cdb6
 
 ### Patch table information
-PATCH http://localhost:3000/table/6182de82f0befe1e44f5cdb6
+PATCH http://localhost:3000/tables/6182de82f0befe1e44f5cdb6
 Content-Type: application/json
 
 {
