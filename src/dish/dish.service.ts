@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, ObjectId } from "mongoose";
 import { Dish, DishDocument } from "./entities/dish.entity";
 import { Category } from "./enums/category.enum";
 
@@ -28,4 +28,8 @@ export class DishService {
       const result = await menu.save()
     }
     */
+
+    async findById(id: ObjectId): Promise<Dish> {
+      return await this.dishSchema.findById(id)
+    }
 }

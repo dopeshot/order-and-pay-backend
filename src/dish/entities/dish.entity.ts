@@ -12,7 +12,7 @@ export class Dish {
     @Prop({ required: true })
     category: Category
 
-    @Prop({ required: true })
+    @Prop({ required: true, default: true })
     availability: boolean
 
     @Prop()

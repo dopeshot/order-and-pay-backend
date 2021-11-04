@@ -1,7 +1,7 @@
 export enum Category {
-    NonAlcoholic,
-    Alcohol,
-    Desert,
-    Starter,
-    MainCourse
+    NonAlcoholic = "NonAlcoholic",
+    Alcohol = "Alcoholic",
+    Desert = "Desert",
+    Starter = "Starter",
+    MainCourse = "MainCourse",
   }

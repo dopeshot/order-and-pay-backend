@@ -1,7 +1,8 @@
-import { Controller, Get, Post } from "@nestjs/common";
+import { Controller, Get, Param, Post } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Dish } from "./entities/dish.entity";
 import { DishService } from "./dish.service";
+import { ObjectId } from "mongoose";
 
 @ApiTags('dish')
 @Controller('dish')
@@ -11,5 +12,10 @@ export class DishController {
   @Get()
   async findAll(): Promise<Dish[]> {
     return await this.dishService.findAll();
+  }
+
+  @Get('/:id')
+  async findOne(@Param('id') id: ObjectId): Promise<Dish> {
+    return await this.dishService.findById(id);
   }
 }
