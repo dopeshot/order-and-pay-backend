@@ -1,5 +1,5 @@
 name: Validate Docker Image
-on: [push, pull]
+on: push
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -7,10 +7,10 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: setup env
-       run: 'echo "$ENV_VALUES" > .env'
-       shell: bash
-       env:
-        ENV_VALUES: ${{secrets.PIPELINE_DOCKER_ENV}}
+        run: 'echo "$ENV_VALUES" > .env'
+        shell: bash
+        env:
+          ENV_VALUES: ${{secrets.PIPELINE_DOCKER_ENV}}
         
         
       - name: Build the stack
