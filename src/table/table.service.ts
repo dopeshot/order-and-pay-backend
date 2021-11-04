@@ -64,23 +64,19 @@ export class TableService {
 
   }
 
-  async update(id: string, updateTableDto: UpdateTableDto) {
+  async update(id: string, updateTableDto: UpdateTableDto): Promise<ResponseTable> {
     try {
-      const table: TableDocument = await this.tableSchema.findByIdAndUpdate(id, updateTableDto)
+      const table: TableDocument = await this.tableSchema.findByIdAndUpdate(id, updateTableDto, {new: true})
 
       if (!table) {
         throw new NotFoundException()
       }
 
-      // FindByIdAndUpdate returns the match, not the updated version, thus I will have to request a second time to view the new data
-      const result = await this.tableSchema.findById(id, { _id: true, tableNumber: true, capacity: true })
-
-      if (!result) {
-        throw new UnprocessableEntityException()
+      return {
+        _id: table._id,
+        tableNumber: table.tableNumber,
+        capacity: table.capacity
       }
-
-      // Casting here is fine since I already only request the parameters that are in type ResponseTable
-      return <ResponseTable>result
 
     } catch (error) {
       console.log(error)
