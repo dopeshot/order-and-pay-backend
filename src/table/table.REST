@@ -18,7 +18,7 @@ PATCH http://localhost:3000/tables/6183bf0bac92df1094bd7caf
 Content-Type: application/json
 
 {
-    "tableNumber": 1,
+    "tableNumber": 2,
     "capacity": 3
 }
 

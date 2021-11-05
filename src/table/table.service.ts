@@ -14,22 +14,20 @@ export class TableService {
 
   async create(createTableDto: CreateTableDto): Promise<ResponseTable> {
     try {
-      const table = await this.tableSchema.create({ ...createTableDto })
+      const table: TableDocument = await this.tableSchema.create({ ...createTableDto })
 
       return {
         _id: table._id,
         tableNumber: table.tableNumber,
         capacity: table.capacity
       }
-      
+
     } catch (error) {
       if (error.code = '11000') {
         throw new UnprocessableEntityException('This table number already exists')
       }
-      else {
-        console.log(error)
-        throw error
-      }
+
+      throw error
     }
   }
 
@@ -37,10 +35,19 @@ export class TableService {
     try {
       const tables: TableDocument[] = await this.tableSchema.find({}, { _id: 1, tableNumber: 1, capacity: 1 })
 
-      return <ResponseTable[]>tables
+      const result: ResponseTable[] = []
+
+      tables.forEach((table) => {
+        result.push({
+          _id: table._id,
+          tableNumber: table.tableNumber,
+          capacity: table.capacity
+        })
+      })
+
+      return result
 
     } catch (error) {
-      console.log(error)
       throw error
     }
 
@@ -54,11 +61,13 @@ export class TableService {
         throw new NotFoundException()
       }
 
-      // Casting here is fine since I already only request the parameters that are in type ResponseTable
-      return <ResponseTable>table
+      return {
+        _id: table._id,
+        tableNumber: table.tableNumber,
+        capacity: table.capacity
+      }
 
     } catch (error) {
-      console.log(error)
       throw error
     }
 
@@ -66,7 +75,7 @@ export class TableService {
 
   async update(id: string, updateTableDto: UpdateTableDto): Promise<ResponseTable> {
     try {
-      const table: TableDocument = await this.tableSchema.findByIdAndUpdate(id, updateTableDto, {new: true})
+      const table: TableDocument = await this.tableSchema.findByIdAndUpdate(id, updateTableDto, { new: true }).select(['_id', 'tableNumber', 'capacity'])
 
       if (!table) {
         throw new NotFoundException()
@@ -79,13 +88,12 @@ export class TableService {
       }
 
     } catch (error) {
-      console.log(error)
       throw error
     }
 
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<void> {
     try {
       const table: TableDocument = await this.tableSchema.findByIdAndDelete(id)
 
@@ -95,7 +103,6 @@ export class TableService {
       return
 
     } catch (error) {
-      console.log(error)
       throw error
     }
 
