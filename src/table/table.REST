@@ -19,8 +19,8 @@ Content-Type: application/json
 
 {
     "tableNumber": 2,
-    "capacity": 3
+    "capacity": 142
 }
 
 ### Delete table by id
-DELETE http://localhost:3000/table/6182c71c97e30938282b69a9
+DELETE http://localhost:3000/tables/6182c71c97e30938282b69a9
