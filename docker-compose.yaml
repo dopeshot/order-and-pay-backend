@@ -1,0 +1,19 @@
+services:
+       backend-server:
+           container_name: oap-backend-server
+           image: oap-backend
+           restart: always
+           env_file:
+            docker.env
+           build: .
+           ports:
+             - "${DOCKER_PORT_OUT}:${DOCKER_PORT_IN}"
+           links:
+             - mongo
+       mongo:
+             container_name: mongo
+             image: mongo:5
+             volumes:
+               - ./data:/data/db
+             ports:
+               - "27017:27017"
