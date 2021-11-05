@@ -3,9 +3,11 @@ services:
            container_name: oap-backend-server
            image: oap-backend
            restart: always
+           env_file:
+            docker.env
            build: .
            ports:
-             - "3000:3000"
+             - "${DOCKER_PORT_OUT}:${DOCKER_PORT_IN}"
            links:
              - mongo
        mongo:
