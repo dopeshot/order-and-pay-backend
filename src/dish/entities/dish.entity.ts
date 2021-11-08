@@ -11,7 +11,7 @@ export class Dish {
     @Prop({ type: SchemaTypes.ObjectId, ref: 'Category', required: true })
     category: ObjectId
 
-    @Prop({ required: true })
+    @Prop({ required: true, default: true })
     availability: boolean
 
     @Prop()

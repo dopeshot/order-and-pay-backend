@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from "@nestjs/common";
+import { Controller, Get, Param, Post } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { Dish } from "./entities/dish.entity";
 import { DishService } from "./dish.service";
@@ -18,5 +18,4 @@ export class DishController {
   async findOne(id: ObjectId): Promise<Dish> {
     return await this.dishService.findById(id);
   }
-
 }
