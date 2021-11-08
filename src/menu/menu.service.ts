@@ -17,6 +17,6 @@ export class MenuService {
 
       async findCurrent(timestamp: number): Promise<Menu>{
         //TODO: This has to be implemented once timestamps are implemented
-        return await this.menuSchema.findOne().select([ "name", "dishes", "categories", "-_id" ]).populate('categories', 'name description _id').populate('dishes', 'name price category allergens labels description -_id')
+        return this.menuSchema.findOne().select([ "name", "dishes", "categories", "-_id" ]).populate('categories', 'name description _id').populate('dishes', 'name price category allergens labels description -_id')
       }
 }
