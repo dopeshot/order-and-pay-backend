@@ -16,6 +16,9 @@ export class Menu {
 
     @Prop( {required: true })
     timeslot: string[]
+
+    @Prop({ required: true, type: [{ type: SchemaTypes.ObjectId, ref: 'Category' }] })
+    categories: ObjectId[]
 }
 
 export type MenuDocument = Menu & Document

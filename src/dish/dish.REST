@@ -2,4 +2,7 @@ GET http://localhost:3000/dish
 
 ###
 
-POST http://localhost:3000/dish
+GET http://localhost:3000/dish/:id
+
+
+
