@@ -26,7 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup
     steps:
-    
+      
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
       # run unit tests with docker container (includes real MongoDB instead of mock)
       - name: docker-e2e
         run: docker-compose -f .\docker-compose.test.yaml up --exit-code-from e2e-tests-service
