@@ -32,7 +32,7 @@ jobs:
       
       # run unit tests with docker container (includes real MongoDB instead of mock)
       - name: docker-e2e
-        run: docker-compose -f .\docker-compose.test.yaml up --exit-code-from e2e-tests-service
+        run: docker-compose -f docker-compose.test.yaml up --exit-code-from e2e-tests-service
         
   build:
     runs-on: ubuntu-latest
