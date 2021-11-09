@@ -1,0 +1,20 @@
+services:
+       e2e-tests-service:
+          container_name: oap-test-e2e
+          image: oap-test-e2e
+          restart: always
+          env_file:
+            docker.env
+          build: .
+          ports:
+            - "${DOCKER_PORT_OUT}:${DOCKER_PORT_IN}"
+          links:
+            - mongo
+          command: ["npm", "run", "test:e2e"]
+       mongo:     
+          container_name: mongo
+          image: mongo:5
+          volumes:
+            - ./data:/data/db
+          ports:
+            - "27017:27017"
