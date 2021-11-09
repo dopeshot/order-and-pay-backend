@@ -2,7 +2,6 @@ services:
        e2e-tests-service:
           container_name: oap-test-e2e
           image: oap-test-e2e
-          restart: always
           build: .
           ports:
             - "${DOCKER_PORT_OUT}:${DOCKER_PORT_IN}"
