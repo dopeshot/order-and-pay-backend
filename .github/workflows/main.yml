@@ -34,7 +34,7 @@ jobs:
         run: 'echo "$ENV_VALUES" > .env'
         shell: bash
         env:
-          ENV_VALUES: ${{secrets.PIPELINE_ENV}}
+          ENV_VALUES: ${{secrets.PIPELINE_DOCKER_ENV}}
       
       # run unit tests with docker container (includes real MongoDB instead of mock)
       - name: docker-e2e
