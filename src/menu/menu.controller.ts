@@ -15,11 +15,6 @@ export class MenuController {
 
   @Get('/current')
   async findCurrent(): Promise<Menu> {
-    return await this.menuService.findCurrent(Date.now());
-  }
-
-  @Post()
-  async create(): Promise<Menu> {
-    return await this.menuService.create();
+    return await this.menuService.findCurrent(await this.menuService.getTimestamp());
   }
 }
