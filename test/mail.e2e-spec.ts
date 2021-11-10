@@ -123,16 +123,14 @@ afterAll(async () => {
     let res = request(app.getHttpServer())
       .get('/user/profile')
       .set('Authorization', `Bearer ${token}`)
-      .expect(200)
 
     let userId = (await res).body.userId
 
-    res = request(app.getHttpServer())
+    await request(app.getHttpServer())
       .delete(`/user/${userId}`)
       .set('Authorization', `Bearer ${token}`)
-      .expect(200)
 
-    return res
+    await app.close()
 })
 
 

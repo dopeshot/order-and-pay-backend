@@ -7,20 +7,10 @@ import { CategoryDocument } from './entities/category.entity';
 @ApiTags('category')
 @Controller('category')
 export class CategoryController {
-    constructor(private readonly dishService: CategoryService) {}
+    constructor(private readonly categoryService: CategoryService) {}
 
     @Get()
     async findAll(): Promise<CategoryDocument[]> {
-        return this.dishService.findAll();
-    }
-
-    @Get('/:id')
-    async findById(@Param("id") id: ObjectId): Promise<CategoryDocument> {
-        return this.dishService.findByID(id);
-    }
-
-    @Post()
-    async Create(): Promise<CategoryDocument> {
-        return this.dishService.create();
+        return this.categoryService.findAll();
     }
 }
