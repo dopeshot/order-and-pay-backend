@@ -38,6 +38,11 @@ export class MenuService {
           if (menu.end - timestamp > 0 && menu.end - timestamp < menu.duration) {
             id = menu.id
             break
+          } 
+          // Apart from horrible formating this also serves as a check if an over midnight menu is active
+          else if (menu.end - (timestamp + 2400) > 0 && menu.end - (timestamp + 2400) < menu.duration){
+            id = menu.id
+            break
           }
         }
 
@@ -57,8 +62,7 @@ export class MenuService {
         })
       }
 
-      async getTimestamp(): Promise<number> {
-
+      async getCurrentTimestamp(): Promise<number> {
         // Get current time in timeslot format. 
         // Max: TODO: implement timezones when restaurant objects are added
         const d = new Date()

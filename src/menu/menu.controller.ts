@@ -15,6 +15,6 @@ export class MenuController {
 
   @Get('/current')
   async findCurrent(): Promise<Menu> {
-    return await this.menuService.findCurrent(await this.menuService.getTimestamp());
+    return await this.menuService.findCurrent(await this.menuService.getCurrentTimestamp());
   }
 }
