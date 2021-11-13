@@ -1,6 +1,5 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { HttpException, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { match } from "assert";
 import { Model, ObjectId } from "mongoose";
 import { Menu, MenuDocument } from "./entities/menu.entity";
 
@@ -17,7 +16,7 @@ export class MenuService {
 
         const menuList = await this.menuSchema.find().select("_id timeslot")
 
-        let sortedMenus: {end: number, start: number, duration: number, id: ObjectId}[] = []
+        const sortedMenus: {end: number, start: number, duration: number, id: ObjectId}[] = []
         for (let menu of menuList) {
           for (let timeslot of menu.timeslot) {
 
@@ -47,7 +46,7 @@ export class MenuService {
         }
 
         if (id === undefined) {
-          throw new InternalServerErrorException('No menu found for this timeslot')
+          throw new HttpException('No active menu for this time', 204)
         }
 
         return this.menuSchema.findById(id).select([ "name", "dishes", "categories", "-_id" ])
