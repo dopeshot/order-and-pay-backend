@@ -16,3 +16,7 @@ to run end to end tests locally:
     npm run test:e2e
 
 The current pipeline runs end2end test (in a very basic scope) and builds the software.
+
+For the Docker env setup run:
+    
+    docker-compose -f docker-compose.dev.yaml up
