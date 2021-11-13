@@ -1,5 +1,8 @@
-FROM node:16
+FROM node:16 as dev
 
+EXPOSE 300
+
+FROM dev as full
 # Create app directory
 WORKDIR /usr/src/app
 
@@ -12,6 +15,3 @@ RUN npm install
 #copy source
 COPY . .
 
-EXPOSE 3000
-
-CMD [ "npm", "run", "start:dev" ]

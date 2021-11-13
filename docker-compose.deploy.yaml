@@ -2,10 +2,14 @@ services:
        backend-server:
            container_name: oap-backend-server
            image: oap-backend
+           command: sh -c "npm run start"
            restart: always
            env_file:
             docker.env
-           build: .
+           build: 
+              context: ./
+              dockerfile: Dockerfile
+              target: full
            ports:
              - "${DOCKER_PORT_OUT}:${DOCKER_PORT_IN}"
            links:
