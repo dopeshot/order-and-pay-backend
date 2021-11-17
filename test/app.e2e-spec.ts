@@ -9,7 +9,7 @@ describe('AppController (e2e)', () => {
   let userId
 
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -115,6 +115,7 @@ describe('AppController (e2e)', () => {
       return res
     })
   })
+  /*
 
   describe('Cleanup', () => {
     it('/user/:id (DELETE)', async () => {
@@ -125,7 +126,7 @@ describe('AppController (e2e)', () => {
       return res
     })
   })
-
+  */
   afterAll(async () => {
     await app.close();
   });

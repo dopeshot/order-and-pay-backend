@@ -7,7 +7,7 @@ describe('AppController (e2e)', () => {
   let app: INestApplication
 
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -25,10 +25,10 @@ describe('AppController (e2e)', () => {
   })
 
   describe('/menu/current (GET)', () => {
-    it("should return 500 (no entry in db)", async () => {
+    it("should return 204 (no active menu)", async () => {
       await request(app.getHttpServer())
       .get('/menu/current')
-      .expect(500)
+      .expect(204)
     })
 })
 
