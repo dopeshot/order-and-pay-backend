@@ -3,8 +3,9 @@ POST http://localhost:3000/tables
 Content-Type: application/json
 
 {
-    "tableNumber": 1,
-    "capacity": 4
+    "tableNumber": 5,
+    "capacity": 4,
+    "createdBy": "12"
 }
 
 ### Get all tables

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 
 export class CreateTableDto {
     @IsNumber()
@@ -8,4 +8,8 @@ export class CreateTableDto {
     @IsNumber()
     @IsNotEmpty()
     capacity: number
+
+    @IsOptional()
+    createdBy: string = "Default User"
+
 }

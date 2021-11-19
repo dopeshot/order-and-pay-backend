@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, ValidationPipe } from '@nestjs/common';
 import { TableService } from './table.service';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
@@ -13,7 +13,8 @@ export class TableController {
   @Post()
   //@UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create a new Table' })
-  create(@Body() createTableDto: CreateTableDto) {
+  create(
+    @Body(new ValidationPipe({ whitelist: true })) createTableDto: CreateTableDto) {
     return this.tableService.create(createTableDto);
   }
 
@@ -34,7 +35,7 @@ export class TableController {
   @Patch(':id')
   //@UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Patch the information of one table via id' })
-  update(@Param('id') id: string, @Body() updateTableDto: UpdateTableDto) {
+  update(@Param('id') id: string, @Body(new ValidationPipe({ whitelist: true })) updateTableDto: UpdateTableDto) {
     return this.tableService.update(id, updateTableDto);
   }
 

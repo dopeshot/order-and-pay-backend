@@ -12,22 +12,24 @@ export class TableService {
     @InjectModel('Table') private tableSchema: Model<TableDocument>
   ) { }
 
-  convertToResponse(table: TableDocument): ResponseTable {
+  convertToResponse(table): ResponseTable {
     return {
       _id: table._id,
       tableNumber: table.tableNumber,
-      capacity: table.capacity
+      capacity: table.capacity,
+      updatedAt: table.updatedAt
     }
   }
 
   async create(createTableDto: CreateTableDto): Promise<ResponseTable> {
     try {
-      const table: TableDocument = await this.tableSchema.create({ ...createTableDto })
+      // This is currently of type any due to no other way to access the createdAt property
+      const table: any = await this.tableSchema.create({...createTableDto})
 
       return this.convertToResponse(table)
 
     } catch (error) {
-      if (error.code = '11000') {
+      if (error.code == '11000') {
         throw new ConflictException('This table number already exists')
       }
       console.error(error)

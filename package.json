@@ -18,7 +18,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json --verbose --ALL --detectOpenHandles --forceExit",
+    "test:e2e": "jest --config ./jest-e2e.json --runInBand",
     "rimraf": "./node_modules/rimraf/bin.js"
   },
   "dependencies": {
@@ -39,7 +39,7 @@
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "ejs": "^3.1.6",
-    "mongoose": "^5.13.12",
+    "mongoose": "^6.0.12",
     "nodemailer-mock": "^1.5.11",
     "passport": "^0.5.0",
     "passport-discord": "^0.1.4",
