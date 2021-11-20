@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TableModule } from './table/table.module';
+import { MenuModule } from './menu/menu.module';
+import { DishModule } from './dish/dish.module';
 
 @Module({
   imports: [
@@ -25,7 +27,9 @@ import { TableModule } from './table/table.module';
   AuthModule,
   UserModule,
   MailModule,
-  TableModule
+  TableModule,
+  MenuModule,
+  DishModule
   ],
   controllers: [AppController],
   providers: [AppService],

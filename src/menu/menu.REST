@@ -1,0 +1,10 @@
+GET http://localhost:3000/menu
+
+###
+
+GET http://localhost:3000/menu/current
+
+
+###
+
+POST http://localhost:3000/menu
