@@ -12,14 +12,7 @@ export class TableService {
     @InjectModel('Table') private tableSchema: Model<TableDocument>
   ) { }
 
-  convertToResponse(table): ResponseTable {
-    return {
-      _id: table._id,
-      tableNumber: table.tableNumber,
-      capacity: table.capacity,
-      updatedAt: table.updatedAt
-    }
-  }
+
 
   async create(createTableDto: CreateTableDto): Promise<ResponseTable> {
     try {
@@ -86,6 +79,16 @@ export class TableService {
 
     return
 
+  }
+
+  convertToResponse(table): ResponseTable {
+    return {
+      _id: table._id,
+      tableNumber: table.tableNumber,
+      capacity: table.capacity,
+      updatedAt: table.updatedAt,
+      createdBy: table.createdBy
+    }
   }
 
 }
