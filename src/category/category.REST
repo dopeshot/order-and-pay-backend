@@ -1,5 +1,4 @@
-GET http://localhost:3000/category
+@HOST = http://localhost:3000/
 
-###
+GET {{HOST}}category
 
-POST http://localhost:3000/category
