@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+  backend:
+    build:
+      context: .
+      target: dev
+    depends_on:
+      - database
+  database:
+    image: mongo:5
+    restart: always
+    volumes:
+      - ./data:/data/db
+    expose:
+      - "27017:27017"
+    logging:
+      driver: "none"
