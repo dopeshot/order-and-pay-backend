@@ -5,7 +5,6 @@ services:
           build: 
             context: ./
             dockerfile: Dockerfile
-            target: full
           ports:
             - "${DOCKER_PORT_OUT}:${DOCKER_PORT_IN}"
           links:
