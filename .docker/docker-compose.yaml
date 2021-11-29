@@ -11,7 +11,9 @@ services:
       driver: "none"
 
   backend:
-    build: src
+    build: 
+      context: .
+      target: dev
     command: sh -c "npm run start:dev"
     ports:
       - "3000:3000"
