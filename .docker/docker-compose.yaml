@@ -7,8 +7,13 @@ services:
       - ./data:/data/db
     ports:
       - "27017:27017"
+    logging: 
+      driver: "none"
+
   backend:
-    build:
-      target: dev
+    build: .
+    command: sh -c "npm run start:dev"
+    ports:
+      - "3000:3000"
     depends_on:
       - mongo
