@@ -9,7 +9,6 @@ services:
       - "27017:27017"
   backend:
     build:
-      context: .
       target: dev
     depends_on:
       - mongo
