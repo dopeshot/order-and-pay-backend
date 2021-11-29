@@ -7,7 +7,7 @@ export class Table {
     _id?: ObjectId
 
     @Prop({ required: true, unique: true })
-    tableNumber: number
+    tableNumber: string
 
 
     @Prop({ required: true })

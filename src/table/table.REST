@@ -5,7 +5,7 @@ POST {{HOST}}tables
 Content-Type: application/json
 
 {
-    "tableNumber": 5,
+    "tableNumber": "5",
     "capacity": 4,
     "createdBy": "12"
 }

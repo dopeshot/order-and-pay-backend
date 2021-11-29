@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsNumber, IsOptional } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateTableDto {
-    @IsNumber()
+    @IsString()
     @IsNotEmpty()
-    tableNumber: number
+    tableNumber: string
 
     @IsNumber()
     @IsNotEmpty()

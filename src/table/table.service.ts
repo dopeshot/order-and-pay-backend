@@ -23,6 +23,7 @@ export class TableService {
 
     } catch (error) {
       if (error.code == '11000') {
+        console.log("DUPLICATE WOOP WOOOP")
         throw new ConflictException('This table number already exists')
       }
       console.error(error)
