@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, ObjectId } from 'mongoose';
+import { timeout } from 'rxjs';
 import { ResponseTable } from 'src/table/types/response';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
@@ -9,10 +10,9 @@ import { AppModule } from '../src/app.module';
 describe('SetController (e2e)', () => {
     let app: INestApplication
     let connection: Connection
-    let tableId: ObjectId
     let responseTable: ResponseTable
     const mockTable = {
-        tableNumber: 1,
+        tableNumber: "1",
         capacity: 4,
         createdBy: "12"
     }
@@ -23,14 +23,12 @@ describe('SetController (e2e)', () => {
         }).compile();
 
         app = moduleFixture.createNestApplication();
-        // app.setGlobalPrefix('api')
         await app.init();
         connection = await moduleFixture.get(getConnectionToken());
         await connection.dropDatabase()
     });
 
     afterAll(async () => {
-        await connection.dropDatabase()
         await connection.close()
         await app.close();
     })
@@ -51,14 +49,16 @@ describe('SetController (e2e)', () => {
             expect(res.body.tableNumber).toEqual(mockTable.tableNumber)
             expect(res.body.capacity).toEqual(mockTable.capacity)
             responseTable = res.body
-            return res
+            request(app.getHttpServer())
+                .post('/tables')
+                .send(mockTable).expect(409)
         })
 
         // Negative test
         it('tables (POST)', () => {
             const res = request(app.getHttpServer())
                 .post('/tables')
-                .send({chicken: "chickennuggets"}).expect(400)
+                .send({ chicken: "chickennuggets" }).expect(400)
             return res
         })
 
@@ -68,7 +68,6 @@ describe('SetController (e2e)', () => {
                 .expect(200)
             expect(res.body.length).toBe(1)
             expect(res.body[0]._id).toBe(responseTable._id)
-            return res
         })
 
         it('tables/:id (GET)', async () => {
@@ -76,11 +75,10 @@ describe('SetController (e2e)', () => {
                 .get(`/tables/${responseTable._id}`)
                 .expect(200)
             expect(res.body).toEqual(responseTable)
-            return res
         })
 
         // Negative test
-        it('tables/:id (GET)', async () => {
+        it('tables/:id (GET)', () => {
             const res = request(app.getHttpServer())
                 .get(`/tables/${'6183bf0bac92df1094bd7caf'}`)
                 .expect(404)
@@ -90,39 +88,38 @@ describe('SetController (e2e)', () => {
         it('tables/:id (PATCH)', async () => {
             const res = await request(app.getHttpServer())
                 .patch(`/tables/${responseTable._id}`)
-                .send({tableNumber: 13, capacity: 3})
+                .send({ tableNumber: "13", capacity: 3 })
                 .expect(200)
-            expect(res.body.tableNumber).toEqual(13)
-            return res
+            expect(res.body.tableNumber).toEqual("13")
         })
 
         // Negative test
-        it('tables/:id (PATCH)', async () => {
+        it('tables/:id (PATCH)', () => {
             const res = request(app.getHttpServer())
                 .patch(`/tables/${'6183bf0bac92df1094bd7caf'}`)
-                .send({tableNumber: 13, capacity: 3})
+                .send({ tableNumber: "13", capacity: 3 })
                 .expect(404)
             return res
         })
 
         // Negative test
-        it('tables/:id (PATCH)', async () => {
+        it('tables/:id (PATCH)', () => {
             const res = request(app.getHttpServer())
                 .patch(`/tables/${responseTable._id}`)
-                .send({chicken: 13})
+                .send({ chicken: 13 })
                 .expect(400)
             return res
         })
 
         // Negative test
-        it('tables/:id (DELETE)', async () => {
+        it('tables/:id (DELETE)', () => {
             const res = request(app.getHttpServer())
                 .delete(`/tables/${'6183bf0bac92df1094bd7caf'}`)
                 .expect(404)
             return res
         })
 
-        it('tables/:id (DELETE)', async () => {
+        it('tables/:id (DELETE)', () => {
             const res = request(app.getHttpServer())
                 .delete(`/tables/${responseTable._id}`)
                 .expect(204)
