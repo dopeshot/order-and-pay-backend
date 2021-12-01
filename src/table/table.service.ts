@@ -17,13 +17,12 @@ export class TableService {
   async create(createTableDto: CreateTableDto): Promise<ResponseTable> {
     try {
       // This is currently of type any due to no other way to access the createdAt property
-      const table: any = await this.tableSchema.create({...createTableDto})
+      const table: any = await this.tableSchema.create({ ...createTableDto })
 
       return this.convertToResponse(table)
 
     } catch (error) {
       if (error.code == '11000') {
-        console.log("DUPLICATE WOOP WOOOP")
         throw new ConflictException('This table number already exists')
       }
       console.error(error)
@@ -60,15 +59,19 @@ export class TableService {
   }
 
   async update(id: string, updateTableDto: UpdateTableDto): Promise<ResponseTable> {
+    try {
+      const table: TableDocument = await this.tableSchema.findByIdAndUpdate(id, updateTableDto, { new: true })
 
-    const table: TableDocument = await this.tableSchema.findByIdAndUpdate(id, updateTableDto, { new: true })
+      if (!table) {
+        throw new NotFoundException()
+      }
 
-    if (!table) {
-      throw new NotFoundException()
+      return this.convertToResponse(table)
+    } catch (error) {
+      if (error.code == '11000') {
+        throw new ConflictException('This table number already exists')
+      }
     }
-
-    return this.convertToResponse(table)
-
   }
 
   async remove(id: string): Promise<void> {

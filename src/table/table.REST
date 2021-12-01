@@ -1,11 +1,11 @@
-@HOST =  http://localhost:3000/
-
+@HOST =  http://localhost:3000/tables
+@tableId = 61a752a5dac31c57eeea1de4
 ### Create table
-POST {{HOST}}tables
+POST {{HOST}}
 Content-Type: application/json
 
 {
-    "tableNumber": "5",
+    "tableNumber": "3",
     "capacity": 4,
     "createdBy": "12"
 }
@@ -14,16 +14,16 @@ Content-Type: application/json
 GET {{HOST}}tables
 
 ### Get table by id
-GET {{HOST}}tables/6183bf0bac92df1094bd7caf
+GET {{HOST}}/{{tableId}}
 
 ### Patch table information
-PATCH {{HOST}}tables/6183bf0bac92df1094bd7caf
+PATCH {{HOST}}/{{tableId}}
 Content-Type: application/json
 
 {
-    "tableNumber": 2,
+    "tableNumber": "5",
     "capacity": 142
 }
 
 ### Delete table by id
-DELETE {{HOST}}tables/6182c71c97e30938282b69a9
+DELETE {{HOST}}/{{tableId}}
