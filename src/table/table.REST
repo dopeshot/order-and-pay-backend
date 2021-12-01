@@ -17,7 +17,7 @@ GET {{HOST}}tables
 GET {{HOST}}/{{tableId}}
 
 ### Patch table information
-PATCH {{HOST}}/{{tableId}}
+PUT {{HOST}}/{{tableId}}
 Content-Type: application/json
 
 {

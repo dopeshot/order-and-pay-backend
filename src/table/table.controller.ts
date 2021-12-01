@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpCode, ValidationPipe, Put } from '@nestjs/common';
 import { TableService } from './table.service';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
@@ -32,7 +32,7 @@ export class TableController {
     return this.tableService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   //@UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Patch the information of one table via id' })
   update(@Param('id') id: string, @Body(new ValidationPipe({ whitelist: true })) updateTableDto: UpdateTableDto) {
