@@ -11,6 +11,7 @@ describe('SetController (e2e)', () => {
     let app: INestApplication
     let connection: Connection
     let responseTable: ResponseTable
+    let wrongId = "6183bf0bac92df1094bd7caf"
     const mockTable = {
         tableNumber: "1",
         capacity: 4,
@@ -80,32 +81,32 @@ describe('SetController (e2e)', () => {
         // Negative test
         it('tables/:id (GET)', () => {
             const res = request(app.getHttpServer())
-                .get(`/tables/${'6183bf0bac92df1094bd7caf'}`)
+                .get(`/tables/${wrongId}`)
                 .expect(404)
             return res
         })
 
-        it('tables/:id (PATCH)', async () => {
+        it('tables/:id (PUT)', async () => {
             const res = await request(app.getHttpServer())
-                .patch(`/tables/${responseTable._id}`)
+                .put(`/tables/${responseTable._id}`)
                 .send({ tableNumber: "13", capacity: 3 })
                 .expect(200)
             expect(res.body.tableNumber).toEqual("13")
         })
 
         // Negative test
-        it('tables/:id (PATCH)', () => {
+        it('tables/:id (PUT)', () => {
             const res = request(app.getHttpServer())
-                .patch(`/tables/${'6183bf0bac92df1094bd7caf'}`)
+                .put(`/tables/${wrongId}`)
                 .send({ tableNumber: "13", capacity: 3 })
                 .expect(404)
             return res
         })
 
         // Negative test
-        it('tables/:id (PATCH)', () => {
+        it('tables/:id (PUT)', () => {
             const res = request(app.getHttpServer())
-                .patch(`/tables/${responseTable._id}`)
+                .put(`/tables/${responseTable._id}`)
                 .send({ chicken: 13 })
                 .expect(400)
             return res
@@ -114,7 +115,7 @@ describe('SetController (e2e)', () => {
         // Negative test
         it('tables/:id (DELETE)', () => {
             const res = request(app.getHttpServer())
-                .delete(`/tables/${'6183bf0bac92df1094bd7caf'}`)
+                .delete(`/tables/${wrongId}`)
                 .expect(404)
             return res
         })

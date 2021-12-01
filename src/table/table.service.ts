@@ -61,7 +61,8 @@ export class TableService {
   async update(id: string, updateTableDto: UpdateTableDto): Promise<ResponseTable> {
     try {
       const table: TableDocument = await this.tableSchema.findByIdAndUpdate(id, updateTableDto, { new: true })
-
+      console.log(id)
+      console.log(table)
       if (!table) {
         throw new NotFoundException()
       }
@@ -71,6 +72,7 @@ export class TableService {
       if (error.code == '11000') {
         throw new ConflictException('This table number already exists')
       }
+      throw error
     }
   }
 

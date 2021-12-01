@@ -34,7 +34,7 @@ export class TableController {
 
   @Put(':id')
   //@UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Patch the information of one table via id' })
+  @ApiOperation({ summary: 'Put new information of one table via id' })
   update(@Param('id') id: string, @Body(new ValidationPipe({ whitelist: true })) updateTableDto: UpdateTableDto) {
     return this.tableService.update(id, updateTableDto);
   }
