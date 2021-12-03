@@ -61,8 +61,6 @@ export class TableService {
   async update(id: string, updateTableDto: UpdateTableDto): Promise<ResponseTable> {
     try {
       const table: TableDocument = await this.tableSchema.findByIdAndUpdate(id, updateTableDto, { new: true })
-      console.log(id)
-      console.log(table)
       if (!table) {
         throw new NotFoundException()
       }

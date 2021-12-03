@@ -86,27 +86,27 @@ describe('SetController (e2e)', () => {
             return res
         })
 
-        it('tables/:id (PUT)', async () => {
+        it('tables/:id (PATCH)', async () => {
             const res = await request(app.getHttpServer())
-                .put(`/tables/${responseTable._id}`)
+                .patch(`/tables/${responseTable._id}`)
                 .send({ tableNumber: "13", capacity: 3 })
                 .expect(200)
             expect(res.body.tableNumber).toEqual("13")
         })
 
         // Negative test
-        it('tables/:id (PUT)', () => {
+        it('tables/:id (PATCH)', () => {
             const res = request(app.getHttpServer())
-                .put(`/tables/${wrongId}`)
+                .patch(`/tables/${wrongId}`)
                 .send({ tableNumber: "13", capacity: 3 })
                 .expect(404)
             return res
         })
 
         // Negative test
-        it('tables/:id (PUT)', () => {
+        it('tables/:id (PATCH)', () => {
             const res = request(app.getHttpServer())
-                .put(`/tables/${responseTable._id}`)
+                .patch(`/tables/${responseTable._id}`)
                 .send({ chicken: 13 })
                 .expect(400)
             return res
