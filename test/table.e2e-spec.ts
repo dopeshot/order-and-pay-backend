@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { HttpCode, HttpStatus, INestApplication } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, ObjectId } from 'mongoose';
@@ -23,10 +23,13 @@ describe('SetController (e2e)', () => {
             imports: [AppModule],
         }).compile();
 
-        app = moduleFixture.createNestApplication();
-        await app.init();
         connection = await moduleFixture.get(getConnectionToken());
         await connection.dropDatabase()
+
+        app = moduleFixture.createNestApplication();
+        await app.init();
+
+
     });
 
     afterAll(async () => {
@@ -43,88 +46,119 @@ describe('SetController (e2e)', () => {
     \--------------------*/
 
     describe('Table', () => {
-        it('tables (POST)', async () => {
+        it('tables (POST), create table', async () => {
             const res = await request(app.getHttpServer())
                 .post('/tables')
                 .send(mockTable).expect(201)
             expect(res.body.tableNumber).toEqual(mockTable.tableNumber)
             expect(res.body.capacity).toEqual(mockTable.capacity)
             responseTable = res.body
-            request(app.getHttpServer())
-                .post('/tables')
-                .send(mockTable).expect(409)
+
         })
 
         // Negative test
-        it('tables (POST)', () => {
-            const res = request(app.getHttpServer())
+        it('tables (POST), duplicate tableNumber', async () => {
+            await request(app.getHttpServer())
                 .post('/tables')
-                .send({ chicken: "chickennuggets" }).expect(400)
-            return res
+                .send(mockTable).expect(HttpStatus.CONFLICT)
         })
 
-        it('tables (GET)', async () => {
+        // Negative test
+        it('tables (POST), not matching property', async () => {
+            await request(app.getHttpServer())
+                .post('/tables')
+                .send({ chicken: "chickennuggets" }).expect(HttpStatus.BAD_REQUEST)
+        })
+
+        it('tables (GET), table amounts', async () => {
             const res = await request(app.getHttpServer())
                 .get('/tables')
-                .expect(200)
+                .expect(HttpStatus.OK)
             expect(res.body.length).toBe(1)
             expect(res.body[0]._id).toBe(responseTable._id)
         })
 
-        it('tables/:id (GET)', async () => {
+        it('tables/:id (GET), correct data received', async () => {
             const res = await request(app.getHttpServer())
                 .get(`/tables/${responseTable._id}`)
-                .expect(200)
+                .expect(HttpStatus.OK)
             expect(res.body).toEqual(responseTable)
         })
 
         // Negative test
-        it('tables/:id (GET)', () => {
-            const res = request(app.getHttpServer())
+        it('tables/:id (GET), wrong Id', async () => {
+            await request(app.getHttpServer())
                 .get(`/tables/${wrongId}`)
-                .expect(404)
-            return res
+                .expect(HttpStatus.NOT_FOUND)
         })
 
-        it('tables/:id (PATCH)', async () => {
+        it('tables/:id (PATCH), correct patch', async () => {
             const res = await request(app.getHttpServer())
                 .patch(`/tables/${responseTable._id}`)
                 .send({ tableNumber: "13", capacity: 3 })
-                .expect(200)
+                .expect(HttpStatus.OK)
             expect(res.body.tableNumber).toEqual("13")
         })
 
         // Negative test
-        it('tables/:id (PATCH)', () => {
-            const res = request(app.getHttpServer())
+        it('tables/:id (PATCH), wrong Id', async () => {
+            await request(app.getHttpServer())
                 .patch(`/tables/${wrongId}`)
                 .send({ tableNumber: "13", capacity: 3 })
-                .expect(404)
-            return res
+                .expect(HttpStatus.NOT_FOUND)
         })
 
         // Negative test
-        it('tables/:id (PATCH)', () => {
-            const res = request(app.getHttpServer())
+        it('tables/:id (PATCH): capacity: null', async () => {
+            await request(app.getHttpServer())
+                .patch(`/tables/${wrongId}`)
+                .send({ tableNumber: "13", capacity: null })
+                .expect(HttpStatus.BAD_REQUEST)
+        })
+
+        // Negative test
+        it('tables/:id (PATCH): capacity: negative', async () => {
+            await request(app.getHttpServer())
+                .patch(`/tables/${wrongId}`)
+                .send({ tableNumber: "13", capacity: -1 })
+                .expect(HttpStatus.BAD_REQUEST)
+        })
+
+        // Negative test
+        it('tables/:id (PATCH), tablenumber: number', async () => {
+            await request(app.getHttpServer())
+                .patch(`/tables/${wrongId}`)
+                .send({ tableNumber: 13, capacity: 1 })
+                .expect(HttpStatus.BAD_REQUEST)
+        })
+
+        // Negative test
+        it('tables/:id (PATCH), capacity: missing', async () => {
+            await request(app.getHttpServer())
+                .patch(`/tables/${wrongId}`)
+                .send({ tableNumber: 13 })
+                .expect(HttpStatus.BAD_REQUEST)
+        })
+
+        // Negative test
+        it('tables/:id (PATCH), wrong property', async () => {
+            await request(app.getHttpServer())
                 .patch(`/tables/${responseTable._id}`)
                 .send({ chicken: 13 })
-                .expect(400)
-            return res
+                .expect(HttpStatus.BAD_REQUEST)
         })
 
         // Negative test
-        it('tables/:id (DELETE)', () => {
-            const res = request(app.getHttpServer())
+        it('tables/:id (DELETE), wrong Id', async () => {
+            await request(app.getHttpServer())
                 .delete(`/tables/${wrongId}`)
-                .expect(404)
-            return res
+                .expect(HttpStatus.NOT_FOUND)
         })
 
-        it('tables/:id (DELETE)', () => {
-            const res = request(app.getHttpServer())
+        it('tables/:id (DELETE), delete table', async () => {
+            await request(app.getHttpServer())
                 .delete(`/tables/${responseTable._id}`)
-                .expect(204)
-            return res
+                .expect(HttpStatus.NO_CONTENT)
         })
 
     })
