@@ -49,11 +49,10 @@ describe('SetController (e2e)', () => {
         it('tables (POST), create table', async () => {
             const res = await request(app.getHttpServer())
                 .post('/tables')
-                .send(mockTable).expect(201)
+                .send(mockTable).expect(HttpStatus.CREATED)
             expect(res.body.tableNumber).toEqual(mockTable.tableNumber)
             expect(res.body.capacity).toEqual(mockTable.capacity)
             responseTable = res.body
-
         })
 
         // Negative test
@@ -98,6 +97,25 @@ describe('SetController (e2e)', () => {
                 .send({ tableNumber: "13", capacity: 3 })
                 .expect(HttpStatus.OK)
             expect(res.body.tableNumber).toEqual("13")
+        })
+
+        it('tables (POST,PATCH), patch duplicate tableNumber', async () => {
+            const res = await request(app.getHttpServer())
+                .post('/tables')
+                .send({
+                    tableNumber: "1",
+                    capacity: 4,
+                    createdBy: "12"
+                }).expect(HttpStatus.CREATED)
+            await request(app.getHttpServer())
+                .patch(`/tables/${res.body._id}`)
+                .send({
+                    tableNumber: "13",
+                    capacity: 4
+                }).expect(HttpStatus.CONFLICT)
+            await request(app.getHttpServer())
+                .delete(`/tables/${res.body._id}`)
+                .expect(HttpStatus.NO_CONTENT)
         })
 
         // Negative test

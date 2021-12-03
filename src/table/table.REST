@@ -1,11 +1,11 @@
 @HOST =  http://localhost:3000/tables
-@tableId = 61aa21072ca5b1d6969cce88
+@tableId = 61aa455b55d8a7728cd5c1bd
 ### Create table
 POST {{HOST}}
 Content-Type: application/json
 
 {
-    "tableNumber": "4",
+    "tableNumber": "5",
     "capacity": 1,
     "createdBy": "12"
 }
