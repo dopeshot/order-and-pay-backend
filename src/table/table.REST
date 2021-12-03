@@ -1,4 +1,4 @@
-@HOST =  http://localhost:3000/tables
+@HOST =  http://localhost:3001/tables
 @tableId = 61a752a5dac31c57eeea1de4
 ### Create table
 POST {{HOST}}
@@ -11,7 +11,7 @@ Content-Type: application/json
 }
 
 ### Get all tables
-GET {{HOST}}tables
+GET {{HOST}}
 
 ### Get table by id
 GET {{HOST}}/{{tableId}}
