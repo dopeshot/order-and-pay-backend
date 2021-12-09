@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailModule } from './mail/mail.module';
 import { AuthModule } from './auth/auth.module';
@@ -12,26 +10,24 @@ import { DishModule } from './dish/dish.module';
 
 @Module({
   imports: [
-   //this has to be done to ensure that env variables work
-   ConfigModule.forRoot({
-    envFilePath: ['.env']
-  }),
-  MongooseModule.forRootAsync({
-    imports: [ConfigModule],
-    useFactory: (configService: ConfigService) => ({
-      uri: configService.get<string>('DB_URI'),
-      autoIndex: true
+    //this has to be done to ensure that env variables work
+    ConfigModule.forRoot({
+      envFilePath: ['.env']
     }),
-    inject: [ConfigService]
-  }),
-  AuthModule,
-  UserModule,
-  MailModule,
-  TableModule,
-  MenuModule,
-  DishModule
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('DB_URI'),
+        autoIndex: true
+      }),
+      inject: [ConfigService]
+    }),
+    AuthModule,
+    UserModule,
+    MailModule,
+    TableModule,
+    MenuModule,
+    DishModule
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule { }
