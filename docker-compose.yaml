@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+  backend-server:
+    command: sh -c "npm run start"
+    restart: always
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+      target: full
+    ports:
+      - "${DOCKER_PORT_OUT}:${DOCKER_PORT_IN}"
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    
+  mongo:
+    image: mongo:5
+    restart: unless-stopped
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "${DOCKER_DB_PORT_OUT}:${DOCKER_DB_PORT_IN}"
+    logging:
+      driver: "local"

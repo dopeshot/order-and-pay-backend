@@ -6,7 +6,7 @@ POST {{HOST}}auth/register
 Content-Type: application/json
 
 {
-    "username": "xyz",
+    "username": "unreal",
     "email": "tvsssst@gmail.de",
     "password": "12345678"
 }
