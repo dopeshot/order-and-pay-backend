@@ -7,7 +7,7 @@ import { ResponseTable } from 'src/table/types/response';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 
-describe('SetController (e2e)', () => {
+describe('TableController (e2e)', () => {
     let app: INestApplication
     let connection: Connection
     let responseTable: ResponseTable
