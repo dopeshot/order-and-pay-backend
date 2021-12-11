@@ -107,7 +107,7 @@ describe('TableController (e2e)', () => {
             const res = await request(app.getHttpServer())
                 .get(`/tables/${getMockTable()._id}`)
                 .expect(HttpStatus.OK)
-            expect({ ...res.body, updatedAt: "0" }).toEqual({ ...getMockTable(), updatedAt: "0" })
+            expect({ ...res.body }).toEqual({ ...getMockTable(), updatedAt: res.body.updatedAt })
         })
 
         // Negative test
@@ -115,6 +115,13 @@ describe('TableController (e2e)', () => {
             await request(app.getHttpServer())
                 .get(`/tables/${getWrongId()}`)
                 .expect(HttpStatus.NOT_FOUND)
+        })
+
+        // Negative test
+        it('tables/:id (GET), wrong Id format', async () => {
+            await request(app.getHttpServer())
+                .get('/tables/todtodtodtod')
+                .expect(HttpStatus.BAD_REQUEST)
         })
 
         it('tables/:id (PATCH), correct patch', async () => {
