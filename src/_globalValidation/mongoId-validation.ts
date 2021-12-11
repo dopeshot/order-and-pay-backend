@@ -3,7 +3,7 @@ import {ObjectId} from 'mongodb'
 
 @Injectable()
 export class ValidateMongoId implements PipeTransform<string> {
-  transform(value: string, metadata: ArgumentMetadata): string{
+  transform(value: string): string{
       if(ObjectId.isValid(value)){
           if((String)(new ObjectId(value)) === value)
               return value;        
