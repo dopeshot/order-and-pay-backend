@@ -4,5 +4,5 @@ module.exports = {
   "trailingComma": "none", // Remove trailing commas from objects and arrays
   "printWidth": 80, // Limit line length
   "tabWidth": 4, // I don´t like people using 2 spaces for tabs
-  "BracketSpacing": true, // Add spaces around brackets
+  "bracketSpacing": true, // Add spaces around brackets
 };
