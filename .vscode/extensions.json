@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "mikestead.dotenv",
+        "eamodio.gitlens",
+        "humao.rest-client"
+    ]
+}
