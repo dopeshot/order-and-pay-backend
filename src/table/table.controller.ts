@@ -47,7 +47,6 @@ export class TableController {
   @HttpCode(204)
   //@UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Delete one Table via id' })
-  //delete(@Param('id') id: string) {
   delete(
     @Param('id', ValidateMongoId) id: string) {
     return this.tableService.delete(id);
