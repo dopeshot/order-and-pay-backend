@@ -1,14 +1,17 @@
-import { HttpCode, HttpStatus, INestApplication } from '@nestjs/common';
-import { getConnectionToken } from '@nestjs/mongoose';
+import { HttpStatus, INestApplication } from '@nestjs/common';
+import { getConnectionToken, MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Connection, ObjectId } from 'mongoose';
-import { timeout } from 'rxjs';
-import { ResponseTable } from 'src/table/types/response';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import { TableModule } from '../src/table/table.module';
+import { ResponseTable } from '../src/table/types/response';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { Connection } from 'mongoose';
+import { closeInMongodConnection, rootMongooseTestModule } from './helpers/MongoMemoryHelpers'
+
 
 describe('TableController (e2e)', () => {
     let app: INestApplication
+    let mongod: MongoMemoryServer
     let connection: Connection
     let responseTable: ResponseTable
     let wrongId = "6183bf0bac92df1094bd7caf"
@@ -19,22 +22,21 @@ describe('TableController (e2e)', () => {
     }
 
     beforeAll(async () => {
-        const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
+        const module: TestingModule = await Test.createTestingModule({
+            imports: [
+                rootMongooseTestModule(),
+                TableModule,
+            ]
         }).compile();
 
-        connection = await moduleFixture.get(getConnectionToken());
-        await connection.dropDatabase()
-
-        app = moduleFixture.createNestApplication();
+        connection = connection = await module.get(getConnectionToken());
+        app = module.createNestApplication();
         await app.init();
-
-
     });
 
     afterAll(async () => {
         await connection.close()
-        await app.close();
+        closeInMongodConnection()
     })
 
     /*---------------------\ 
@@ -44,6 +46,7 @@ describe('TableController (e2e)', () => {
     /*--------------------\ 
     |        Table        |
     \--------------------*/
+
 
     describe('Table', () => {
         it('tables (POST), create table', async () => {
@@ -180,4 +183,5 @@ describe('TableController (e2e)', () => {
         })
 
     })
+
 })
