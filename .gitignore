@@ -150,3 +150,6 @@ modules.xml
 # Docker
 data/
 docker.env
+
+
+.eslintcache
