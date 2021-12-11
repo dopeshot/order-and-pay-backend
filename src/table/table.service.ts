@@ -85,7 +85,7 @@ export class TableService {
 
   }
 
-  async bulkDelete(ids: ObjectId[]) {
+  async bulkDelete(ids: string[]) {
     const deletes: DeleteResult = await this.tableSchema.deleteMany({"_id": {$in: ids}})
     if (deletes.deletedCount === 0) {
       throw new NotFoundException()
