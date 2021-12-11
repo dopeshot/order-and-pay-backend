@@ -95,7 +95,13 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-stage": "npm run lint"
+    }
+  },
   "lint-staged": {
-    "**/*.(t|j)s": "eslint --cache --fix"
+    "**/*.(t|j)s": "prettier --write"
   }
 }
