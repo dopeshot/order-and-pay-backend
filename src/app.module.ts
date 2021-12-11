@@ -10,7 +10,7 @@ import { DishModule } from './dish/dish.module';
 
 @Module({
   imports: [
-    //this has to be done to ensure that env variables work
+    // This has to be done to ensure that env variables work
     ConfigModule.forRoot({
       envFilePath: ['.env']
     }),
