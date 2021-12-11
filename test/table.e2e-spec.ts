@@ -4,9 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { TableModule } from '../src/table/table.module';
-import { ResponseTable } from '../src/table/types/response';
 import { closeInMongodConnection, rootMongooseTestModule } from './helpers/MongoMemoryHelpers';
-import { getTestSetupData, getWrongId, getMockTable } from './__mocks__/tableMockData'
+import { getMockTable, getTestSetupData, getWrongId } from './__mocks__/tableMockData';
 
 
 describe('TableController (e2e)', () => {
