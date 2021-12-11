@@ -55,7 +55,8 @@ describe('TableController (e2e)', () => {
         it('tables (POST), create table', async () => {
             const res = await request(app.getHttpServer())
                 .post('/tables')
-                .send(getMockTable()).expect(HttpStatus.CREATED)
+                .send(getMockTable())
+                .expect(HttpStatus.CREATED)
             expect(res.body.tableNumber).toEqual(getMockTable().tableNumber)
             expect(res.body.capacity).toEqual(getMockTable().capacity)
         })
@@ -65,14 +66,24 @@ describe('TableController (e2e)', () => {
             await tableModel.create(getMockTable())
             await request(app.getHttpServer())
                 .post('/tables')
-                .send(getMockTable()).expect(HttpStatus.CONFLICT)
+                .send(getMockTable())
+                .expect(HttpStatus.CONFLICT)
+        })
+        // Negative test
+        it('tables (POST), empty tableNumber', async () => {
+            await tableModel.create(getMockTable())
+            await request(app.getHttpServer())
+                .post('/tables')
+                .send({ ...getMockTable(), tableNumber: "" })
+                .expect(HttpStatus.BAD_REQUEST)
         })
 
         // Negative test
         it('tables (POST), extra properties are ignored', async () => {
             const res = await request(app.getHttpServer())
                 .post('/tables')
-                .send({ ...getMockTable(), chicken: "CHICKEN" }).expect(HttpStatus.CREATED)
+                .send({ ...getMockTable(), chicken: "CHICKEN" })
+                .expect(HttpStatus.CREATED)
             expect(res.body.chicken).toBeUndefined
         })
 
@@ -80,7 +91,8 @@ describe('TableController (e2e)', () => {
         it('tables (POST), tableNumber is number', async () => {
             await request(app.getHttpServer())
                 .post('/tables')
-                .send({ ...getMockTable(), tableNumber: 12 }).expect(HttpStatus.BAD_REQUEST)
+                .send({ ...getMockTable(), tableNumber: 12 })
+                .expect(HttpStatus.BAD_REQUEST)
         })
 
         it('tables (GET), table amounts', async () => {
@@ -192,7 +204,7 @@ describe('TableController (e2e)', () => {
         it('tables/:id (DELETE), bulkDelete tables', async () => {
             await request(app.getHttpServer())
                 .delete('/tables/bulk/delete')
-                .send({ids: getTestSetupData().splice(1, 3).map(tables => tables._id)})
+                .send({ ids: getTestSetupData().splice(1, 3).map(tables => tables._id) })
                 .expect(HttpStatus.NO_CONTENT)
             expect((await tableModel.find({})).length).toBe(7)
         })
@@ -201,7 +213,7 @@ describe('TableController (e2e)', () => {
         it('tables/:id (DELETE), bulkDelete tables, notMongoId', async () => {
             await request(app.getHttpServer())
                 .delete('/tables/bulk/delete')
-                .send({ids: ["aaa", "aaa"]})
+                .send({ ids: ["aaa", "aaa"] })
                 .expect(HttpStatus.BAD_REQUEST)
             expect((await tableModel.find({})).length).toBe(10)
         })
@@ -210,7 +222,7 @@ describe('TableController (e2e)', () => {
         it('tables/:id (DELETE), bulkDelete tables, wrong MongoId', async () => {
             await request(app.getHttpServer())
                 .delete('/tables/bulk/delete')
-                .send({ids: ["aaaaaaaaaaaaaaaaaaaaaa10", "aaaaaaaaaaaaaaaaaaaaaa20"]})
+                .send({ ids: ["aaaaaaaaaaaaaaaaaaaaaa10", "aaaaaaaaaaaaaaaaaaaaaa20"] })
                 .expect(HttpStatus.NOT_FOUND)
             expect((await tableModel.find({})).length).toBe(10)
         })
