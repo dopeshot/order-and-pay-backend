@@ -176,10 +176,43 @@ describe('TableController (e2e)', () => {
                 .expect(HttpStatus.NOT_FOUND)
         })
 
+        // Negative test
+        it('tables/:id (DELETE), wrong Id format', async () => {
+            await request(app.getHttpServer())
+                .delete(`/tables/aaa`)
+                .expect(HttpStatus.BAD_REQUEST)
+        })
+
         it('tables/:id (DELETE), delete table', async () => {
             await request(app.getHttpServer())
                 .delete(`/tables/${getTestSetupData()[0]._id}`)
                 .expect(HttpStatus.NO_CONTENT)
+        })
+
+        it('tables/:id (DELETE), bulkDelete tables', async () => {
+            await request(app.getHttpServer())
+                .delete('/tables/bulk/delete')
+                .send({ids: getTestSetupData().splice(1, 3).map(tables => tables._id)})
+                .expect(HttpStatus.NO_CONTENT)
+            expect((await tableModel.find({})).length).toBe(7)
+        })
+
+        // Negative test
+        it('tables/:id (DELETE), bulkDelete tables, notMongoId', async () => {
+            await request(app.getHttpServer())
+                .delete('/tables/bulk/delete')
+                .send({ids: ["aaa", "aaa"]})
+                .expect(HttpStatus.BAD_REQUEST)
+            expect((await tableModel.find({})).length).toBe(10)
+        })
+
+        // Negative test
+        it('tables/:id (DELETE), bulkDelete tables, wrong MongoId', async () => {
+            await request(app.getHttpServer())
+                .delete('/tables/bulk/delete')
+                .send({ids: ["aaaaaaaaaaaaaaaaaaaaaa10", "aaaaaaaaaaaaaaaaaaaaaa20"]})
+                .expect(HttpStatus.NOT_FOUND)
+            expect((await tableModel.find({})).length).toBe(10)
         })
 
     })

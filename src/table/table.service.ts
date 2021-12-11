@@ -1,17 +1,17 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
 import { TableDocument } from './entities/table.entity';
 import { ResponseTable } from './types/response';
+import { DeleteResult, ObjectId } from 'mongodb';
 
 @Injectable()
 export class TableService {
   constructor(
     @InjectModel('Table') private tableSchema: Model<TableDocument>
   ) { }
-
 
 
   async create(createTableDto: CreateTableDto): Promise<ResponseTable> {
@@ -74,7 +74,7 @@ export class TableService {
     }
   }
 
-  async remove(id: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     const table: TableDocument = await this.tableSchema.findByIdAndDelete(id)
 
     if (!table) {
@@ -84,6 +84,15 @@ export class TableService {
     return
 
   }
+
+  async bulkDelete(ids: ObjectId[]) {
+    const deletes: DeleteResult = await this.tableSchema.deleteMany({"_id": {$in: ids}})
+    if (deletes.deletedCount === 0) {
+      throw new NotFoundException()
+    }
+  }
+
+  // Helper function
 
   convertToResponse(table): ResponseTable {
     return {
