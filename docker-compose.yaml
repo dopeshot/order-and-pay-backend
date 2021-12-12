@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   backend-server:
-    command: sh -c "ls && npm run start"
+    command: sh -c "npm run start:prod"
     restart: always
     build: 
       context: ./

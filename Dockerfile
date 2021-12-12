@@ -18,3 +18,5 @@ RUN npm install
 COPY --chown=node:node . .
 
 USER node
+
+RUN npm run build
