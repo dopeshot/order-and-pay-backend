@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ValidateMongoId } from '../_globalValidation/mongoId-validation';
+import { MongoIdDto } from '../_globalValidation/mongoId.dto';
 import { BulkDeleteTableDto } from './dto/bulkDelete-table.dto';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
@@ -15,7 +15,7 @@ export class TableController {
   //@UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create a new Table' })
   create(
-    @Body(new ValidationPipe({ whitelist: true })) createTableDto: CreateTableDto) {
+    @Body() createTableDto: CreateTableDto) {
     return this.tableService.create(createTableDto);
   }
 
@@ -30,17 +30,17 @@ export class TableController {
   //@UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get information of one Table via id' })
   findOne(
-    @Param('id', ValidateMongoId) id: string) {
-    return this.tableService.findOne(id);
+    @Param() id: MongoIdDto) {
+    return this.tableService.findOne(id.id);
   }
 
   @Patch(':id')
   //@UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Patch new information of one Table via id' })
   update(
-    @Param('id', ValidateMongoId) id: string,
-    @Body(new ValidationPipe({ whitelist: true })) updateTableDto: UpdateTableDto) {
-    return this.tableService.update(id, updateTableDto);
+    @Param() id: MongoIdDto,
+    @Body() updateTableDto: UpdateTableDto) {
+    return this.tableService.update(id.id, updateTableDto);
   }
 
   @Delete(':id')
@@ -48,8 +48,8 @@ export class TableController {
   //@UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Delete one Table via id' })
   delete(
-    @Param('id', ValidateMongoId) id: string) {
-    return this.tableService.delete(id);
+    @Param() id: MongoIdDto) {
+    return this.tableService.delete(id.id);
   }
 
   @Delete('/bulk/delete')
@@ -57,7 +57,7 @@ export class TableController {
   //@UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Delete multiple Tables' })
   bulkDelete(
-    @Body(new ValidationPipe({ whitelist: true })) ids: BulkDeleteTableDto) {
+    @Body() ids: BulkDeleteTableDto) {
     return this.tableService.bulkDelete(ids.ids);
   }
 
