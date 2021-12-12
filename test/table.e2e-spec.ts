@@ -234,6 +234,13 @@ describe('TableController (e2e)', () => {
             expect((await tableModel.find({})).length).toBe(10)
         })
 
+        it('tables (POST), extra properties are ignored', async () => {
+            await request(app.getHttpServer())
+                .post('/tables/migrate')
+                .expect(HttpStatus.NO_CONTENT)
+            expect((await tableModel.find({})).length).toBe(30)
+        })
+
     })
 
 })
