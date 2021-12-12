@@ -60,4 +60,12 @@ export class TableController {
     @Body(new ValidationPipe({ whitelist: true })) ids: BulkDeleteTableDto) {
     return this.tableService.bulkDelete(ids.ids);
   }
+
+  @Post('/migrate')
+  @HttpCode(204)
+  //@UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Delete multiple Tables' })
+  migrate() {
+    return this.tableService.migrate();
+  }
 }

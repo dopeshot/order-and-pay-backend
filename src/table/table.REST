@@ -27,3 +27,6 @@ Content-Type: application/json
 
 ### Delete table by id
 DELETE {{HOST}}/{{tableId}}
+
+### Migrate data
+POST {{HOST}}/migrate

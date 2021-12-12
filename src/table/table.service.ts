@@ -6,6 +6,7 @@ import { UpdateTableDto } from './dto/update-table.dto';
 import { TableDocument } from './entities/table.entity';
 import { ResponseTable } from './types/response';
 import { DeleteResult, ObjectId } from 'mongodb';
+import { getMigrateTables } from './sampleTables/migrateTables'
 
 @Injectable()
 export class TableService {
@@ -86,10 +87,14 @@ export class TableService {
   }
 
   async bulkDelete(ids: string[]) {
-    const deletes: DeleteResult = await this.tableSchema.deleteMany({"_id": {$in: ids}})
+    const deletes: DeleteResult = await this.tableSchema.deleteMany({ "_id": { $in: ids } })
     if (deletes.deletedCount === 0) {
       throw new NotFoundException()
     }
+  }
+
+  async migrate() {
+    this.tableSchema.insertMany(getMigrateTables())
   }
 
   // Helper function
