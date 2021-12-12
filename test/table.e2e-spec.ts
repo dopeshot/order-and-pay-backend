@@ -1,4 +1,4 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
@@ -24,6 +24,7 @@ describe('TableController (e2e)', () => {
         connection = connection = await module.get(getConnectionToken());
         tableModel = connection.model('Table')
         app = module.createNestApplication();
+        app.useGlobalPipes(new ValidationPipe({whitelist: true}))
         await app.init();
     });
 
