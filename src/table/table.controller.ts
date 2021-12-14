@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MongoIdDto } from '../_globalValidation/mongoId.dto';
 import { BulkDeleteTableDto } from './dto/bulkDelete-table.dto';
@@ -30,17 +30,17 @@ export class TableController {
   //@UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get information of one Table via id' })
   findOne(
-    @Param() id: MongoIdDto) {
-    return this.tableService.findOne(id.id);
+    @Param() { id }: MongoIdDto) {
+    return this.tableService.findOne(id);
   }
 
   @Patch(':id')
   //@UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Patch new information of one Table via id' })
   update(
-    @Param() id: MongoIdDto,
+    @Param() { id }: MongoIdDto,
     @Body() updateTableDto: UpdateTableDto) {
-    return this.tableService.update(id.id, updateTableDto);
+    return this.tableService.update(id, updateTableDto);
   }
 
   @Delete(':id')
@@ -48,8 +48,8 @@ export class TableController {
   //@UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Delete one Table via id' })
   delete(
-    @Param() id: MongoIdDto) {
-    return this.tableService.delete(id.id);
+    @Param() { id }: MongoIdDto) {
+    return this.tableService.delete(id);
   }
 
   @Delete('/bulk/delete')
@@ -57,8 +57,8 @@ export class TableController {
   //@UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Delete multiple Tables' })
   bulkDelete(
-    @Body() ids: BulkDeleteTableDto) {
-    return this.tableService.bulkDelete(ids.ids);
+    @Body() { ids }: BulkDeleteTableDto) {
+    return this.tableService.bulkDelete(ids);
   }
 
   @Post('/migrate')
