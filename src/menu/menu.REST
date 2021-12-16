@@ -1,0 +1,9 @@
+@HOST = http://localhost:3000/
+
+### GET all menus
+GET {{HOST}}menu
+
+### GET menu at current time
+
+GET {{HOST}}menu/current
+
