@@ -86,19 +86,18 @@ export class TableService {
 
   }
 
-  async bulkDelete(ids: string[]) {
+  async bulkDelete(ids: string[]): Promise<void> {
     const deletes: DeleteResult = await this.tableSchema.deleteMany({ "_id": { $in: ids } })
     if (deletes.deletedCount === 0) {
       throw new NotFoundException()
     }
   }
 
-  async migrate() {
-    this.tableSchema.insertMany(getMigrateTables())
+  async migrate(): Promise<void> {
+    await this.tableSchema.insertMany(getMigrateTables())
   }
 
   // Helper function
-
   convertToResponse(table): ResponseTable {
     return {
       _id: table._id,
