@@ -1,8 +1,8 @@
-@HOST = http://localhost:3000/
+@HOST = http://localhost:3000
 
 
 ### Register User
-POST {{HOST}}auth/register
+POST {{HOST}}/auth/register
 Content-Type: application/json
 
 {
@@ -12,7 +12,7 @@ Content-Type: application/json
 }
 
 ### Login User
-POST {{HOST}}auth/login
+POST {{HOST}}/auth/login
 Content-Type: application/json
 
 {
@@ -21,10 +21,10 @@ Content-Type: application/json
 }
 
 ### Google Auth
-GET {{HOST}}auth/google
+GET {{HOST}}/auth/google
 
 ### Facebook Auth
-GET {{HOST}}auth/facebook
+GET {{HOST}}/auth/facebook
 
 ### Discord Auth
-GET {{HOST}}auth/discord
+GET {{HOST}}/auth/discord
