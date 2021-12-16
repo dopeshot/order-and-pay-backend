@@ -17,6 +17,4 @@ to run end to end tests locally:
 
 The current pipeline runs end2end test (in a very basic scope) and builds the software.
 
-For the Docker env setup run:
-    
-    docker-compose -f docker-compose.dev.yaml up
+To develop from within a container to avoid having to install external dependencies (such as mongodb, npm, ...) it is recommended to clone this repository into a remote container with the vsc extension. 

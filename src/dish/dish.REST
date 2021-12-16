@@ -1,5 +1,10 @@
-GET http://localhost:3000/dish
+@HOST = http://localhost:3000/
 
-###
+GET {{HOST}}dish
 
-POST http://localhost:3000/dish
+### GET Dish by ID
+
+GET {{HOST}}dish/:id
+
+
+

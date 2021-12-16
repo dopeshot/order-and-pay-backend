@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { INestApplication } from '@nestjs/common'
-import * as request from 'supertest'
-import { AppModule } from './../src/app.module'
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as request from 'supertest';
+import { AppModule } from '../src/app.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication
@@ -9,12 +9,13 @@ describe('AppController (e2e)', () => {
   let userId
 
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
     await app.init();
   });
 
@@ -27,12 +28,12 @@ describe('AppController (e2e)', () => {
           email: "zoe@gmail.com",
           password: "12345678"
         })
-        .expect(201)
+        .expect(HttpStatus.CREATED)
 
       token = res.body.access_token
       return res
     })
-    
+
     it('/auth/register (POST) duplicate', async () => {
       const res = await request(app.getHttpServer())
         .post('/auth/register')
@@ -52,7 +53,7 @@ describe('AppController (e2e)', () => {
           email: "zoe@gmail.com",
           password: "12345678"
         })
-        .expect(201)
+        .expect(HttpStatus.CREATED)
     })
 
     it('/auth/login (POST) Wrong Password', async () => {
@@ -62,14 +63,14 @@ describe('AppController (e2e)', () => {
           email: "zoe@gmail.com",
           password: "123"
         })
-        .expect(401)
+        .expect(HttpStatus.UNAUTHORIZED)
     })
 
     it('/user/profile (GET)', async () => {
       const res = request(app.getHttpServer())
         .get('/user/profile')
         .set('Authorization', `Bearer ${token}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
       userId = (await res).body.userId
       return res
     })
@@ -80,7 +81,7 @@ describe('AppController (e2e)', () => {
       const res = request(app.getHttpServer())
         .get('/user')
         .set('Authorization', `Bearer ${token}`)
-        .expect(403)
+        .expect(HttpStatus.FORBIDDEN)
       return res
     })
 
@@ -90,18 +91,18 @@ describe('AppController (e2e)', () => {
         .send({
           role: "admin"
         })
-        .expect(200)
+        .expect(HttpStatus.OK)
       return res
     })
 
     it('/auth/login (POST)', async () => {
       const res = request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: "zoe@gmail.com",
-        password: "12345678"
-      })
-      .expect(201)
+        .post('/auth/login')
+        .send({
+          email: "zoe@gmail.com",
+          password: "12345678"
+        })
+        .expect(HttpStatus.CREATED)
 
       token = (await res).body.access_token
       return res
@@ -111,21 +112,22 @@ describe('AppController (e2e)', () => {
       const res = request(app.getHttpServer())
         .get('/user')
         .set('Authorization', `Bearer ${token}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
       return res
     })
   })
+  /*
 
   describe('Cleanup', () => {
     it('/user/:id (DELETE)', async () => {
       const res = request(app.getHttpServer())
         .delete(`/user/${userId}`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
       return res
     })
   })
-
+  */
   afterAll(async () => {
     await app.close();
   });

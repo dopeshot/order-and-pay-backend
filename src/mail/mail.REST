@@ -1,4 +1,6 @@
-POST http://localhost:3000/mail
+@HOST = http://localhost:3000
+
+POST {{HOST}}/mail
 Content-Type: application/json
 
 {
@@ -7,4 +9,4 @@ Content-Type: application/json
 
 
 ###
-GET http://localhost:3000/mail
+GET {{HOST}}/mail

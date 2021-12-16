@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
-import { Document, ObjectId } from "mongoose"
-import { Category } from "../enums/category.enum"
+import { Document, ObjectId, SchemaTypes } from "mongoose"
 
 @Schema({ timestamps: true })
 export class Dish {
@@ -9,10 +8,10 @@ export class Dish {
     @Prop({ required: true })
     name: string
 
-    @Prop({ required: true })
-    category: Category
+    @Prop({ type: SchemaTypes.ObjectId, ref: 'Category', required: true })
+    category: ObjectId
 
-    @Prop({ required: true })
+    @Prop({ required: true, default: true })
     availability: boolean
 
     @Prop()

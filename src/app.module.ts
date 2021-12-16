@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TableModule } from './table/table.module';
 import { MenuModule } from './menu/menu.module';
 import { DishModule } from './dish/dish.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { DishModule } from './dish/dish.module';
     MailModule,
     TableModule,
     MenuModule,
-    DishModule
+    DishModule,
+    CategoryModule
   ],
 })
 export class AppModule { }

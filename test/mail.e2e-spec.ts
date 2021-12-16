@@ -8,77 +8,81 @@ import * as request from 'supertest'
 
 //project imports
 import { AppModule } from './../src/app.module';
+import { HttpStatus, ValidationPipe } from '@nestjs/common';
 
 const { mock } = require('nodemailer');
 
 let app: NestExpressApplication
 let token: string
 
-beforeEach( async () => {
+beforeAll(async () => {
+  const moduleFixture: TestingModule = await Test.createTestingModule({
+    imports: [AppModule],
+  }).compile();
 
-    // mockmailer should be reset and not throw artificial errors
-    mock.reset()
-    mock.setShouldFail(false)
+  app = moduleFixture.createNestApplication();
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
+  await app.init();
+})
 
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-  
-      app = moduleFixture.createNestApplication();
-      await app.init();
+beforeEach(async () => {
+
+  // mockmailer should be reset and not throw artificial errors
+  mock.reset()
+  mock.setShouldFail(false)
 })
 
 describe("sendMail", () => {
 
-    it("should return 201 to valid request", async () => {
+  it("should return 201 to valid request", async () => {
 
-        const res = await request(app.getHttpServer())
-        .post('/mail')
-        .set("Content-Type", "application/json")
-        .send({
-            recipient: "unit1@test.mock"
-        })
-        .expect(201)
-    })
-
-    it("should send email", async () => {
-      const res = await request(app.getHttpServer())
+    const res = await request(app.getHttpServer())
       .post('/mail')
       .set("Content-Type", "application/json")
       .send({
-          recipient: "unit2@test.mock"
+        recipient: "unit1@test.mock"
       })
+      .expect(HttpStatus.CREATED)
+  })
 
-      const sendMails = mock.getSentMail()
-
-      expect(sendMails.length).toBe(1)
-    })
-
-    it("should send email with test content", async () => {
-      await request(app.getHttpServer())
+  it("should send email", async () => {
+    const res = await request(app.getHttpServer())
       .post('/mail')
       .set("Content-Type", "application/json")
       .send({
-          recipient: "unit2@test.mock"
+        recipient: "unit2@test.mock"
       })
-      .expect(201)
 
-      const receivedMail = mock.getSentMail()[0]
+    const sendMails = mock.getSentMail()
 
-      expect(receivedMail.subject).toBe("test")
-      expect(receivedMail.html).toBe("this is a dummy endpoint")
-    })
+    expect(sendMails.length).toBe(1)
+  })
 
-    it("should return an error if Mail fails to send", async () => {
-      mock.setShouldFail(true)
-      await request(app.getHttpServer())
+  it("should send email with test content", async () => {
+    await request(app.getHttpServer())
       .post('/mail')
       .set("Content-Type", "application/json")
       .send({
-          recipient: "unit2@test.mock"
+        recipient: "unit2@test.mock"
       })
-      .expect(500)
-    })
+      .expect(HttpStatus.CREATED)
+
+    const receivedMail = mock.getSentMail()[0]
+
+    expect(receivedMail.subject).toBe("test")
+    expect(receivedMail.html).toBe("this is a dummy endpoint")
+  })
+
+  it("should return an error if Mail fails to send", async () => {
+    mock.setShouldFail(true)
+    await request(app.getHttpServer())
+      .post('/mail')
+      .set("Content-Type", "application/json")
+      .send({
+        recipient: "unit2@test.mock"
+      })
+      .expect(HttpStatus.INTERNAL_SERVER_ERROR)
+  })
 })
 
 describe("generateVerifyMail", () => {
@@ -90,15 +94,15 @@ describe("generateVerifyMail", () => {
         email: "dummy@unit.test",
         password: "verysecurepassword"
       })
-      .expect(201)
+      .expect(HttpStatus.CREATED)
 
-      token = (await res).body.access_token
+    token = (await res).body.access_token
 
-      //checking send mail (content is ignored as this would make changing templates annoying)
-      const sendMails =  mock.getSentMail()    
-      expect(sendMails.length).toBe(1)
-      expect(sendMails[0].to).toBe("dummy@unit.test")
-    })  
+    //checking send mail (content is ignored as this would make changing templates annoying)
+    const sendMails = mock.getSentMail()
+    expect(sendMails.length).toBe(1)
+    expect(sendMails[0].to).toBe("dummy@unit.test")
+  })
 })
 
 describe("sendPasswordReset", () => {
@@ -108,31 +112,29 @@ describe("sendPasswordReset", () => {
       .send({
         userMail: "dummy@unit.test"
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
 
-      
-      //checking send mail (content is ignored as this would make changing templates annoying)
-      const sendMails =  mock.getSentMail()
-      expect(sendMails.length).toBe(1)
-      expect(sendMails[0].to).toBe("dummy@unit.test")
-    })  
+
+    //checking send mail (content is ignored as this would make changing templates annoying)
+    const sendMails = mock.getSentMail()
+    expect(sendMails.length).toBe(1)
+    expect(sendMails[0].to).toBe("dummy@unit.test")
+  })
 })
 
 
 afterAll(async () => {
-    let res = request(app.getHttpServer())
-      .get('/user/profile')
-      .set('Authorization', `Bearer ${token}`)
-      .expect(200)
+  let res = request(app.getHttpServer())
+    .get('/user/profile')
+    .set('Authorization', `Bearer ${token}`)
 
-    let userId = (await res).body.userId
+  let userId = (await res).body.userId
 
-    res = request(app.getHttpServer())
-      .delete(`/user/${userId}`)
-      .set('Authorization', `Bearer ${token}`)
-      .expect(200)
+  await request(app.getHttpServer())
+    .delete(`/user/${userId}`)
+    .set('Authorization', `Bearer ${token}`)
 
-    return res
+  await app.close()
 })
 
 

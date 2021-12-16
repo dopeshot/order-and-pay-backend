@@ -15,7 +15,10 @@ export class Menu {
     dishes: ObjectId[]
 
     @Prop( {required: true })
-    timeslot: string[]
+    timeslot: [{ end: number, start: number, duration: number }]
+
+    @Prop({ required: true, type: [{ type: SchemaTypes.ObjectId, ref: 'Category' }] })
+    categories: ObjectId[]
 }
 
 export type MenuDocument = Menu & Document
