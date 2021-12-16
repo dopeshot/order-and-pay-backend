@@ -5,18 +5,17 @@ services:
           build: 
             context: ./
             dockerfile: Dockerfile
-            target: full
           ports:
             - "${DOCKER_PORT_OUT}:${DOCKER_PORT_IN}"
           links:
             - mongo
-          command: ["npm", "run", "test:e2e"]
+          command: sh -c "npm run test:e2e"
+
        mongo:     
           container_name: mongo
           image: mongo:5
-          #volumes:
-          #  - ./data:/data/db
           ports:
             - "27017:27017"
           logging:
               driver: "none"
+          command: --bind_ip_all
