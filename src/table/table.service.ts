@@ -14,7 +14,6 @@ export class TableService {
     @InjectModel('Table') private tableSchema: Model<TableDocument>
   ) { }
 
-
   async create(createTableDto: CreateTableDto): Promise<ResponseTable> {
     try {
       // This is currently of type any due to no other way to access the createdAt property
@@ -44,8 +43,6 @@ export class TableService {
     return result
 
   }
-
-
 
   async findOne(id: string): Promise<ResponseTable> {
 
