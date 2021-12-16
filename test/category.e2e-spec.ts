@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { INestApplication } from '@nestjs/common'
-import * as request from 'supertest'
-import { AppModule } from './../src/app.module'
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as request from 'supertest';
+import { AppModule } from './../src/app.module';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication
@@ -13,18 +13,19 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
     await app.init();
   });
 
   describe('/category (GET)', () => {
-      it("should return 200", async () => {
-        await request(app.getHttpServer())
+    it("should return 200", async () => {
+      await request(app.getHttpServer())
         .get('/category')
-        .expect(200)
-      })
+        .expect(HttpStatus.OK)
+    })
   })
 
-  
+
   afterAll(async () => {
     await app.close();
   });
