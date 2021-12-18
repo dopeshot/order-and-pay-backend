@@ -9,6 +9,8 @@ services:
             - "${DOCKER_PORT_OUT}:${DOCKER_PORT_IN}"
           links:
             - mongo
+          depends_on:
+            - mongo
           command: sh -c "npm run test:e2e"
 
        mongo:     

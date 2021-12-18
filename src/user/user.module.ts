@@ -2,18 +2,28 @@ import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserSchema } from './entities/user.entity';
-import { MailService } from '../mail/mail.service';
-import { VerifySchema } from './entities/verify.entity';
-import { ConfigModule } from '@nestjs/config';
+import { User, UserSchema } from './entities/user.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { JWTVerifyStrategy } from './guards/mailVerify-jwt.strategy';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
-  MongooseModule.forFeature([{ name: 'Verify', schema: VerifySchema }]),
-  MongooseModule.forFeature([{ name: 'Reset', schema: VerifySchema }]), 
-  ConfigModule],
+  imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+  JwtModule.registerAsync({
+    imports: [ConfigModule],
+    useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('VERIFY_JWT_SECRET'),
+        signOptions: {
+            expiresIn: configService.get<string>('VERIFY_JWT_EXPIRESIN'),
+        },
+    }),
+    inject: [ConfigService],
+  }),
+  ConfigModule,
+  MailModule],
   controllers: [UserController],
-  providers: [UserService, MailService],
+  providers: [UserService, JWTVerifyStrategy],
   exports: [UserService] 
 })
 export class UserModule {}

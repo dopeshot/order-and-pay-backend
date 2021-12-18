@@ -81,7 +81,7 @@ describe("sendMail", () => {
       .send({
         recipient: "unit2@test.mock"
       })
-      .expect(HttpStatus.INTERNAL_SERVER_ERROR)
+      .expect(HttpStatus.SERVICE_UNAVAILABLE)
   })
 })
 
@@ -97,23 +97,6 @@ describe("generateVerifyMail", () => {
       .expect(HttpStatus.CREATED)
 
     token = (await res).body.access_token
-
-    //checking send mail (content is ignored as this would make changing templates annoying)
-    const sendMails = mock.getSentMail()
-    expect(sendMails.length).toBe(1)
-    expect(sendMails[0].to).toBe("dummy@unit.test")
-  })
-})
-
-describe("sendPasswordReset", () => {
-  it('/user/password-reset (GET) should send password reset email', async () => {
-    await request(app.getHttpServer())
-      .get('/user/password-reset')
-      .send({
-        userMail: "dummy@unit.test"
-      })
-      .expect(HttpStatus.OK)
-
 
     //checking send mail (content is ignored as this would make changing templates annoying)
     const sendMails = mock.getSentMail()
