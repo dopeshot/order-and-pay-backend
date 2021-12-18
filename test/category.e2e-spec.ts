@@ -1,21 +1,49 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Connection, Model } from 'mongoose';
+import { CategoryModule } from '../src/category/category.module';
+import { CategoryDocument } from '../src/category/entities/category.entity';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { rootMongooseTestModule, closeInMongodConnection } from './helpers/MongoMemoryHelpers';
+import { getTestSetupData } from './__mocks__/categoryMockData';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication
+  let connection: Connection
+  let categoryModel: Model<CategoryDocument>
 
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+    const module: TestingModule = await Test.createTestingModule({
+        imports: [
+            rootMongooseTestModule(),
+            CategoryModule,
+        ]
     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
+    connection = await module.get(getConnectionToken());
+    categoryModel = connection.model('Category')
+    app = module.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({whitelist: true}))
     await app.init();
-  });
+});
+
+// Insert test data
+beforeEach(async () => {
+    await categoryModel.insertMany(getTestSetupData())
+})
+
+// Empty the collection from all possible impurities
+afterEach(async () => {
+    await categoryModel.deleteMany()
+})
+
+afterAll(async () => {
+    await connection.close()
+    closeInMongodConnection()
+    await app.close()
+})
 
   describe('/category (GET)', () => {
     it("should return 200", async () => {
@@ -24,9 +52,4 @@ describe('AppController (e2e)', () => {
         .expect(HttpStatus.OK)
     })
   })
-
-
-  afterAll(async () => {
-    await app.close();
-  });
 });
