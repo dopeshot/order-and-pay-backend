@@ -43,15 +43,6 @@ describe('TableController (e2e)', () => {
         closeInMongodConnection()
     })
 
-    /*---------------------\ 
-    |      User Setup      |
-    \---------------------*/
-
-    /*--------------------\ 
-    |        Table        |
-    \--------------------*/
-
-
     describe('Table', () => {
         it('tables (POST), create table', async () => {
             const res = await request(app.getHttpServer())
