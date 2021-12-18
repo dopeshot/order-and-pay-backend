@@ -62,7 +62,6 @@ export class TableController {
   }
 
   @Post('/migrate')
-  @HttpCode(204)
   //@UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Delete multiple tables' })
   migrate() {
