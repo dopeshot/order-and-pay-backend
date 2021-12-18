@@ -13,7 +13,7 @@ export class TableController {
 
   @Post()
   //@UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Create a new Table' })
+  @ApiOperation({ summary: 'Create a new table' })
   create(
     @Body() createTableDto: CreateTableDto) {
     return this.tableService.create(createTableDto);
@@ -21,14 +21,14 @@ export class TableController {
 
   @Get()
   //@UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Create a new Table' })
+  @ApiOperation({ summary: 'Create a new table' })
   findAll() {
     return this.tableService.findAll();
   }
 
   @Get(':id')
   //@UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Get information of one Table via id' })
+  @ApiOperation({ summary: 'Get information of one table via id' })
   findOne(
     @Param() { id }: MongoIdDto) {
     return this.tableService.findOne(id);
@@ -36,7 +36,7 @@ export class TableController {
 
   @Patch(':id')
   //@UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Patch new information of one Table via id' })
+  @ApiOperation({ summary: 'Patch new information of one table via id' })
   update(
     @Param() { id }: MongoIdDto,
     @Body() updateTableDto: UpdateTableDto) {
@@ -46,7 +46,7 @@ export class TableController {
   @Delete(':id')
   @HttpCode(204)
   //@UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Delete one Table via id' })
+  @ApiOperation({ summary: 'Delete one table via id' })
   delete(
     @Param() { id }: MongoIdDto) {
     return this.tableService.delete(id);
@@ -55,7 +55,7 @@ export class TableController {
   @Delete('/bulk/delete')
   @HttpCode(204)
   //@UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Delete multiple Tables' })
+  @ApiOperation({ summary: 'Delete multiple tables' })
   bulkDelete(
     @Body() { ids }: BulkDeleteTableDto) {
     return this.tableService.bulkDelete(ids);
@@ -64,7 +64,7 @@ export class TableController {
   @Post('/migrate')
   @HttpCode(204)
   //@UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Delete multiple Tables' })
+  @ApiOperation({ summary: 'Delete multiple tables' })
   migrate() {
     return this.tableService.migrate();
   }
