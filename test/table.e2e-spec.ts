@@ -78,6 +78,14 @@ describe('TableController (e2e)', () => {
                 .send({ ...getMockTable(), tableNumber: "" })
                 .expect(HttpStatus.BAD_REQUEST)
         })
+        // Negative test
+        it('tables (POST), too long tableNumber', async () => {
+            await tableModel.create(getMockTable())
+            await request(app.getHttpServer())
+                .post('/tables')
+                .send({ ...getMockTable(), tableNumber: "123456789" })
+                .expect(HttpStatus.BAD_REQUEST)
+        })
 
         // Negative test
         it('tables (POST), extra properties are ignored', async () => {
