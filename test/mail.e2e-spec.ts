@@ -38,6 +38,12 @@ beforeEach(async () => {
   // Mockmailer should be reset and not throw artificial errors
   mock.reset();
   mock.setShouldFail(false);
+  // TODO provide test data like users etc.
+});
+
+// Empty the collection from all possible impurities
+afterEach(async () => {
+  // TODO delete test data / wipe collection with deleteMany()
 });
 
 afterAll(async () => {
@@ -52,7 +58,7 @@ afterAll(async () => {
     .set('Authorization', `Bearer ${token}`);
 
   await connection.close();
-  await app.close()
+  await app.close();
   closeInMongodConnection();
 });
 
