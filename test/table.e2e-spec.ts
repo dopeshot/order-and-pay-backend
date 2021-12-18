@@ -36,7 +36,7 @@ describe('TableController (e2e)', () => {
 
     // Empty the collection from all possible impurities
     afterEach(async () => {
-        await tableModel.deleteMany({})
+        await tableModel.deleteMany()
     })
 
     afterAll(async () => {
@@ -214,7 +214,7 @@ describe('TableController (e2e)', () => {
                 .delete('/tables/bulk/delete')
                 .send({ ids: getTestSetupData().splice(1, 3).map(tables => tables._id) })
                 .expect(HttpStatus.NO_CONTENT)
-            expect((await tableModel.find({})).length).toBe(7)
+            expect((await tableModel.find()).length).toBe(7)
         })
 
         // Negative test
@@ -223,7 +223,7 @@ describe('TableController (e2e)', () => {
                 .delete('/tables/bulk/delete')
                 .send({ ids: ["aaa", "aaa"] })
                 .expect(HttpStatus.BAD_REQUEST)
-            expect((await tableModel.find({})).length).toBe(10)
+            expect((await tableModel.find()).length).toBe(10)
         })
 
         // Negative test
@@ -232,14 +232,14 @@ describe('TableController (e2e)', () => {
                 .delete('/tables/bulk/delete')
                 .send({ ids: ["aaaaaaaaaaaaaaaaaaaaaa10", "aaaaaaaaaaaaaaaaaaaaaa20"] })
                 .expect(HttpStatus.NOT_FOUND)
-            expect((await tableModel.find({})).length).toBe(10)
+            expect((await tableModel.find()).length).toBe(10)
         })
 
         it('tables (POST), extra properties are ignored', async () => {
             await request(app.getHttpServer())
                 .post('/tables/migrate')
                 .expect(HttpStatus.CREATED)
-            expect((await tableModel.find({})).length).toBe(30)
+            expect((await tableModel.find()).length).toBe(30)
         })
 
     })
