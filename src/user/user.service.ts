@@ -71,8 +71,6 @@ export class UserService {
 
   let verifyCode =  this.jwtService.sign(payload)
 
-  console.log( `${process.env.HOST}/user/verify/?code=${verifyCode}`)
-
   await this.mailService.sendMail( user.email, 'MailVerify', {name: user.username, link: `${process.env.HOST}/user/verify/?code=${verifyCode}`} as MailVerifyDto, 'Verify your email')
   }
 
