@@ -12,6 +12,6 @@ export class CreateTableDto {
     capacity: number
 
     @IsOptional()
-    createdBy: string = "Default User"
+    author: string = "Default User"
 
 }

@@ -15,7 +15,7 @@ export class Table {
 
     // @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
     @Prop({ required: true})
-    createdBy: string
+    author: string
 }
 
 export type TableDocument = Table & Document

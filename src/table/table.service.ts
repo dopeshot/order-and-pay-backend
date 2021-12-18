@@ -100,7 +100,7 @@ export class TableService {
       tableNumber: table.tableNumber,
       capacity: table.capacity,
       updatedAt: table.updatedAt,
-      createdBy: table.createdBy
+      author: table.author
     }
   }
 

@@ -4,6 +4,6 @@ export type ResponseTable = {
     _id: ObjectId 
     tableNumber: string 
     capacity: number 
-    createdBy: string
+    author: string
     updatedAt: Date // Is equivalent to createdAt on create
  }

@@ -7,7 +7,7 @@ Content-Type: application/json
 {
     "tableNumber": "5",
     "capacity": 1,
-    "createdBy": "12"
+    "author": "12"
 }
 
 ### Get all tables
