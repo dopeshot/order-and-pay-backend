@@ -25,6 +25,7 @@ export class TableService {
       if (error.code == '11000') {
         throw new ConflictException('This table number already exists')
       }
+      throw error
     }
 
   }
@@ -66,6 +67,7 @@ export class TableService {
       if (error.code == '11000') {
         throw new ConflictException('This table number already exists')
       }
+      throw error
     }
   }
 
