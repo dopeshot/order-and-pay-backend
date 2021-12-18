@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -10,6 +10,7 @@ async function bootstrap() {
 
   app.setBaseViewsDir(join(__dirname, '..', 'views'))
   app.setViewEngine('ejs')
+  app.useGlobalPipes(new ValidationPipe({whitelist: true}))
 
   const config = new DocumentBuilder()
     .setTitle('NestJS Boilerplate')
@@ -23,6 +24,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup('swagger', app, document)
   app.enableCors()
-  await app.listen(+process.env.PORT || 3000, () => Logger.log(`Nest lisiting on ${process.env.HOST}`, 'Bootstrap'))
+  await app.listen(+process.env.PORT || 3000, () => Logger.log(`Nest listening on ${process.env.HOST}`, 'Bootstrap'))
 }
 bootstrap();
