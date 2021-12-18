@@ -92,7 +92,7 @@ export class TableService {
   }
 
   // Helper function
-  convertToResponse(table): ResponseTable {
+  private convertToResponse(table): ResponseTable {
     return {
       _id: table._id,
       tableNumber: table.tableNumber,
