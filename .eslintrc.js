@@ -22,5 +22,6 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
+    '@typescript-eslint/ban-ts-comment':'warn'
   },
 };
