@@ -10,6 +10,7 @@ import { RolesGuard } from '../auth/roles/roles.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { resetFormValues } from './interfaces/resetForm.interface';
 import { parsedLoginRequest } from 'src/auth/interfaces/parsedUserRequest.interface';
+import { VerifyJWTGuard } from './guards/mailVerify-jwt.guard';
 
 @ApiTags('user')
 @Controller('user')
@@ -21,13 +22,6 @@ export class UserController {
   @Roles(Role.Admin)
   async findAll(): Promise<User[]> {
     return await this.userService.findAll();
-  }
-
-
-  @Get("/verify/:code")
-  @Render("MailVerify")
-  async verifyMail(@Param('code') code: string, @Res() res: Response): Promise<UserDocument> {
-    return await this.userService.veryfiyUser(code)
   }
 
   @Get('/profile')
@@ -52,6 +46,14 @@ export class UserController {
     return this.userService.createVerification(await this.userService.parseJWTtOUsable(req.user))
   }
 
+  
+  @Get('/verify')
+  @UseGuards(VerifyJWTGuard)
+  @Render('MailVerify')
+  async verifyMail(@Request() req): Promise<User> {
+      return await this.userService.veryfiyUser(req.user)
+  }
+
   @Patch('/:id')
   @UseGuards(JwtAuthGuard)
   async update(@Param('id') id: ObjectId, @Body(new ValidationPipe({
@@ -65,21 +67,5 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async remove(@Param('id') id: ObjectId): Promise<User> {
     return await this.userService.remove(id);
-  }
-
-  @Get('/password-reset')
-  async resetPassword(@Body() userData: {userMail: string}): Promise<void>{
-    return await this.userService.requestResetPassword(userData.userMail)
-  }
-
-  @Get('/reset-form/:code')
-  @Render('reset')
-  async getResetForm(@Param('code') Usercode: string): Promise<resetFormValues> {
-    return { code: Usercode , submitURL: `${process.env.HOST}/user/submitReset`}
-  }
-  
-  @Post('/submitReset')
-  async validateReset(@Body() values: { password: string, code: string }): Promise<User>{
-    return await this.userService.validatePasswordReset(values.code, values.password)
   }
 }

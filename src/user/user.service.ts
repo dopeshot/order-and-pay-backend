@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, Provider } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, Provider, ServiceUnavailableException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -10,12 +10,14 @@ import { Status } from './enums/status.enum';
 import { MailService } from '../mail/mail.service';
 import { VerifyDocument } from './entities/verify.entity';
 import * as crypto from 'crypto'
+import { JwtService } from '@nestjs/jwt';
+import { MailVerifyDto } from 'src/mail/dto/mail-verify.dto';
 
 @Injectable()
 export class UserService {
   constructor(@InjectModel('User') private userSchema: Model<UserDocument>,
-    @InjectModel('Verify') private verifySchema: Model<VerifyDocument>,
     @InjectModel('Reset') private resetSchema: Model<VerifyDocument>,
+    private readonly jwtService: JwtService,
     private readonly mailService: MailService) { }
 
   /**
@@ -31,9 +33,10 @@ export class UserService {
         status: Status.Unverified,
         password: hash
       })
-      const result = await user.save()
 
-      await this.createVerification(result)
+      await this.createVerification(user)
+
+      const result = await user.save()
 
       return result
     } catch (error) {
@@ -41,6 +44,8 @@ export class UserService {
         throw new ConflictException('Username is already taken.')
       else if (error.code === 11000 && error.keyPattern.email)
         throw new ConflictException('Email is already taken.')
+      else if (error instanceof ServiceUnavailableException )
+        throw error
       throw new InternalServerErrorException("User Create failed")
 
     }
@@ -57,14 +62,18 @@ export class UserService {
   }
 
   async createVerification(user: User) {
-    const verifyCode = crypto.randomBytes(64).toString('hex');
-    const verifyObject = new this.verifySchema({
-      userId: user._id,
-      verificationCode: verifyCode
-    })
-    await verifyObject.save()
+    const payload = {
+      mail: user.email,
+      name: user.username,
+      id: user._id,
+      create_time: Date.now()
+  }
 
-    await this.mailService.generateVerifyMail(user.username, user.email, verifyCode)
+  let verifyCode =  this.jwtService.sign(payload)
+
+  console.log( `${process.env.HOST}/user/verify/?code=${verifyCode}`)
+
+  await this.mailService.sendMail( user.email, 'MailVerify', {name: user.username, link: `${process.env.HOST}/user/verify/?code=${verifyCode}`} as MailVerifyDto, 'Verify your email')
   }
 
   /**
@@ -191,95 +200,33 @@ export class UserService {
     return user
   }
 
+  async validateVerifyCode(userId: ObjectId): Promise<boolean> {
+    let user: User
+    try {
+        user = await this.findOneById(userId)
+    } catch (error) {
+        // This is necessary as a not found exception would overwrite the guard response
+        return false
+    }
+    if (!user) return false // This should never happen but just in case    
+    if (user.status !== Status.Unverified){
+        return false
+    }
+    return true
+  }
   /**
    * Verify a user and set the status of said user to active.
    * @param code - email validation code
    * @returns the updated user object
    */
 
-  async veryfiyUser(code: string):Promise<UserDocument> {
+  async veryfiyUser(userId:ObjectId):Promise<UserDocument> {
 
-    const verifyObject = await this.verifySchema.findOne({
-      'verificationCode': code
-    }).lean()
-
-    if (!verifyObject) {
-      throw new NotFoundException()
-    }
-
-    if (Date.now() - verifyObject._id.getTimestamp() > +process.env.VERIFY_TTL) {
-      throw new ConflictException("Code has expired")
-    }
-
-    const user = await this.userSchema.findById(verifyObject.userId)
+    const user = await this.userSchema.findByIdAndUpdate(userId, {status: Status.Active})
 
     if (!user) {
       throw new NotFoundException()
     }
-
-    user.status = Status.Active
-
-    const result = await user.save()
-
-
-    return result
-  }
-
-  /**
-   * Sends the code for a password reset to the mail adress
-   * @param mail - usermail
-   */
-  async requestResetPassword(mail: string) {
-    const user = await this.userSchema.findOne({
-      'email': mail
-    }).lean()
-
-    if (!user) {
-      throw new NotFoundException()
-    }
-
-    const resetCode = crypto.randomBytes(64).toString('hex');
-    const resetObject = new this.resetSchema({
-      userId: user._id,
-      verificationCode: resetCode
-    })
-    await resetObject.save()
-
-    await this.mailService.sendPasswordReset(user.username, user.email, resetCode)
-
-  }
-
-  /**
-   * Overwrites the password with the new one
-   * @param code - resetcode as passed in url
-   * @param password new password
-   * @returns 
-   */
-  async validatePasswordReset(code: string, password: string) {
-    const resetObject = await this.resetSchema.findOneAndDelete({
-      'verificationCode': code
-    })
-
-    if (!resetObject) {
-      throw new NotFoundException()
-    }
-
-    if (Date.now() - resetObject._id.getTimestamp() > +process.env.RESET_TTL) {
-      throw new BadRequestException('Token expired.')
-    }
-
-    const hash = await bcyrpt.hash(password, 12)
-
-    const updatedUser: User = await this.userSchema.findByIdAndUpdate(resetObject.userId, {
-        password: hash
-      }, {
-        new: true
-    })
-
-    if (!updatedUser) {
-      throw new NotFoundException()
-    }
-
-    return updatedUser
+    return user
   }
 }
