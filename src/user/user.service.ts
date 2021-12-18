@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, Provider, ServiceUnavailableException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable, InternalServerErrorException, NotFoundException, Provider, ServiceUnavailableException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -8,15 +8,12 @@ import * as bcyrpt from 'bcrypt'
 import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
 import { Status } from './enums/status.enum';
 import { MailService } from '../mail/mail.service';
-import { VerifyDocument } from './entities/verify.entity';
-import * as crypto from 'crypto'
 import { JwtService } from '@nestjs/jwt';
 import { MailVerifyDto } from 'src/mail/dto/mail-verify.dto';
 
 @Injectable()
 export class UserService {
   constructor(@InjectModel('User') private userSchema: Model<UserDocument>,
-    @InjectModel('Reset') private resetSchema: Model<VerifyDocument>,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService) { }
 
@@ -34,9 +31,9 @@ export class UserService {
         password: hash
       })
 
-      await this.createVerification(user)
-
       const result = await user.save()
+
+      await this.createVerification(user)
 
       return result
     } catch (error) {
@@ -65,8 +62,7 @@ export class UserService {
     const payload = {
       mail: user.email,
       name: user.username,
-      id: user._id,
-      create_time: Date.now()
+      id: user._id
   }
 
   let verifyCode =  this.jwtService.sign(payload)

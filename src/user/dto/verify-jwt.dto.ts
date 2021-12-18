@@ -1,4 +1,4 @@
-import { IsEmail,  IsString} from 'class-validator'
+import { IsEmail,  IsString, IsMongoId} from 'class-validator'
 import { Schema } from 'mongoose'
 
 export class MailVerifyJWTDto {
@@ -8,5 +8,6 @@ export class MailVerifyJWTDto {
     @IsString()
     name: string
 
+    @IsMongoId()
     id: Schema.Types.ObjectId
 }
