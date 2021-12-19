@@ -32,7 +32,7 @@ export class TableService {
 
   async findAll(): Promise<ResponseTable[]> {
 
-    const tables: TableDocument[] = await this.tableSchema.find({},)
+    const tables: TableDocument[] = await this.tableSchema.find()
     const result: ResponseTable[] = []
 
     tables.forEach((table) => {
