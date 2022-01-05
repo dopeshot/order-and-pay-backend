@@ -9,7 +9,6 @@ jobs:
           
   test:
     runs-on: ubuntu-latest
-    needs: setup
     steps:
       
       - name: Checkout repository
