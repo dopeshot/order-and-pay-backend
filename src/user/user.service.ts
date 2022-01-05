@@ -93,7 +93,7 @@ export class UserService {
     async createVerification(user: User): Promise<string> {
         const verifyCode = await this.generateVerifyCode(user);
 
-        await this.mailService.sendMail(
+        await this.mailService.sendMail<MailVerifyDto>(
             user.email,
             'MailVerify',
             {
