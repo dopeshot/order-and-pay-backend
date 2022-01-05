@@ -6,21 +6,6 @@ on:
     branches: [main]
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      # install/cache npm dependencies
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 14
-      - uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
-      - run: npm install
           
   test:
     runs-on: ubuntu-latest
@@ -36,7 +21,10 @@ jobs:
         env:
           ENV_VALUES: ${{secrets.PIPELINE_DOCKER_ENV}}
       
+      - name: install dependencies
+        run: npm i
+
       # run unit tests with docker container (includes real MongoDB instead of mock)
-      - name: docker-e2e
-        run: docker-compose -f docker-compose.test.yaml up --exit-code-from e2e-tests-service
+      - name: e2e-tests
+        run: npm run test:e2e
         
