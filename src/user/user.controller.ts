@@ -1,4 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, Request, Render, Res , Response} from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Post,
+    Body,
+    Patch,
+    Param,
+    Delete,
+    ValidationPipe,
+    UseGuards,
+    Request,
+    Render,
+    Res,
+    Response,
+    HttpCode
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ObjectId } from 'mongoose';
@@ -8,64 +23,73 @@ import { Roles } from '../auth/roles/roles.decorator';
 import { Role } from './enums/role.enum';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { ApiTags } from '@nestjs/swagger';
-import { resetFormValues } from './interfaces/resetForm.interface';
-import { parsedLoginRequest } from 'src/auth/interfaces/parsedUserRequest.interface';
 import { VerifyJWTGuard } from './guards/mailVerify-jwt.guard';
+import { returnUser } from './types/returnUser.type';
 
 @ApiTags('user')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+    constructor(private readonly userService: UserService) {}
 
-  @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin)
-  async findAll(): Promise<User[]> {
-    return await this.userService.findAll();
-  }
+    @Get()
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.ADMIN)
+    async findAll(): Promise<returnUser[]> {
+        const users = await this.userService.findAll();
+        users.forEach(async (user) => {
+            await this.userService.transformToReturn(user);
+        });
 
-  @Get('/profile')
-  @UseGuards(JwtAuthGuard)
-  getProfile(@Request() req: parsedLoginRequest): Promise<User> {
-    return req.user
-  }
+        return users;
+    }
 
-  /**
-   * FOR TESTING
-   * @param id Object Id
-   * @param role body
-   */
-  @Patch('/testing/:id')
-  async updateRole(@Param('id') id: ObjectId, @Body() role: Role): Promise<User> {
-    return await this.userService.patchRole(id, role)
-  }
-  
-  @Get('/getVerify')
-  @UseGuards(JwtAuthGuard)
-  async regenerateVerify(@Request() req: parsedLoginRequest): Promise<void> {
-    return this.userService.createVerification(await this.userService.parseJWTtOUsable(req.user))
-  }
+    @Get('/profile')
+    @UseGuards(JwtAuthGuard)
+    async getProfile(@Request() req): Promise<returnUser> {
+        const user = await this.userService.veryfiyUser(req.user);
+        return await this.userService.transformToReturn(user);
+    }
 
-  
-  @Get('/verify')
-  @UseGuards(VerifyJWTGuard)
-  @Render('MailVerify')
-  async verifyMail(@Request() req): Promise<User> {
-      return await this.userService.veryfiyUser(req.user)
-  }
+    @Get('/resend-account-verification')
+    @UseGuards(JwtAuthGuard)
+    async regenerateVerify(@Request() req): Promise<void> {
+        const userData = await this.userService.findOneById(req.user._id);
+        await this.userService.createVerification(userData);
+    }
 
-  @Patch('/:id')
-  @UseGuards(JwtAuthGuard)
-  async update(@Param('id') id: ObjectId, @Body(new ValidationPipe({
-    // whitelist will strip all fields which are not in the DTO
-    whitelist: true
-  })) updateUserDto: UpdateUserDto): Promise<User> {
-    return await this.userService.updateUser(id, updateUserDto);
-  }
+    @Get('/verify-account')
+    @UseGuards(VerifyJWTGuard)
+    @Render('MailVerify')
+    async verifyMail(@Request() req): Promise<returnUser> {
+        const user = await this.userService.veryfiyUser(req.user);
+        return await this.userService.transformToReturn(user);
+    }
 
-  @Delete('/:id')
-  @UseGuards(JwtAuthGuard)
-  async remove(@Param('id') id: ObjectId): Promise<User> {
-    return await this.userService.remove(id);
-  }
+    @Patch('/:id')
+    @UseGuards(JwtAuthGuard)
+    async update(
+        @Param('id') id: ObjectId,
+        @Body(
+            new ValidationPipe({
+                // whitelist will strip all fields which are not in the DTO
+                whitelist: true
+            })
+        )
+        updateUserDto: UpdateUserDto,
+        @Request() req
+    ): Promise<returnUser> {
+        const user = await this.userService.updateUser(
+            id,
+            updateUserDto,
+            req.user
+        );
+        return await this.userService.transformToReturn(user);
+    }
+
+    @Delete('/:id')
+    @HttpCode(204)
+    @UseGuards(JwtAuthGuard)
+    async remove(@Param('id') id: ObjectId, @Request() req): Promise<void> {
+        await this.userService.remove(id, req.user);
+    }
 }

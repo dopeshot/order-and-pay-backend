@@ -8,7 +8,7 @@ import * as request from 'supertest';
 import { rootMongooseTestModule, closeInMongodConnection } from './helpers/MongoMemoryHelpers';
 import { getTestSetupData } from './__mocks__/categoryMockData';
 
-describe('AppController (e2e)', () => {
+describe('CategoryController(e2e)', () => {
   let app: INestApplication
   let connection: Connection
   let categoryModel: Model<CategoryDocument>

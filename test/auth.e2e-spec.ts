@@ -1,143 +1,293 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { MailModule } from '../src/mail/mail.module';
+import { ConfigModule } from '@nestjs/config';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Connection } from 'mongoose';
+import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { AuthModule } from '../src/auth/auth.module';
+import { DiscordAuthGuard } from '../src/auth/strategies/discord/discord-auth.guard';
+import { FacebookAuthGuard } from '../src/auth/strategies/facebook/facebook-auth.guard';
+import { GoogleAuthGuard } from '../src/auth/strategies/google/google-auth.guard';
+import { UserDocument } from '../src/user/entities/user.entity';
+import { UserStatus } from '../src/user/enums/status.enum';
+import { UserModule } from '../src/user/user.module';
+import { ThirdPartyGuardMock } from './helpers/fakeProvider.strategy';
+import { ProviderGuardFaker } from './helpers/fakeThirdParty.guard';
 import {
-  rootMongooseTestModule,
-  closeInMongodConnection,
+    closeInMongodConnection,
+    rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
-import { getTestSetupData } from './__mocks__/dishMockData';
+import { getJWT, getTestUser } from './__mocks__/userMockData';
+const { mock } = require('nodemailer');
 
-describe('AppController (e2e)', () => {
-  let app: INestApplication;
-  let connection: Connection;
-  let token;
-  let userId;
+describe('AuthController (e2e)', () => {
+    let app: INestApplication;
+    let connection: Connection;
+    let userModel: Model<UserDocument>;
 
-  beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [rootMongooseTestModule(), AppModule],
-    }).compile();
-
-    connection = await module.get(getConnectionToken());
-    app = module.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-    await app.init();
-  });
-
-  // Insert test data
-  beforeEach(async () => {
-    // TODO
-  });
-
-  // Empty the collection from all possible impurities
-  afterEach(async () => {
-    // TODO
-  });
-
-  afterAll(async () => {
-    await connection.close();
-    closeInMongodConnection();
-    await app.close()
-  });
-
-  describe('Auth and User', () => {
-    it('/auth/register (POST)', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({
-          username: 'Zoe',
-          email: 'zoe@gmail.com',
-          password: '12345678',
+    beforeAll(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            imports: [
+                rootMongooseTestModule(),
+                UserModule,
+                AuthModule,
+                MailModule,
+                ConfigModule.forRoot({
+                    envFilePath: ['.env', '.development.env']
+                })
+            ],
+            providers: [ThirdPartyGuardMock]
         })
-        .expect(HttpStatus.CREATED);
+            .overrideGuard(GoogleAuthGuard) // Overwrite guards with mocks that don´t rely on external APIs
+            .useClass(ProviderGuardFaker)
+            .overrideGuard(FacebookAuthGuard)
+            .useClass(ProviderGuardFaker)
+            .overrideGuard(DiscordAuthGuard)
+            .useClass(ProviderGuardFaker)
+            .compile();
 
-      token = res.body.access_token;
-      return res;
+        connection = await module.get(getConnectionToken());
+        userModel = connection.model('User');
+        app = module.createNestApplication();
+        app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+        await app.init();
     });
 
-    it('/auth/register (POST) duplicate', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/auth/register')
-        .send({
-          username: 'Zoe',
-          email: 'zoe@gmail.com',
-          password: '12345678',
-        })
-        .expect(409);
-      return res;
+    // Insert test data
+    beforeEach(async () => {});
+
+    // Empty the collection from all possible impurities
+    afterEach(async () => {
+        await userModel.deleteMany();
     });
 
-    it('/auth/login (POST)', async () => {
-      return request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          email: 'zoe@gmail.com',
-          password: '12345678',
-        })
-        .expect(HttpStatus.CREATED);
+    afterAll(async () => {
+        await connection.close();
+        closeInMongodConnection();
+        await app.close();
     });
 
-    it('/auth/login (POST) Wrong Password', async () => {
-      return request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          email: 'zoe@gmail.com',
-          password: '123',
-        })
-        .expect(HttpStatus.UNAUTHORIZED);
+    describe('Auth basics', () => {
+        describe('/auth/register (POST)', () => {
+            it('/auth/register (POST)', async () => {
+                await request(app.getHttpServer())
+                    .post('/auth/register')
+                    .send({
+                        username: 'fictional user',
+                        email: 'fictional@gmail.com',
+                        password: '12345678'
+                    })
+                    .expect(HttpStatus.CREATED);
+            });
+
+            it('/auth/register (POST) duplicate mail', async () => {
+                await userModel.create(await getTestUser());
+                await request(app.getHttpServer())
+                    .post('/auth/register')
+                    .send({
+                        username: 'a mock user',
+                        email: 'mock@mock.mock',
+                        password: 'mensa essen'
+                    })
+                    .expect(HttpStatus.CONFLICT);
+            });
+
+            it('/auth/register (POST) duplicate username', async () => {
+                await userModel.create(await getTestUser());
+                await request(app.getHttpServer())
+                    .post('/auth/register')
+                    .send({
+                        username: 'mock',
+                        email: 'notMock@mock.mock',
+                        password: 'mensa essen'
+                    })
+                    .expect(HttpStatus.CONFLICT);
+            });
+        });
+
+        describe('/auth/(third-party-provider) (GET)', () => {
+            it('/auth/google/redirect should create user', async () => {
+                // send data that normally is provided by guard
+                await request(app.getHttpServer())
+                    .get('/auth/google/redirect')
+                    .send({
+                        user: {
+                            username: 'googleman',
+                            email: 'googleuser@google.com',
+                            provider: 'google'
+                        }
+                    })
+                    .expect(HttpStatus.OK);
+                expect(await (await userModel.find()).length).toBe(1);
+            });
+
+            it('/auth/facebook/redirect should create user', async () => {
+                // send data that normally is provided by guard
+                await request(app.getHttpServer())
+                    .get('/auth/facebook/redirect')
+                    .send({
+                        user: {
+                            username: 'meta slave',
+                            email: 'face@book.com',
+                            provider: 'face'
+                        }
+                    })
+                    .expect(HttpStatus.OK);
+                expect(await (await userModel.find()).length).toBe(1);
+            });
+
+            it('/auth/discord/redirect should create user', async () => {
+                // send data that normally is provided by guard
+                await request(app.getHttpServer())
+                    .get('/auth/discord/redirect')
+                    .send({
+                        user: {
+                            username: 'discorduser',
+                            email: 'user@discord.com',
+                            provider: 'discord'
+                        }
+                    })
+                    .expect(HttpStatus.OK);
+                expect(await (await userModel.find()).length).toBe(1);
+            });
+
+            it('/auth/(can be used for login)/redirect can be used for login (given user has provider)', async () => {
+                // add provide to test user
+                let user = await getTestUser();
+                user = { ...user, provider: 'google' };
+                await userModel.create(user);
+                // send data that normally is provided by guard
+                await request(app.getHttpServer())
+                    .get('/auth/discord/redirect')
+                    .send({
+                        user: {
+                            username: 'mock',
+                            email: 'mock@mock.mock',
+                            provider: 'google'
+                        }
+                    })
+                    .expect(HttpStatus.OK);
+                expect(await (await userModel.find()).length).toBe(1);
+            });
+
+            it('/auth/(any third party)/redirect should throw error on duplicate', async () => {
+                // send data that normally is provided by guard
+                await userModel.create(await getTestUser());
+                await request(app.getHttpServer())
+                    .get('/auth/google/redirect')
+                    .send({
+                        user: {
+                            username: 'mock',
+                            email: 'mock@mock.mock',
+                            provider: 'google'
+                        }
+                    })
+                    .expect(HttpStatus.CONFLICT);
+                expect(await (await userModel.find()).length).toBe(1);
+            });
+
+            it('/auth/(any third party)/redirect should throw error on duplicate username', async () => {
+                // send data that normally is provided by guard
+                await userModel.create(await getTestUser());
+                await request(app.getHttpServer())
+                    .get('/auth/google/redirect')
+                    .send({
+                        user: {
+                            username: 'mock',
+                            email: 'not@mock.mock',
+                            provider: 'google'
+                        }
+                    })
+                    .expect(HttpStatus.INTERNAL_SERVER_ERROR);
+                expect(await (await userModel.find()).length).toBe(1);
+            });
+
+            it('/auth/(any third party)/redirect should fail without values', async () => {
+                // send data that normally is provided by guard
+                await userModel.create(await getTestUser());
+                await request(app.getHttpServer())
+                    .get('/auth/google/redirect')
+                    .send({})
+                    .expect(HttpStatus.UNAUTHORIZED);
+            });
+        });
+
+        describe('/auth/login (POST)', () => {
+            it('/auth/login (POST)', async () => {
+                await userModel.create(await getTestUser());
+                await request(app.getHttpServer())
+                    .post('/auth/login')
+                    .send({
+                        email: 'mock@mock.mock',
+                        password: 'mock password'
+                    })
+                    .expect(HttpStatus.CREATED);
+            });
+
+            it('/auth/login (POST) Wrong Password', async () => {
+                await userModel.create(await getTestUser());
+                await request(app.getHttpServer())
+                    .post('/auth/login')
+                    .send({
+                        email: 'mock@mock.mock',
+                        password: 'my grandmas birthday'
+                    })
+                    .expect(HttpStatus.UNAUTHORIZED);
+            });
+
+            it('/auth/login (POST) Wrong Email', async () => {
+                await userModel.create(await getTestUser());
+                await request(app.getHttpServer())
+                    .post('/auth/login')
+                    .send({
+                        email: 'peter@mock.mock',
+                        password: 'mock password'
+                    })
+                    .expect(HttpStatus.UNAUTHORIZED);
+            });
+
+            it('/auth/login (POST) User uses provider for login', async () => {
+                // add provide to test user
+                let user = await getTestUser();
+                user = { ...user, provider: 'google' };
+                await userModel.create(user);
+
+                await request(app.getHttpServer())
+                    .post('/auth/login')
+                    .send({
+                        email: 'mock@mock.mock',
+                        password: 'mock password'
+                    })
+                    .expect(HttpStatus.UNAUTHORIZED);
+            });
+        });
     });
 
-    it('/user/profile (GET)', async () => {
-      const res = request(app.getHttpServer())
-        .get('/user/profile')
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.OK);
-      userId = (await res).body.userId;
-      return res;
-    });
-  });
+    describe('Guard', () => {
+        describe('JWT Guard', () => {
+            it('Guard should block with invalid token', async () => {
+                await request(app.getHttpServer())
+                    .get('/user')
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestUser())}`
+                    )
+                    .expect(HttpStatus.UNAUTHORIZED);
+            });
 
-  describe('Roles', () => {
-    it('/user (GET) Protected Route: No Admin Role', async () => {
-      const res = request(app.getHttpServer())
-        .get('/user')
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.FORBIDDEN);
-      return res;
+            it('Guard should block when user is banned ', async () => {
+                let user = await getTestUser();
+                user = { ...user, status: UserStatus.BANNED };
+                await userModel.create(user);
+                await request(app.getHttpServer())
+                    .get('/user')
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestUser())}`
+                    )
+                    .expect(HttpStatus.UNAUTHORIZED);
+            });
+        });
     });
-
-    it('/user/testing (PATCH) Change to Admin', async () => {
-      const res = request(app.getHttpServer())
-        .patch(`/user/testing/${userId}`)
-        .send({
-          role: 'admin',
-        })
-        .expect(HttpStatus.OK);
-      return res;
-    });
-
-    it('/auth/login (POST)', async () => {
-      const res = request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          email: 'zoe@gmail.com',
-          password: '12345678',
-        })
-        .expect(HttpStatus.CREATED);
-
-      token = (await res).body.access_token;
-      return res;
-    });
-
-    it('/user (GET) Protected Route: Admin Role', async () => {
-      const res = request(app.getHttpServer())
-        .get('/user')
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.OK);
-      return res;
-    });
-  });
 });
