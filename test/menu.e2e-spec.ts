@@ -11,7 +11,7 @@ import {
 import { MenuModule } from '../src/menu/menu.module';
 import { getTestSetupData } from './__mocks__/menuMockData';
 
-describe('AppController (e2e)', () => {
+describe('MenuController (e2e)', () => {
   let app: INestApplication;
   let connection: Connection;
   let menuModel: Model<MenuDocument>;

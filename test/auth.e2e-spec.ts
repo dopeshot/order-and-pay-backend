@@ -21,7 +21,7 @@ import {
 import { getJWT, getTestUser } from './__mocks__/userMockData';
 const { mock } = require('nodemailer');
 
-describe('AuthMdoule (e2e)', () => {
+describe('AuthController (e2e)', () => {
     let app: INestApplication;
     let connection: Connection;
     let userModel: Model<UserDocument>;

@@ -11,7 +11,7 @@ import {
 } from './helpers/MongoMemoryHelpers';
 import { getTestSetupData } from './__mocks__/dishMockData';
 
-describe('AppController (e2e)', () => {
+describe('DishController (e2e)', () => {
   let app: INestApplication;
   let connection: Connection;
   let dishModel: Model<DishDocument>;

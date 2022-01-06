@@ -24,7 +24,7 @@ import {
 } from './__mocks__/userMockData';
 const { mock } = require('nodemailer');
 
-describe('UserModule (e2e)', () => {
+describe('UserController (e2e)', () => {
     let app: NestExpressApplication;
     let connection: Connection;
     let userModel: Model<UserDocument>;
