@@ -1,8 +1,8 @@
 FROM node:16 as dev
 
-RUN mkdir -p /home/node/app
-RUN chown -R node:node /home/node/app
-WORKDIR /home/node/app
+RUN mkdir -p /home/node/oap-backend
+RUN chown -R node:node /home/node/oap-backend
+WORKDIR /home/node/oap-backend
 
 EXPOSE 3000
 

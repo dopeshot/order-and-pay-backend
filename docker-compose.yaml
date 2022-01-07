@@ -1,25 +1,26 @@
 version: "3.7"
 services:
-  backend:
+  oap-backend:
     container_name: oap-backend
     image: coffeemakingtoaster/oap-backend:latest
     restart: always
     ports:
-      - "4001:3000"
+      - "4001:3001"
     links:
-      - mongo
+      - oap-mongo
     depends_on:
-      - mongo
+      - oap-mongo
     
-  mongo:
+  oap-mongo:
     container_name: oap-backend-db
     image: mongo:5
     restart: always
     volumes:
       - ./home/mongodb:/home/mongodb
       - ./data:/data/db
+    command: mongod --port 27027
     ports:
-      - "27018:27017"
+      - "27018:27027"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=OrderAndPay
       - MONGO_INITDB_ROOT_PASSWORD=UedD8WR2U8Amv3t2
