@@ -1,27 +1,28 @@
 version: "3.7"
 services:
-  backend-server:
-    command: sh -c "npm run start:prod"
+  backend:
+    container_name: oap-backend
+    image: coffeemakingtoaster/oap-backend:latest
     restart: always
-    build: 
-      context: ./
-      dockerfile: Dockerfile
-      target: full
     ports:
-      - "${DOCKER_PORT_OUT}:${DOCKER_PORT_IN}"
+      - "4001:3000"
     links:
-      - oap-mongo:mongo
+      - mongo
     depends_on:
-      - oap-mongo
+      - mongo
     
-  oap-mongo:
+  mongo:
+    container_name: oap-backend-db
     image: mongo:5
-    restart: unless-stopped
+    restart: always
     volumes:
-      - mongodb:/data/db
+      - ./home/mongodb:/home/mongodb
+      - ./data:/data/db
     ports:
-      - "${DOCKER_DB_PORT_OUT}:${DOCKER_DB_PORT_IN}"
+      - "27018:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=OrderAndPay
+      - MONGO_INITDB_ROOT_PASSWORD=UedD8WR2U8Amv3t2
+      - MONGO_INITDB_DATABASE=wop
     logging:
-      driver: "local"
-volumes:
-  mongodb:
+      driver: "none"

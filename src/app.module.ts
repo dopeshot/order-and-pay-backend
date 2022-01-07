@@ -10,26 +10,27 @@ import { DishModule } from './dish/dish.module';
 import { CategoryModule } from './category/category.module';
 
 @Module({
-  imports: [
-    // This has to be done to ensure that env variables work
-    ConfigModule.forRoot({
-      envFilePath: ['.env']
-    }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('DB_URI'),
-        autoIndex: true
-      }),
-      inject: [ConfigService]
-    }),
-    AuthModule,
-    UserModule,
-    MailModule,
-    TableModule,
-    MenuModule,
-    DishModule,
-    CategoryModule
-  ],
+    imports: [
+        // This has to be done to ensure that env variables work
+        ConfigModule.forRoot({
+            envFilePath: ['.env']
+        }),
+        MongooseModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: (configService: ConfigService) => ({
+                uri: configService.get<string>('DB_URI'),
+                user: configService.get<string>('DB_USER'),
+                pass: configService.get<string>('DB_PASS')
+            }),
+            inject: [ConfigService]
+        }),
+        AuthModule,
+        UserModule,
+        MailModule,
+        TableModule,
+        MenuModule,
+        DishModule,
+        CategoryModule
+    ]
 })
-export class AppModule { }
+export class AppModule {}
