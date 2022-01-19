@@ -1,9 +1,14 @@
-@HOST = http://localhost:3000/
+@HOST = http://localhost:3001/menus
 
 ### GET all menus
-GET {{HOST}}menu
+GET {{HOST}}
 
-### GET menu at current time
+### POST new menu
+POST {{HOST}}
+Content-Type: application/json
 
-GET {{HOST}}menu/current
+{
+    "title": "cool menu",
+    "description": "desc"
+}
 
