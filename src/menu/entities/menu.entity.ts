@@ -1,25 +1,21 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
-import { Document, ObjectId, SchemaTypes } from "mongoose"
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+import { Status } from '../enums/status.enum';
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, _id: true })
 export class Menu {
-    _id: ObjectId
-
-    @Prop({ required: true })
-    name: string
+    @Prop({ required: true, unique: true })
+    title: string;
 
     @Prop({})
-    description: string
+    description: string;
 
-    @Prop({ required: true, type: [{ type: SchemaTypes.ObjectId, ref: 'Dish' }] })
-    dishes: ObjectId[]
+    @Prop({ default: Status.ACTIVE })
+    status: Status;
 
-    @Prop( {required: true })
-    timeslot: [{ end: number, start: number, duration: number }]
-
-    @Prop({ required: true, type: [{ type: SchemaTypes.ObjectId, ref: 'Category' }] })
-    categories: ObjectId[]
+    @Prop({ default: false })
+    isActive: boolean;
 }
 
-export type MenuDocument = Menu & Document
-export const MenuSchema = SchemaFactory.createForClass(Menu)
+export type MenuDocument = Menu & Document;
+export const MenuSchema = SchemaFactory.createForClass(Menu);

@@ -8,6 +8,8 @@ import { TableModule } from './table/table.module';
 import { MenuModule } from './menu/menu.module';
 import { DishModule } from './dish/dish.module';
 import { CategoryModule } from './category/category.module';
+import { AdminModule } from './admin/admin.module';
+import { ClientModule } from './client/client.module';
 
 @Module({
     imports: [
@@ -30,7 +32,9 @@ import { CategoryModule } from './category/category.module';
         TableModule,
         MenuModule,
         DishModule,
-        CategoryModule
+        CategoryModule,
+        AdminModule,
+        ClientModule
     ]
 })
 export class AppModule {}
