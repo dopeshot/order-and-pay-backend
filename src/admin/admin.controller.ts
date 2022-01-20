@@ -9,34 +9,31 @@ import {
     SerializeOptions,
     UseInterceptors
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
-import { CreateMenuDto } from './dto/create-menu.dto';
-import { UpdateMenuDto } from './dto/update-menu.dto';
-import { Menu } from './entities/menu.entity';
-import { MenuService } from './menu.service';
-import { MenuResponse } from './responses/menu.responses';
+import { CreateMenuDto } from '../menu/dto/create-menu.dto';
+import { UpdateMenuDto } from '../menu/dto/update-menu.dto';
+import { MenuService } from '../menu/menu.service';
+import { MenuResponse } from '../menu/responses/menu.responses';
 
-@ApiTags('menus')
-@Controller('menus')
+@Controller('admin')
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({ strategy: 'excludeAll' })
-export class MenuController {
+export class AdminController {
     constructor(private readonly menuService: MenuService) {}
 
-    @Get()
+    @Get('/menus')
     async findAll(): Promise<MenuResponse[]> {
         return (await this.menuService.findAll()).map(
             (set) => new MenuResponse(set)
         );
     }
 
-    @Post()
+    @Post('/menus')
     async createNew(@Body() newMenu: CreateMenuDto): Promise<MenuResponse> {
         return new MenuResponse(await this.menuService.createMenu(newMenu));
     }
 
-    @Patch('/:id')
+    @Patch('menus/:id')
     async updateMenu(
         @Body() updateMenuDto: UpdateMenuDto,
         @Param('id') id: ObjectId

@@ -11,6 +11,7 @@ import { MenuModule } from '../src/menu/menu.module';
 import { getTestMenuData, getValidMenus } from './__mocks__/menuMockData';
 import * as request from 'supertest';
 import { MenuResponse } from '../src/menu/responses/menu.responses';
+import { AdminModule } from '../src/admin/admin.module';
 
 describe('MenuController (e2e)', () => {
     let app: INestApplication;
@@ -19,7 +20,7 @@ describe('MenuController (e2e)', () => {
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [rootMongooseTestModule(), MenuModule]
+            imports: [rootMongooseTestModule(), MenuModule, AdminModule]
         }).compile();
 
         connection = await module.get(getConnectionToken());
@@ -46,10 +47,10 @@ describe('MenuController (e2e)', () => {
 
     describe('MenuModule', () => {
         describe('GET requests', () => {
-            describe('/menu (GET)', () => {
+            describe('admin/menu (GET)', () => {
                 it('should return all active menus', async () => {
                     const res = await request(app.getHttpServer())
-                        .get('/menus')
+                        .get('/admin/menus')
                         .expect(HttpStatus.OK);
 
                     expect(res.body.length).toBe(getValidMenus().length);
@@ -61,10 +62,10 @@ describe('MenuController (e2e)', () => {
         });
 
         describe('POST request', () => {
-            describe('/menu (POST)', () => {
+            describe('admin/menu (POST)', () => {
                 it('should create new set', async () => {
                     const res = await request(app.getHttpServer())
-                        .post('/menus')
+                        .post('/admin/menus')
                         .send({
                             title: 'new menu',
                             description: 'mock me harder daddy'
@@ -80,7 +81,7 @@ describe('MenuController (e2e)', () => {
 
                 it('should fail with invalid data', async () => {
                     await request(app.getHttpServer())
-                        .post('/menus')
+                        .post('/admin/menus')
                         .send({
                             error: 'what even is this?'
                         })
@@ -90,7 +91,7 @@ describe('MenuController (e2e)', () => {
                 it('should fail with duplicate title', async () => {
                     const duplicate = getTestMenuData()[0];
                     await request(app.getHttpServer())
-                        .post('/menus')
+                        .post('/admin/menus')
                         .send({
                             title: duplicate.title,
                             description: 'mock me harder daddy'
@@ -101,11 +102,11 @@ describe('MenuController (e2e)', () => {
         });
 
         describe('PATCH requests', () => {
-            describe('/menu (PATCH)', () => {
+            describe('admin/menu (PATCH)', () => {
                 it('should update set', async () => {
                     const target = getTestMenuData()[0];
                     const res = await request(app.getHttpServer())
-                        .patch('/menus/' + target._id)
+                        .patch('/admin/menus/' + target._id)
                         .send({
                             description:'where did you come from, where did you go, where did you come from',
                             title: 'Cotton eye joe'
@@ -125,7 +126,7 @@ describe('MenuController (e2e)', () => {
                     const target = getTestMenuData()[0];
                     const another = getTestMenuData()[1];
                     const res = await request(app.getHttpServer())
-                        .patch('/menus/' + target._id)
+                        .patch('/admin/menus/' + target._id)
                         .send({
                             description:
                                 'where did you come from, where did you go, where did you come from',
@@ -138,7 +139,7 @@ describe('MenuController (e2e)', () => {
                     const target = getTestMenuData()[0];
                     const another = getTestMenuData()[1];
                     const res = await request(app.getHttpServer())
-                        .patch('/menus/' + target._id)
+                        .patch('/admin/menus/' + target._id)
                         .send({
                             not: 'this is not a field'
                         })

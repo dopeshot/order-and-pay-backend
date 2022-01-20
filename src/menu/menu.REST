@@ -1,4 +1,4 @@
-@HOST = http://localhost:3001/menus
+@HOST = http://localhost:3001/admin/menus
 
 ### GET all menus
 GET {{HOST}}
