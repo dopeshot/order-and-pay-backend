@@ -19,3 +19,6 @@ export const getTestMenuData = () => {
 export const getValidMenus = () => {
   return menuMockData.filter(menu => menu.status === Status.ACTIVE)
 };
+
+
+export const getWrongId = () => 'aaaaaababaaaaaaaaaaaaaae';

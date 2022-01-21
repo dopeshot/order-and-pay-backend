@@ -1,5 +1,7 @@
 @HOST = http://localhost:3001/admin/menus
 
+@MENU = aaaaaababaaaaaaaaaaaaaae
+
 ### GET all menus
 GET {{HOST}}
 
@@ -11,4 +13,7 @@ Content-Type: application/json
     "title": "cool menu",
     "description": "desc"
 }
+
+### Delete menu
+DELETE {{HOST}}/{{MENU}}
 
