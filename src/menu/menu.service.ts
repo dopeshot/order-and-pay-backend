@@ -79,6 +79,7 @@ export class MenuService {
 
         // Hard delete
         if (type === DeleteType.HARD) {
+            // Coffee TODO: Maybe deleting the reference to this menu in dishes, categories, etc. should  be added as well
             const menu: MenuDocument = await this.menuModel.findByIdAndDelete(
                 id
             );
