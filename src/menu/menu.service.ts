@@ -47,15 +47,9 @@ export class MenuService {
 
         try {
             updatedMenu = await this.menuModel
-                .findByIdAndUpdate(
-                    id,
-                    {
-                        ...updateMenuDto
-                    },
-                    {
-                        new: true
-                    }
-                )
+                .findByIdAndUpdate(id, updateMenuDto, {
+                    new: true
+                })
                 .lean();
         } catch (error) {
             if (error.code === 11000 && error.keyPattern.title)
