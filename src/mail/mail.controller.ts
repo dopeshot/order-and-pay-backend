@@ -1,9 +1,11 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ENVGuard } from '../auth/strategies/env/environment.guard';
 import { MailTestDto } from './dto/mail-test.dto';
 import { MailService } from './mail.service';
 
 @Controller('mail')
+@ApiTags('mail')
 export class MailController {
     constructor(private readonly mailService: MailService) {}
 

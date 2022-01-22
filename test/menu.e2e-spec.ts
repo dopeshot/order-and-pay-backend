@@ -8,10 +8,12 @@ import {
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
 import { MenuModule } from '../src/menu/menu.module';
-import { getTestMenuData, getValidMenus } from './__mocks__/menuMockData';
+import { getTestMenuData, getValidMenus, getWrongId } from './__mocks__/menuMockData';
 import * as request from 'supertest';
 import { MenuResponse } from '../src/menu/responses/menu.responses';
 import { AdminModule } from '../src/admin/admin.module';
+import { DeleteType } from '../src/admin/enums/delete-type.enum';
+import { Status } from '../src/menu/enums/status.enum';
 
 describe('MenuController (e2e)', () => {
     let app: INestApplication;
@@ -47,7 +49,7 @@ describe('MenuController (e2e)', () => {
 
     describe('MenuModule', () => {
         describe('GET requests', () => {
-            describe('admin/menu (GET)', () => {
+            describe('admin/menus (GET)', () => {
                 it('should return all active menus', async () => {
                     const res = await request(app.getHttpServer())
                         .get('/admin/menus')
@@ -62,8 +64,8 @@ describe('MenuController (e2e)', () => {
         });
 
         describe('POST request', () => {
-            describe('admin/menu (POST)', () => {
-                it('should create new set', async () => {
+            describe('admin/menus (POST)', () => {
+                it('should create new menu', async () => {
                     const res = await request(app.getHttpServer())
                         .post('/admin/menus')
                         .send({
@@ -147,6 +149,53 @@ describe('MenuController (e2e)', () => {
                 });
             });
         });
+
+        describe('DELETE requests', () => {
+            describe('admin/menus (PATCH)', () => {
+                it('should delete menu (HARD delete)', async () => {
+                    const target = getTestMenuData()[0];
+                    await request(app.getHttpServer())
+                        .delete('/admin/menus/' + target._id)
+                        .query({
+                            type: DeleteType.HARD
+                        })
+                        .expect(HttpStatus.NO_CONTENT);
+                    
+                    expect(await(menuModel.findById(target._id))).toBe(null)
+                });
+
+                it('should set menu deleted (SOFT delete)', async () => {
+                    const target = getTestMenuData()[0];
+                    await request(app.getHttpServer())
+                        .delete('/admin/menus/' + target._id)
+                        .query({
+                            type: DeleteType.SOFT
+                        })
+                        .expect(HttpStatus.NO_CONTENT);
+                    
+                    expect(await(await (menuModel.findById(target._id))).status).toBe(Status.DELETED)
+                });
+
+                it('should set menu deleted (SOFT delete) without provided type', async () => {
+                    const target = getTestMenuData()[0];
+                    await request(app.getHttpServer())
+                        .delete('/admin/menus/' + target._id)
+                        .expect(HttpStatus.NO_CONTENT);
+                    
+                    expect(await(await (menuModel.findById(target._id))).status).toBe(Status.DELETED)
+                });
+
+                it('should fail with invalid id', async () => {
+                     await request(app.getHttpServer())
+                        .delete(`/admin/menus/${getWrongId()}`)
+                        .query({
+                            type: DeleteType.SOFT
+                        })
+                        .expect(HttpStatus.NOT_FOUND);
+                });
+            });
+        });
+        
 
         afterAll(async () => {
             await connection.close();

@@ -5,7 +5,8 @@ import {
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Schema } from 'mongoose';
+import { Model, ObjectId, Schema } from 'mongoose';
+import { DeleteType } from '../admin/enums/delete-type.enum';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { Menu, MenuDocument } from './entities/menu.entity';
@@ -13,15 +14,15 @@ import { Status } from './enums/status.enum';
 
 @Injectable()
 export class MenuService {
-    constructor(@InjectModel('Menu') private menuSchema: Model<MenuDocument>) {}
+    constructor(@InjectModel('Menu') private menuModel: Model<MenuDocument>) {}
 
     async findAll(): Promise<Menu[]> {
-        return await this.menuSchema.find({ status: Status.ACTIVE }).lean();
+        return await this.menuModel.find({ status: Status.ACTIVE }).lean();
     }
 
     async createMenu(createMenuDto: CreateMenuDto): Promise<MenuDocument> {
         try {
-            const menu = await this.menuSchema.create({
+            const menu = await this.menuModel.create({
                 ...createMenuDto
             });
 
@@ -39,22 +40,16 @@ export class MenuService {
     }
 
     async updateMenu(
-        id: Schema.Types.ObjectId,
+        id: ObjectId,
         updateMenuDto: UpdateMenuDto
     ): Promise<Menu> {
         let updatedMenu: Menu;
 
         try {
-            updatedMenu = await this.menuSchema
-                .findByIdAndUpdate(
-                    id,
-                    {
-                        ...updateMenuDto
-                    },
-                    {
-                        new: true
-                    }
-                )
+            updatedMenu = await this.menuModel
+                .findByIdAndUpdate(id, updateMenuDto, {
+                    new: true
+                })
                 .lean();
         } catch (error) {
             if (error.code === 11000 && error.keyPattern.title)
@@ -67,5 +62,34 @@ export class MenuService {
         if (!updatedMenu) throw new NotFoundException('Menu not found');
 
         return updatedMenu;
+    }
+
+    async deleteMenu(
+        id: Schema.Types.ObjectId,
+        type: DeleteType
+    ): Promise<void> {
+        // Default to soft delete
+        if (!type) type = DeleteType.SOFT;
+
+        // Hard delete
+        if (type === DeleteType.HARD) {
+            // Coffee TODO: Maybe deleting the reference to this menu in dishes, categories, etc. should  be added as well
+            const menu: MenuDocument = await this.menuModel.findByIdAndDelete(
+                id
+            );
+
+            if (!menu) throw new NotFoundException();
+
+            return;
+        }
+
+        // Soft delete
+        const menu: MenuDocument = await this.menuModel.findByIdAndUpdate(id, {
+            status: Status.DELETED
+        });
+
+        if (!menu) throw new NotFoundException();
+
+        return;
     }
 }
