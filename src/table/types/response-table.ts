@@ -1,6 +1,6 @@
 import { Expose, Transform } from 'class-transformer';
 import { ObjectId } from 'mongoose';
-import { TableDocument } from '../entities/table.entity';
+import { TableDocument } from '../entities/tables.entity';
 
 export class ResponseTable {
     @Expose()

@@ -12,19 +12,19 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { MongoIdDto } from '../_globalValidation/mongoId.dto';
+import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { BulkDeleteTableDto } from './dto/bulkDelete-table.dto';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
-import { TableService } from './table.service';
+import { TablesService } from './tables.service';
 import { ResponseTable } from './types/response-table';
 
 @ApiTags('tables')
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({ strategy: 'excludeAll' })
 @Controller('tables')
-export class TableController {
-    constructor(private readonly tableService: TableService) {}
+export class TablesController {
+    constructor(private readonly tableService: TablesService) {}
 
     @Post()
     //@UseGuards(JwtAuthGuard)

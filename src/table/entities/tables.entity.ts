@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, ObjectId } from 'mongoose';
+import { Timestamps } from 'src/shared/global-validation/types/timestamps';
 
 @Schema({ timestamps: true, _id: true })
 export class Table {
@@ -16,6 +17,5 @@ export class Table {
     author: string;
 }
 
-export type TableDocument = Table &
-    Document & { updatedAt: Date; createdAt: Date };
+export type TableDocument = Table & Document & Timestamps;
 export const TableSchema = SchemaFactory.createForClass(Table);

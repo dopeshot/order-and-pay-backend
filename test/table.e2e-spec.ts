@@ -2,9 +2,9 @@ import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
-import { TableDocument } from '../src/table/entities/table.entity';
+import { TableDocument } from '../src/table/entities/tables.entity';
 import * as request from 'supertest';
-import { TableModule } from '../src/table/table.module';
+import { TablesModule } from '../src/table/tables.module';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
@@ -23,7 +23,7 @@ describe('TableController (e2e)', () => {
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [rootMongooseTestModule(), TableModule]
+            imports: [rootMongooseTestModule(), TablesModule]
         }).compile();
 
         connection = await module.get(getConnectionToken());
