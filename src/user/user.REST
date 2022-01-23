@@ -1,4 +1,4 @@
-@HOST = http://localhost:3000
+@HOST = http://localhost:3001
 @AUTH_TOKEN = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inh5eiIsInN1YiI6IjYxYTBmZTYzMmYzNDhhOGIwMjg4MTZlOCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjM3OTQxMTU3LCJleHAiOjE2Mzc5NzcxNTd9.W5u23I5O8l-iqZCsvLt4LMHFdsrjLVauzMqnSjh21gE
 
 ### Get current User
