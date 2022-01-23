@@ -22,12 +22,13 @@ async function bootstrap() {
         .addTag('tables', 'Table related endpoints')
         .addTag('admin', 'all admin endpoints')
         .addTag('menus', 'all menu endpoints')
+        .addTag('labels', 'are additions to dishes like "vegan"')
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('swagger', app, document);
     app.enableCors();
-    await app.listen(+process.env.PORT || 3000, () =>
+    await app.listen(+process.env.PORT || 3001, () =>
         Logger.log(`Nest listening on ${process.env.HOST}`, 'Bootstrap')
     );
 }

@@ -4,12 +4,13 @@ import { MailModule } from './mail/mail.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TableModule } from './table/table.module';
+import { TablesModule } from './table/tables.module';
 import { MenuModule } from './menu/menu.module';
 import { DishModule } from './dish/dish.module';
 import { CategoryModule } from './category/category.module';
 import { AdminModule } from './admin/admin.module';
 import { ClientModule } from './client/client.module';
+import { LabelsModule } from './labels/labels.module';
 
 @Module({
     imports: [
@@ -29,12 +30,13 @@ import { ClientModule } from './client/client.module';
         AuthModule,
         UserModule,
         MailModule,
-        TableModule,
+        TablesModule,
         MenuModule,
         DishModule,
         CategoryModule,
         AdminModule,
-        ClientModule
+        ClientModule,
+        LabelsModule
     ]
 })
 export class AppModule {}
