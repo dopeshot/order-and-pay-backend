@@ -110,6 +110,13 @@ describe('LabelsController (e2e)', () => {
                 .post(`${path}`)
                 .expect(HttpStatus.BAD_REQUEST)
             })   
+
+            it('should return CONFLICT with duplicate title', async () => {
+                await request(app.getHttpServer())
+                .post(`${path}`)
+                .send({title: getLabelDBSeeder().title})
+                .expect(HttpStatus.CONFLICT)
+            })   
         })
 
         describe('admin/labels (GET)', () => {
@@ -149,7 +156,7 @@ describe('LabelsController (e2e)', () => {
             })
         })
 
-        describe('admin/labels/:id/refs (GET)', () => {
+        describe('admin/labels/:id/refs (GET): TODO: FIX AFTER DISHES IMPLEMENTED', () => {
             it('should return one element of type Label', async () => {
                 const res = await request(app.getHttpServer())
                 .get(`${path}/${getLabelDBSeeder()._id}/refs`)
@@ -204,8 +211,27 @@ describe('LabelsController (e2e)', () => {
                 .patch(`${path}/${getLabelDBSeeder()._id}`)
                 .expect(HttpStatus.OK)
 
-                const label = new Label(res.body)
-                expect(res.body).toMatchObject(label)
+                // Expect unchanged Object
+                expect(res.body.title).toBe(getLabelDBSeeder().title)
+                expect(res.body.icon).toBe(getLabelDBSeeder().icon)
+            })
+
+            it('should return OK with wrong param', async () => {
+                const res = await request(app.getHttpServer())
+                .patch(`${path}/${getLabelDBSeeder()._id}`)
+                .send({wrongparam: "something"})
+                .expect(HttpStatus.OK)
+
+                // Expect unchanged Object
+                expect(res.body.title).toBe(getLabelDBSeeder().title)
+                expect(res.body.icon).toBe(getLabelDBSeeder().icon)
+            })
+
+            it('should return BAD_REQUEST with wrong param', async () => {
+                await request(app.getHttpServer())
+                .patch(`${path}/${getWrongId()}`)
+                .send({wrongparam: "something"})
+                .expect(HttpStatus.NOT_FOUND)
             })
         })
 

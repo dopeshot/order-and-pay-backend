@@ -82,7 +82,7 @@ export class LabelsController {
     })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
-        throw new NotImplementedException();
+        return await this.labelsService.findRefs(id);
         //return new Label(await this.labelsService.findRefs(id));
     }
 
