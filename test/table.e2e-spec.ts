@@ -2,8 +2,8 @@ import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
-import { TableDocument } from '../src/table/entities/tables.entity';
 import * as request from 'supertest';
+import { TableDocument } from '../src/table/entities/tables.entity';
 import { TablesModule } from '../src/table/tables.module';
 import {
     closeInMongodConnection,
@@ -14,7 +14,6 @@ import {
     getTestSetupData,
     getWrongId
 } from './__mocks__/tableMockData';
-import { ResponseTable } from '../src/table/types/response-table';
 
 describe('TableController (e2e)', () => {
     let app: INestApplication;

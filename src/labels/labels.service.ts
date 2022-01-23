@@ -20,7 +20,7 @@ export class LabelsService {
     async create(createLabelDto: CreateLabelDto) {
         try {
             const label = await this.labelModel.create(createLabelDto);
-            return label;
+            return label.toObject() as LabelDocument;
         } catch (error) {
             if (error.code == '11000') {
                 throw new ConflictException('This table number already exists');
@@ -46,7 +46,7 @@ export class LabelsService {
 
     async update(id: string, updateLabelDto: UpdateLabelDto) {
         const label = await this.labelModel
-            .findByIdAndUpdate(id, updateLabelDto)
+            .findByIdAndUpdate(id, { ...updateLabelDto }, { new: true })
             .lean();
         if (!label) throw new NotFoundException();
         return label;

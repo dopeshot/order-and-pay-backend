@@ -1,25 +1,25 @@
 import {
-    Controller,
-    Get,
-    Post,
     Body,
-    Patch,
-    Param,
-    Delete,
     ClassSerializerInterceptor,
-    SerializeOptions,
-    UseInterceptors,
-    NotImplementedException,
+    Controller,
+    Delete,
+    Get,
     HttpCode,
-    HttpStatus
+    HttpStatus,
+    NotImplementedException,
+    Param,
+    Patch,
+    Post,
+    SerializeOptions,
+    UseInterceptors
 } from '@nestjs/common';
-import { LabelsService } from './labels.service';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Dish } from '../dish/entities/dish.entity';
+import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { CreateLabelDto } from './dto/create-label.dto';
 import { UpdateLabelDto } from './dto/update-label.dto';
 import { Label } from './entities/label.entity';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { MongoIdDto } from 'src/shared/global-validation/mongoId.dto';
-import { Dish } from 'src/dish/entities/dish.entity';
+import { LabelsService } from './labels.service';
 
 @Controller('admin/labels')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -86,7 +86,7 @@ export class LabelsController {
         //return new Label(await this.labelsService.findRefs(id));
     }
 
-    @ApiOperation({ summary: 'Patch label', tags: ['labels'] })
+    @ApiOperation({ summary: 'Patch a label', tags: ['labels'] })
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The label has been updated',

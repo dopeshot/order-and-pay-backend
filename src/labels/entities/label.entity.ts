@@ -13,7 +13,7 @@ export class Label {
     title: string;
 
     @Expose()
-    @Prop() // TODO: is this required?
+    @Prop()
     icon: string;
 
     constructor(partial: Partial<LabelDocument>) {

@@ -1,4 +1,4 @@
-import { IsString, Length } from 'class-validator';
+import { IsOptional, IsString, Length } from 'class-validator';
 
 export class CreateLabelDto {
     @IsString()
@@ -7,5 +7,6 @@ export class CreateLabelDto {
 
     @IsString()
     @Length(2, 50)
+    @IsOptional()
     icon: string;
 }
