@@ -1,0 +1,28 @@
+@host = http://localhost:3001
+@labelId = 61ed3d81ab90636455d34ffa
+### POST one label
+POST {{host}}/admin/labels
+Content-Type: application/json
+
+{
+    "title": "Muck",
+    "icon": "dave"
+}
+
+### GET all labels
+GET {{host}}/admin/labels
+
+### GET one label
+GET {{host}}/admin/labels/{{labelId}}
+
+### GET refs in dishes of label
+GET {{host}}/admin/labels/{{labelId}}/refs
+
+### PATCH one label
+PATCH {{host}}/admin/labels/{{labelId}}
+Content-Type: application/json
+
+{
+    "title": "Muck",
+    "icon": "dave"
+}
