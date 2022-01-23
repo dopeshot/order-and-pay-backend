@@ -6,7 +6,7 @@ import * as request from 'supertest';
 import { Label, LabelDocument } from "../src/labels/entities/label.entity";
 import { LabelsModule } from "../src/labels/labels.module";
 import { rootMongooseTestModule, closeInMongodConnection } from "./helpers/MongoMemoryHelpers";
-import { getStringOfLength, getSampleLabel, getLabelDBSeeder, getWrongId } from "./__mocks__/label-mock-data";
+import { getStringOfLength, getSampleLabel, getLabelSeeder, getWrongId, getExtraLabelSeeder } from "./__mocks__/label-mock-data";
 
 describe('LabelsController (e2e)', () => {
     let app: INestApplication;
@@ -28,7 +28,7 @@ describe('LabelsController (e2e)', () => {
 
     // Insert test data
     beforeEach(async () => {
-        await labelModel.insertMany(getLabelDBSeeder());
+        await labelModel.insertMany(getLabelSeeder());
     });
 
     // Empty the collection from all possible impurities
@@ -114,7 +114,7 @@ describe('LabelsController (e2e)', () => {
             it('should return CONFLICT with duplicate title', async () => {
                 await request(app.getHttpServer())
                 .post(`${path}`)
-                .send({title: getLabelDBSeeder().title})
+                .send({title: getLabelSeeder().title})
                 .expect(HttpStatus.CONFLICT)
             })   
         })
@@ -142,7 +142,7 @@ describe('LabelsController (e2e)', () => {
         describe('admin/labels/:id (GET)', () => {
             it('should return one element of type Label', async () => {
                 const res = await request(app.getHttpServer())
-                .get(`${path}/${getLabelDBSeeder()._id}`)
+                .get(`${path}/${getLabelSeeder()._id}`)
                 .expect(HttpStatus.OK)
 
                 const label = new Label(res.body)
@@ -159,7 +159,7 @@ describe('LabelsController (e2e)', () => {
         describe('admin/labels/:id/refs (GET): TODO: FIX AFTER DISHES IMPLEMENTED', () => {
             it('should return one element of type Label', async () => {
                 const res = await request(app.getHttpServer())
-                .get(`${path}/${getLabelDBSeeder()._id}/refs`)
+                .get(`${path}/${getLabelSeeder()._id}/refs`)
                 .expect(HttpStatus.NOT_IMPLEMENTED)
 
                 // const label = new Label(res.body)
@@ -178,7 +178,7 @@ describe('LabelsController (e2e)', () => {
         describe('admin/labels/:id (PATCH)', () => {
             it('should return one element of type Label with both updates', async () => {
                 const res = await request(app.getHttpServer())
-                .patch(`${path}/${getLabelDBSeeder()._id}`)
+                .patch(`${path}/${getLabelSeeder()._id}`)
                 .send({title: "New Title", icon: "New Icon"})
                 .expect(HttpStatus.OK)
 
@@ -190,7 +190,7 @@ describe('LabelsController (e2e)', () => {
 
             it('should return one element of type Label with title update', async () => {
                 const res = await request(app.getHttpServer())
-                .patch(`${path}/${getLabelDBSeeder()._id}`)
+                .patch(`${path}/${getLabelSeeder()._id}`)
                 .send({title: "New Title"})
                 .expect(HttpStatus.OK)
 
@@ -199,7 +199,7 @@ describe('LabelsController (e2e)', () => {
 
             it('should return one element of type Label with icon update', async () => {
                 const res = await request(app.getHttpServer())
-                .patch(`${path}/${getLabelDBSeeder()._id}`)
+                .patch(`${path}/${getLabelSeeder()._id}`)
                 .send({icon: "New Icon"})
                 .expect(HttpStatus.OK)
 
@@ -208,37 +208,45 @@ describe('LabelsController (e2e)', () => {
 
             it('should return OK without data', async () => {
                 const res = await request(app.getHttpServer())
-                .patch(`${path}/${getLabelDBSeeder()._id}`)
+                .patch(`${path}/${getLabelSeeder()._id}`)
                 .expect(HttpStatus.OK)
 
                 // Expect unchanged Object
-                expect(res.body.title).toBe(getLabelDBSeeder().title)
-                expect(res.body.icon).toBe(getLabelDBSeeder().icon)
+                expect(res.body.title).toBe(getLabelSeeder().title)
+                expect(res.body.icon).toBe(getLabelSeeder().icon)
             })
 
             it('should return OK with wrong param', async () => {
                 const res = await request(app.getHttpServer())
-                .patch(`${path}/${getLabelDBSeeder()._id}`)
+                .patch(`${path}/${getLabelSeeder()._id}`)
                 .send({wrongparam: "something"})
                 .expect(HttpStatus.OK)
 
                 // Expect unchanged Object
-                expect(res.body.title).toBe(getLabelDBSeeder().title)
-                expect(res.body.icon).toBe(getLabelDBSeeder().icon)
+                expect(res.body.title).toBe(getLabelSeeder().title)
+                expect(res.body.icon).toBe(getLabelSeeder().icon)
             })
 
-            it('should return BAD_REQUEST with wrong param', async () => {
+            it('should return NOT_FOUND with wrong id', async () => {
                 await request(app.getHttpServer())
                 .patch(`${path}/${getWrongId()}`)
                 .send({wrongparam: "something"})
                 .expect(HttpStatus.NOT_FOUND)
+            })
+
+            it('should return CONFLICT with wrong param', async () => {
+                await labelModel.insertMany(getExtraLabelSeeder())
+                await request(app.getHttpServer())
+                .patch(`${path}/${getExtraLabelSeeder()._id}`)
+                .send({title: getLabelSeeder().title})
+                .expect(HttpStatus.CONFLICT)
             })
         })
 
         describe('admin/labels/:id (DELETE)', () => {
             it('should return NO_CONTENT and delete the label',async ()=> {
                 await request(app.getHttpServer())
-                .delete(`${path}/${getLabelDBSeeder()._id}`)
+                .delete(`${path}/${getLabelSeeder()._id}`)
                 .expect(HttpStatus.NO_CONTENT)
                 
                 expect(await labelModel.find()).toHaveLength(0)

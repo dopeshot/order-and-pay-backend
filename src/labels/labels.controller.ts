@@ -34,6 +34,10 @@ export class LabelsController {
         description: 'The label has been created',
         type: Label
     })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: 'The label title already exists'
+    })
     async create(@Body() createLabelDto: CreateLabelDto) {
         return new Label(await this.labelsService.create(createLabelDto));
     }
@@ -94,6 +98,10 @@ export class LabelsController {
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
         description: 'The label could not be found'
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: 'The label title already exists'
     })
     @Patch(':id')
     async update(
