@@ -1,31 +1,28 @@
 import {
-    BadRequestException,
     ConflictException,
     ForbiddenException,
-    Inject,
     Injectable,
     InternalServerErrorException,
     NotFoundException,
-    Provider,
     ServiceUnavailableException
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
+import * as bcyrpt from 'bcrypt';
 import { Model, ObjectId } from 'mongoose';
+import { JwtUserDto } from 'src/auth/dto/jwt.dto';
+import { MailVerifyDto } from 'src/mail/dto/mail-verify.dto';
+import { MailService } from '../mail/mail.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
-import * as bcyrpt from 'bcrypt';
-import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
-import { UserStatus } from './enums/status.enum';
-import { MailService } from '../mail/mail.service';
-import { JwtService } from '@nestjs/jwt';
-import { MailVerifyDto } from 'src/mail/dto/mail-verify.dto';
 import { Role } from './enums/role.enum';
-import { JwtUserDto } from 'src/auth/dto/jwt.dto';
+import { UserStatus } from './enums/status.enum';
+import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
 import { returnUser } from './types/returnUser.type';
 
 @Injectable()
-export class UserService {
+export class UsersService {
     constructor(
         @InjectModel('User') private userSchema: Model<UserDocument>,
         private readonly jwtService: JwtService,

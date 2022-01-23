@@ -7,7 +7,7 @@ import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
-import { MenuModule } from '../src/menu/menu.module';
+import { MenusModule } from '../src/menu/menus.module';
 import { getTestMenuData, getValidMenus, getWrongId } from './__mocks__/menuMockData';
 import * as request from 'supertest';
 import { MenuResponse } from '../src/menu/responses/menu.responses';
@@ -22,7 +22,7 @@ describe('MenuController (e2e)', () => {
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [rootMongooseTestModule(), MenuModule, AdminModule]
+            imports: [rootMongooseTestModule(), MenusModule, AdminModule]
         }).compile();
 
         connection = await module.get(getConnectionToken());

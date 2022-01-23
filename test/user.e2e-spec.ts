@@ -10,7 +10,7 @@ import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
 import { UserDocument } from '../src/user/entities/user.entity';
 import { UserStatus } from '../src/user/enums/status.enum';
-import { UserModule } from '../src/user/user.module';
+import { UsersModule } from '../src/user/users.module';
 import { ThirdPartyGuardMock } from './helpers/fakeProvider.strategy';
 import {
     closeInMongodConnection,
@@ -33,7 +33,7 @@ describe('UserController (e2e)', () => {
         const module: TestingModule = await Test.createTestingModule({
             imports: [
                 rootMongooseTestModule(),
-                UserModule,
+                UsersModule,
                 AuthModule,
                 MailModule,
                 ConfigModule.forRoot({

@@ -4,9 +4,10 @@ import { Model, ObjectId } from 'mongoose';
 import { CategoryDocument } from './entities/category.entity';
 
 @Injectable()
-export class CategoryService {
-    constructor( @InjectModel('Category') private categorySchema: Model<CategoryDocument>){}
-
+export class CategoriesService {
+    constructor(
+        @InjectModel('Category') private categorySchema: Model<CategoryDocument>
+    ) {}
 
     async findAll(): Promise<CategoryDocument[]> {
         return await this.categorySchema.find();

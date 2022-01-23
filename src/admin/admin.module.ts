@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { MenuModule } from '../menu/menu.module';
+import { MenusModule } from '../menu/menus.module';
 import { AdminController } from './admin.controller';
 
 @Module({
     controllers: [AdminController],
-    imports: [MenuModule]
+    imports: [MenusModule]
 })
 export class AdminModule {}

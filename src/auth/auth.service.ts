@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/entities/user.entity';
-import { UserService } from '../user/user.service';
+import { UsersService } from '../user/users.service';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { AccessTokenDto } from './dto/jwt.dto';
@@ -20,7 +20,7 @@ import { UserStatus } from '../user/enums/status.enum';
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly userService: UserService,
+        private readonly userService: UsersService,
         private readonly jwtService: JwtService
     ) {}
 

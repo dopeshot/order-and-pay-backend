@@ -3,7 +3,7 @@ import { AuthService } from '../../src/auth/auth.service';
 import { Role } from '../../src/user/enums/role.enum';
 import { UserStatus } from '../../src/user/enums/status.enum';
 // TODO: Is this the best way to do this?
-import { UserService } from '../../src/user/user.service';
+import { UsersService } from '../../src/user/users.service';
 
 let jwtService: JwtService = new JwtService({
     secret: 'secretkey',
@@ -11,7 +11,7 @@ let jwtService: JwtService = new JwtService({
         expiresIn: '10h'
     }
 });
-const userService: UserService = new UserService(null, jwtService, null);
+const userService: UsersService = new UsersService(null, jwtService, null);
 const authService: AuthService = new AuthService(null, jwtService);
 
 let user = {

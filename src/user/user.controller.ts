@@ -14,7 +14,7 @@ import {
     Response,
     HttpCode
 } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ObjectId } from 'mongoose';
 import { User, UserDocument } from './entities/user.entity';
@@ -29,7 +29,7 @@ import { returnUser } from './types/returnUser.type';
 @ApiTags('user')
 @Controller('user')
 export class UserController {
-    constructor(private readonly userService: UserService) {}
+    constructor(private readonly userService: UsersService) {}
 
     @Get()
     @UseGuards(JwtAuthGuard, RolesGuard)

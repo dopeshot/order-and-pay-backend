@@ -2,7 +2,7 @@ import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
-import { CategoryModule } from '../src/category/category.module';
+import { CategoriesModule } from '../src/category/categories.module';
 import { CategoryDocument } from '../src/category/entities/category.entity';
 import * as request from 'supertest';
 import { rootMongooseTestModule, closeInMongodConnection } from './helpers/MongoMemoryHelpers';
@@ -18,7 +18,7 @@ describe('CategoryController(e2e)', () => {
     const module: TestingModule = await Test.createTestingModule({
         imports: [
             rootMongooseTestModule(),
-            CategoryModule,
+            CategoriesModule,
         ]
     }).compile();
 

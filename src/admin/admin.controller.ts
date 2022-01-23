@@ -17,7 +17,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 import { CreateMenuDto } from '../menu/dto/create-menu.dto';
 import { UpdateMenuDto } from '../menu/dto/update-menu.dto';
-import { MenuService } from '../menu/menu.service';
+import { MenusService } from '../menu/menus.service';
 import { MenuResponse } from '../menu/responses/menu.responses';
 import { DeleteType } from './enums/delete-type.enum';
 
@@ -26,7 +26,7 @@ import { DeleteType } from './enums/delete-type.enum';
 @SerializeOptions({ strategy: 'excludeAll' })
 @ApiTags('admin')
 export class AdminController {
-    constructor(private readonly menuService: MenuService) {}
+    constructor(private readonly menuService: MenusService) {}
 
     @Get('/menus')
     @ApiOperation({ summary: 'Get all menus (simple form)', tags: ['menus'] })

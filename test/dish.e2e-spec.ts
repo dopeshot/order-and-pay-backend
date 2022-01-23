@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { DishDocument } from '../src/dish/entities/dish.entity';
 import { Connection, Model } from 'mongoose';
 import { getConnectionToken } from '@nestjs/mongoose';
-import { DishModule } from '../src/dish/dish.module';
+import { DishesModule } from '../src/dish/dishes.module';
 import {
   closeInMongodConnection,
   rootMongooseTestModule,
@@ -18,7 +18,7 @@ describe('DishController (e2e)', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [rootMongooseTestModule(), DishModule],
+      imports: [rootMongooseTestModule(), DishesModule],
     }).compile();
 
     connection = await module.get(getConnectionToken());

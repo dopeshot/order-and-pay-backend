@@ -23,7 +23,7 @@ export class LabelsService {
             return label.toObject() as LabelDocument;
         } catch (error) {
             if (error.code == '11000') {
-                throw new ConflictException('This table number already exists');
+                throw new ConflictException('This label title already exists');
             }
             /* istanbul ignore next */
             throw new InternalServerErrorException();

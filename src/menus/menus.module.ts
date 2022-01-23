@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MenuSchema } from './entities/menu.entity';
-import { MenuService } from './menu.service';
+import { MenusService } from './menus.service';
 
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: 'Menu', schema: MenuSchema }])
     ],
-    providers: [MenuService],
-    exports: [MenuService]
+    providers: [MenusService],
+    exports: [MenusService]
 })
-export class MenuModule {}
+export class MenusModule {}

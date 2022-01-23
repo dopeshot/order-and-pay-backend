@@ -12,7 +12,7 @@ import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
 import { MailModule } from '../src/mail/mail.module';
 import { UserDocument } from '../src/user/entities/user.entity';
-import { UserModule } from '../src/user/user.module';
+import { UsersModule } from '../src/user/users.module';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
@@ -30,7 +30,7 @@ beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
         imports: [
             rootMongooseTestModule(),
-            UserModule,
+            UsersModule,
             AuthModule,
             MailModule,
             ConfigModule.forRoot({

@@ -11,7 +11,7 @@ import { FacebookAuthGuard } from '../src/auth/strategies/facebook/facebook-auth
 import { GoogleAuthGuard } from '../src/auth/strategies/google/google-auth.guard';
 import { UserDocument } from '../src/user/entities/user.entity';
 import { UserStatus } from '../src/user/enums/status.enum';
-import { UserModule } from '../src/user/user.module';
+import { UsersModule } from '../src/user/users.module';
 import { ThirdPartyGuardMock } from './helpers/fakeProvider.strategy';
 import { ProviderGuardFaker } from './helpers/fakeThirdParty.guard';
 import {
@@ -30,7 +30,7 @@ describe('AuthController (e2e)', () => {
         const module: TestingModule = await Test.createTestingModule({
             imports: [
                 rootMongooseTestModule(),
-                UserModule,
+                UsersModule,
                 AuthModule,
                 MailModule,
                 ConfigModule.forRoot({

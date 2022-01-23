@@ -13,7 +13,7 @@ import { Menu, MenuDocument } from './entities/menu.entity';
 import { Status } from './enums/status.enum';
 
 @Injectable()
-export class MenuService {
+export class MenusService {
     constructor(@InjectModel('Menu') private menuModel: Model<MenuDocument>) {}
 
     async findAll(): Promise<Menu[]> {
