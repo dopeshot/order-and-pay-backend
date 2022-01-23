@@ -1,0 +1,4 @@
+@HOST = http://localhost:3001/
+
+GET {{HOST}}category
+

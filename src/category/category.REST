@@ -1,4 +1,0 @@
-@HOST = http://localhost:3000/
-
-GET {{HOST}}category
-

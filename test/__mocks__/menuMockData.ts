@@ -1,4 +1,4 @@
-import { Status } from "../../src/menu/enums/status.enum";
+import { Status } from "../../src/menus/enums/status.enum";
 
 const menuMockData = [
   { _id: "aaaaaaaaaaaaaaaaaaaaaaa0", isAvailable: true, title: "test0", description: "The first menu", status: Status.ACTIVE},
