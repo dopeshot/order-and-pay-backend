@@ -11,6 +11,7 @@ import { CategoryModule } from './category/category.module';
 import { AdminModule } from './admin/admin.module';
 import { ClientModule } from './client/client.module';
 import { LabelsModule } from './labels/labels.module';
+import { SseModule } from './sse/sse.module';
 
 @Module({
     imports: [
@@ -36,7 +37,8 @@ import { LabelsModule } from './labels/labels.module';
         CategoryModule,
         AdminModule,
         ClientModule,
-        LabelsModule
+        LabelsModule,
+        SseModule
     ]
 })
 export class AppModule {}
