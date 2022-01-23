@@ -30,6 +30,7 @@ export class TablesService {
             if (error.code == '11000') {
                 throw new ConflictException('This table number already exists');
             }
+            /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
     }
