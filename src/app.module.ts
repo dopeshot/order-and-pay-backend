@@ -3,14 +3,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
-import { CategoriesModule } from './category/categories.module';
+import { CategoriesModule } from './categories/categories.module';
 import { ClientModule } from './client/client.module';
-import { DishesModule } from './dish/dishes.module';
+import { DishesModule } from './dishes/dishes.module';
 import { LabelsModule } from './labels/labels.module';
 import { MailModule } from './mail/mail.module';
-import { MenusModule } from './menu/menus.module';
-import { TablesModule } from './table/tables.module';
-import { UsersModule } from './user/users.module';
+import { MenusModule } from './menus/menus.module';
+import { TablesModule } from './tables/tables.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
     imports: [

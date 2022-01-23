@@ -1,9 +1,9 @@
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../../src/auth/auth.service';
-import { Role } from '../../src/user/enums/role.enum';
-import { UserStatus } from '../../src/user/enums/status.enum';
+import { Role } from '../../src/users/enums/role.enum';
+import { UserStatus } from '../../src/users/enums/status.enum';
 // TODO: Is this the best way to do this?
-import { UsersService } from '../../src/user/users.service';
+import { UsersService } from '../../src/users/users.service';
 
 let jwtService: JwtService = new JwtService({
     secret: 'secretkey',

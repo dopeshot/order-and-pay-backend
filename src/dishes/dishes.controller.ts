@@ -4,8 +4,8 @@ import { Dish } from './entities/dish.entity';
 import { DishesService } from './dishes.service';
 import { ObjectId } from 'mongoose';
 
-@ApiTags('dish')
-@Controller('dish')
+@ApiTags('dishes')
+@Controller('dishes')
 export class DishesController {
     constructor(private readonly dishService: DishesService) {}
 

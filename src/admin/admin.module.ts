@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { MenusModule } from '../menu/menus.module';
+import { MenusModule } from '../menus/menus.module';
 import { AdminController } from './admin.controller';
 
 @Module({

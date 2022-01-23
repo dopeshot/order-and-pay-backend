@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
-import { DishDocument } from '../src/dish/entities/dish.entity';
-import { Connection, Model } from 'mongoose';
 import { getConnectionToken } from '@nestjs/mongoose';
-import { DishesModule } from '../src/dish/dishes.module';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Connection, Model } from 'mongoose';
+import * as request from 'supertest';
+import { DishesModule } from '../src/dishes/dishes.module';
+import { DishDocument } from '../src/dishes/entities/dish.entity';
 import {
   closeInMongodConnection,
-  rootMongooseTestModule,
+  rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
 import { getTestSetupData } from './__mocks__/dishMockData';
 
@@ -43,9 +43,9 @@ describe('DishController (e2e)', () => {
     closeInMongodConnection();
   });
 
-  describe('/dish (GET)', () => {
+  describe('/dishes (GET)', () => {
     it('should return 200', async () => {
-      await request(app.getHttpServer()).get('/dish').expect(HttpStatus.OK);
+      await request(app.getHttpServer()).get('/dishes').expect(HttpStatus.OK);
     });
   });
 });

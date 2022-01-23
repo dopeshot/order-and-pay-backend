@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { doesNotMatch } from 'assert';
 import { Strategy } from 'passport-discord';
-import { userDataFromProvider } from '../../../user/interfaces/userDataFromProvider.interface';
-import { UsersService } from '../../../user/users.service';
+import { userDataFromProvider } from '../../../users/interfaces/userDataFromProvider.interface';
+import { UsersService } from '../../../users/users.service';
 import { DiscordUser } from './discord-user.interface';
 @Injectable()
 export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {

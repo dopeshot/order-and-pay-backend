@@ -2,8 +2,8 @@ import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
-import { CategoriesModule } from '../src/category/categories.module';
-import { CategoryDocument } from '../src/category/entities/category.entity';
+import { CategoriesModule } from '../src/categories/categories.module';
+import { CategoryDocument } from '../src/categories/entities/category.entity';
 import * as request from 'supertest';
 import { rootMongooseTestModule, closeInMongodConnection } from './helpers/MongoMemoryHelpers';
 import { getTestSetupData } from './__mocks__/categoryMockData';
@@ -45,10 +45,10 @@ afterAll(async () => {
     await app.close()
 })
 
-  describe('/category (GET)', () => {
+  describe('/categories (GET)', () => {
     it("should return 200", async () => {
       await request(app.getHttpServer())
-        .get('/category')
+        .get('/categories')
         .expect(HttpStatus.OK)
     })
   })

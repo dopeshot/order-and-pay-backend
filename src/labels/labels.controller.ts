@@ -6,7 +6,6 @@ import {
     Get,
     HttpCode,
     HttpStatus,
-    NotImplementedException,
     Param,
     Patch,
     Post,
@@ -14,7 +13,7 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Dish } from '../dish/entities/dish.entity';
+import { Dish } from '../dishes/entities/dish.entity';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { CreateLabelDto } from './dto/create-label.dto';
 import { UpdateLabelDto } from './dto/update-label.dto';

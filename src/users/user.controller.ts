@@ -26,8 +26,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { VerifyJWTGuard } from './guards/mailVerify-jwt.guard';
 import { returnUser } from './types/returnUser.type';
 
-@ApiTags('user')
-@Controller('user')
+@ApiTags('users')
+@Controller('users')
 export class UserController {
     constructor(private readonly userService: UsersService) {}
 

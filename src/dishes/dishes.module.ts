@@ -3,7 +3,7 @@ import { DishesService } from './dishes.service';
 import { DishesController } from './dishes.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DishSchema } from './entities/dish.entity';
-import { CategorySchema } from '../category/entities/category.entity';
+import { CategorySchema } from '../categories/entities/category.entity';
 
 @Module({
     imports: [

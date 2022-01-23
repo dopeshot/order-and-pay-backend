@@ -2,18 +2,18 @@ import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
-import { MenuDocument } from '../src/menu/entities/menu.entity';
+import { MenuDocument } from '../src/menus/entities/menu.entity';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
-import { MenusModule } from '../src/menu/menus.module';
+import { MenusModule } from '../src/menus/menus.module';
 import { getTestMenuData, getValidMenus, getWrongId } from './__mocks__/menuMockData';
 import * as request from 'supertest';
-import { MenuResponse } from '../src/menu/responses/menu.responses';
+import { MenuResponse } from '../src/menus/responses/menu.responses';
 import { AdminModule } from '../src/admin/admin.module';
 import { DeleteType } from '../src/admin/enums/delete-type.enum';
-import { Status } from '../src/menu/enums/status.enum';
+import { Status } from '../src/menus/enums/status.enum';
 
 describe('MenuController (e2e)', () => {
     let app: INestApplication;

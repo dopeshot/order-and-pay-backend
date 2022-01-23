@@ -1,11 +1,10 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ObjectId } from 'mongoose';
 import { CategoriesService } from './categories.service';
 import { CategoryDocument } from './entities/category.entity';
 
-@ApiTags('category')
-@Controller('category')
+@ApiTags('categories')
+@Controller('categories')
 export class CategoriesController {
     constructor(private readonly categoryService: CategoriesService) {}
 

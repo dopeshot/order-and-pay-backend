@@ -4,7 +4,7 @@ GET {{HOST}}dish
 
 ### GET Dish by ID
 
-GET {{HOST}}dish/:id
+GET {{HOST}}dishes/:id
 
 
 

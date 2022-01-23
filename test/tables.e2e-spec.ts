@@ -3,8 +3,8 @@ import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
-import { TableDocument } from '../src/table/entities/tables.entity';
-import { TablesModule } from '../src/table/tables.module';
+import { TableDocument } from '../src/tables/entities/tables.entity';
+import { TablesModule } from '../src/tables/tables.module';
 import {
     closeInMongodConnection,
     rootMongooseTestModule

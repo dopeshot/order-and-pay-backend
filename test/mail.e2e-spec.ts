@@ -11,8 +11,8 @@ import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
 import { MailModule } from '../src/mail/mail.module';
-import { UserDocument } from '../src/user/entities/user.entity';
-import { UsersModule } from '../src/user/users.module';
+import { UserDocument } from '../src/users/entities/user.entity';
+import { UsersModule } from '../src/users/users.module';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
@@ -127,7 +127,7 @@ describe('MailModule', () => {
             it('/user/get-verify (POST) should send mail verification', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
-                    .get('/user/resend-account-verification')
+                    .get('/users/resend-account-verification')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
