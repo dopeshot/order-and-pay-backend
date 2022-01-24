@@ -8,10 +8,12 @@ import { CategoriesModule } from './categories/categories.module';
 import { ClientModule } from './client/client.module';
 import { DishesModule } from './dishes/dishes.module';
 import { LabelsModule } from './labels/labels.module';
+import { SseModule } from './sse/sse.module';
 import { MailModule } from './mail/mail.module';
 import { MenusModule } from './menus/menus.module';
 import { TablesModule } from './tables/tables.module';
 import { UsersModule } from './users/users.module';
+
 
 @Module({
     imports: [
@@ -37,6 +39,7 @@ import { UsersModule } from './users/users.module';
         CategoriesModule,
         DishesModule,
         TablesModule,
+        SseModule,
         LabelsModule,
         AllergensModule
     ]
