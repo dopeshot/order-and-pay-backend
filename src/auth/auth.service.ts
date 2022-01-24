@@ -8,19 +8,19 @@ import {
     UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../user/entities/user.entity';
-import { UserService } from '../user/user.service';
+import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { AccessTokenDto } from './dto/jwt.dto';
-import { userDataFromProvider } from '../user/interfaces/userDataFromProvider.interface';
+import { userDataFromProvider } from '../users/interfaces/userDataFromProvider.interface';
 import { ObjectId } from 'mongoose';
-import { UserStatus } from '../user/enums/status.enum';
+import { UserStatus } from '../users/enums/status.enum';
 
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly userService: UserService,
+        private readonly userService: UsersService,
         private readonly jwtService: JwtService
     ) {}
 
