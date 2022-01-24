@@ -1,17 +1,18 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MailModule } from './mail/mail.module';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TablesModule } from './table/tables.module';
-import { MenuModule } from './menu/menu.module';
-import { DishModule } from './dish/dish.module';
-import { CategoryModule } from './category/category.module';
 import { AdminModule } from './admin/admin.module';
+import { AuthModule } from './auth/auth.module';
+import { CategoriesModule } from './categories/categories.module';
 import { ClientModule } from './client/client.module';
+import { DishesModule } from './dishes/dishes.module';
 import { LabelsModule } from './labels/labels.module';
 import { SseModule } from './sse/sse.module';
+import { MailModule } from './mail/mail.module';
+import { MenusModule } from './menus/menus.module';
+import { TablesModule } from './tables/tables.module';
+import { UsersModule } from './users/users.module';
+
 
 @Module({
     imports: [
@@ -28,17 +29,17 @@ import { SseModule } from './sse/sse.module';
             }),
             inject: [ConfigService]
         }),
-        AuthModule,
-        UserModule,
-        MailModule,
-        TablesModule,
-        MenuModule,
-        DishModule,
-        CategoryModule,
         AdminModule,
         ClientModule,
-        LabelsModule,
-        SseModule
+        AuthModule,
+        MailModule,
+        UsersModule,
+        MenusModule,
+        CategoriesModule,
+        DishesModule,
+        TablesModule,
+        SseModule,
+        LabelsModule
     ]
 })
 export class AppModule {}

@@ -6,7 +6,6 @@ import {
     Get,
     HttpCode,
     HttpStatus,
-    NotImplementedException,
     Param,
     Patch,
     Post,
@@ -14,7 +13,7 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Dish } from '../dish/entities/dish.entity';
+import { Dish } from '../dishes/entities/dish.entity';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { CreateLabelDto } from './dto/create-label.dto';
 import { UpdateLabelDto } from './dto/update-label.dto';
@@ -34,6 +33,10 @@ export class LabelsController {
         status: HttpStatus.CREATED,
         description: 'The label has been created',
         type: Label
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: 'The label title already exists'
     })
     async create(@Body() createLabelDto: CreateLabelDto) {
         return new Label(await this.labelsService.create(createLabelDto));
@@ -95,6 +98,10 @@ export class LabelsController {
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
         description: 'The label could not be found'
+    })
+    @ApiResponse({
+        status: HttpStatus.CONFLICT,
+        description: 'The label title already exists'
     })
     @Patch(':id')
     async update(

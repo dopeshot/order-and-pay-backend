@@ -23,7 +23,7 @@ export class LabelsService {
             return label.toObject() as LabelDocument;
         } catch (error) {
             if (error.code == '11000') {
-                throw new ConflictException('This table number already exists');
+                throw new ConflictException('This label title already exists');
             }
             /* istanbul ignore next */
             throw new InternalServerErrorException();
@@ -46,11 +46,24 @@ export class LabelsService {
     }
 
     async update(id: string, updateLabelDto: UpdateLabelDto) {
-        const label = await this.labelModel
-            .findByIdAndUpdate(id, { ...updateLabelDto }, { new: true })
-            .lean();
-        if (!label) throw new NotFoundException();
-        return label;
+        // MD: TODO this try catch is really unclean in terms of catching NotFound
+        try {
+            const label = await this.labelModel
+                .findByIdAndUpdate(id, { ...updateLabelDto }, { new: true })
+                .lean();
+            if (!label) throw new NotFoundException();
+            return label;
+        } catch (error) {
+            if (error.code === 11000) {
+                throw new ConflictException('This label title already exists');
+            } else {
+                if (error.status === 404) {
+                    throw error;
+                }
+            }
+            /* istanbul ignore next */
+            throw new InternalServerErrorException();
+        }
     }
 
     async remove(id: string) {

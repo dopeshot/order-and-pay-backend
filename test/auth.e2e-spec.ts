@@ -9,9 +9,9 @@ import { AuthModule } from '../src/auth/auth.module';
 import { DiscordAuthGuard } from '../src/auth/strategies/discord/discord-auth.guard';
 import { FacebookAuthGuard } from '../src/auth/strategies/facebook/facebook-auth.guard';
 import { GoogleAuthGuard } from '../src/auth/strategies/google/google-auth.guard';
-import { UserDocument } from '../src/user/entities/user.entity';
-import { UserStatus } from '../src/user/enums/status.enum';
-import { UserModule } from '../src/user/user.module';
+import { UserDocument } from '../src/users/entities/user.entity';
+import { UserStatus } from '../src/users/enums/status.enum';
+import { UsersModule } from '../src/users/users.module';
 import { ThirdPartyGuardMock } from './helpers/fakeProvider.strategy';
 import { ProviderGuardFaker } from './helpers/fakeThirdParty.guard';
 import {
@@ -30,7 +30,7 @@ describe('AuthController (e2e)', () => {
         const module: TestingModule = await Test.createTestingModule({
             imports: [
                 rootMongooseTestModule(),
-                UserModule,
+                UsersModule,
                 AuthModule,
                 MailModule,
                 ConfigModule.forRoot({
@@ -268,7 +268,7 @@ describe('AuthController (e2e)', () => {
         describe('JWT Guard', () => {
             it('Guard should block with invalid token', async () => {
                 await request(app.getHttpServer())
-                    .get('/user')
+                    .get('/users')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -281,7 +281,7 @@ describe('AuthController (e2e)', () => {
                 user = { ...user, status: UserStatus.BANNED };
                 await userModel.create(user);
                 await request(app.getHttpServer())
-                    .get('/user')
+                    .get('/users')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
