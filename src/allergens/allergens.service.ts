@@ -10,7 +10,7 @@ import { Model } from 'mongoose';
 import { DishDocument } from '../dishes/entities/dish.entity';
 import { CreateAllergenDto } from './dto/create-allergen.dto';
 import { UpdateAllergenDto } from './dto/update-allergen.dto';
-import { Allergen, AllergenDocument } from './entities/allergen.entity';
+import { AllergenDocument } from './entities/allergen.entity';
 @Injectable()
 export class AllergensService {
     constructor(
@@ -57,7 +57,7 @@ export class AllergensService {
         let allergen: AllergenDocument;
         try {
             allergen = await this.allergenModel
-                .findByIdAndUpdate(id, { ...updateAllergenDto }, { new: true })
+                .findByIdAndUpdate(id, updateAllergenDto, { new: true })
                 .lean();
         } catch (error) {
             if (error.code === 11000) {

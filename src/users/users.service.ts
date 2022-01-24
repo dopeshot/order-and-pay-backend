@@ -207,9 +207,7 @@ export class UsersService {
         try {
             const updatedUser: User = await this.userSchema.findByIdAndUpdate(
                 id,
-                {
-                    ...updateUserDto
-                },
+                updateUserDto,
                 {
                     new: true
                 }

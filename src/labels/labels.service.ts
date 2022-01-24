@@ -53,7 +53,7 @@ export class LabelsService {
         let label: LabelDocument;
         try {
             label = await this.labelModel
-                .findByIdAndUpdate(id, { ...updateLabelDto }, { new: true })
+                .findByIdAndUpdate(id, updateLabelDto, { new: true })
                 .lean();
         } catch (error) {
             if (error.code === 11000) {
