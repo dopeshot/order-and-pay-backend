@@ -15,10 +15,10 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Dish } from '../dishes/entities/dish.entity';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
-import { CreateAllergenDto } from './dto/create-allergen.dto';
 import { AllergensService } from './allergens.service';
-import { Allergen } from './entities/allergen.entity';
+import { CreateAllergenDto } from './dto/create-allergen.dto';
 import { UpdateAllergenDto } from './dto/update-allergen.dto';
+import { Allergen } from './entities/allergen.entity';
 
 @Controller('admin/allergens')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -95,7 +95,7 @@ export class AllergensController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The allergen has been updated',
-        type: Dish
+        type: Allergen
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,

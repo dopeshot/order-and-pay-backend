@@ -93,7 +93,7 @@ export class LabelsController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The label has been updated',
-        type: Dish
+        type: Label
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,

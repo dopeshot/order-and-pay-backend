@@ -75,10 +75,10 @@ export class AllergensService {
     async remove(id: string): Promise<void> {
         // Only Hard delete, it is easier to create a new than retrieve the old
         // MD: Delete references too
-        const menu: AllergenDocument =
+        const allergen: AllergenDocument =
             await this.allergenModel.findByIdAndDelete(id);
 
-        if (!menu) throw new NotFoundException();
+        if (!allergen) throw new NotFoundException();
 
         return;
     }

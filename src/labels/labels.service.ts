@@ -69,9 +69,11 @@ export class LabelsService {
     async remove(id: string): Promise<void> {
         // Only Hard delete, it is easier to create a new than retrieve the old
         // MD: Delete references too
-        const menu: LabelDocument = await this.labelModel.findByIdAndDelete(id);
+        const label: LabelDocument = await this.labelModel.findByIdAndDelete(
+            id
+        );
 
-        if (!menu) throw new NotFoundException();
+        if (!label) throw new NotFoundException();
 
         return;
     }
