@@ -1,0 +1,28 @@
+@host = http://localhost:3001
+@allergenId = 61ed3d81ab90636455d34ffa
+### POST one allergen
+POST {{host}}/admin/allergens
+Content-Type: application/json
+
+{
+    "title": "Muck",
+    "icon": "dave"
+}
+
+### GET all allergens
+GET {{host}}/admin/allergens
+
+### GET one allergen
+GET {{host}}/admin/allergens/{{allergenId}}
+
+### GET refs in dishes of allergen
+GET {{host}}/admin/allergens/{{allergenId}}/refs
+
+### PATCH one allergen
+PATCH {{host}}/admin/allergens/{{allergenId}}
+Content-Type: application/json
+
+{
+    "title": "Muck",
+    "icon": "dave"
+}
