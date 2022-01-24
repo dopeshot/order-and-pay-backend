@@ -7,9 +7,10 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { DishDocument } from '../dishes/entities/dish.entity';
 import { CreateAllergenDto } from './dto/create-allergen.dto';
 import { UpdateAllergenDto } from './dto/update-allergen.dto';
-import { AllergenDocument } from './entities/allergen.entity';
+import { Allergen, AllergenDocument } from './entities/allergen.entity';
 @Injectable()
 export class AllergensService {
     constructor(
@@ -17,7 +18,9 @@ export class AllergensService {
         private readonly allergenModel: Model<AllergenDocument>
     ) {}
 
-    async create(createAllergenDto: CreateAllergenDto) {
+    async create(
+        createAllergenDto: CreateAllergenDto
+    ): Promise<AllergenDocument> {
         try {
             const allergen = await this.allergenModel.create(createAllergenDto);
             return allergen.toObject() as AllergenDocument;
@@ -32,45 +35,44 @@ export class AllergensService {
         }
     }
 
-    async findAll() {
+    async findAll(): Promise<AllergenDocument[]> {
         // Returns array, empty array if nothing is found
         return await this.allergenModel.find().lean();
     }
 
-    async findOne(id: string) {
+    async findOne(id: string): Promise<AllergenDocument> {
         const allergen = await this.allergenModel.findById(id).lean();
         if (!allergen) throw new NotFoundException();
         return allergen;
     }
 
-    async findRefs(id: string) {
+    async findRefs(id: string): Promise<DishDocument> {
         throw new NotImplementedException();
     }
 
-    async update(id: string, updateAllergenDto: UpdateAllergenDto) {
-        // MD: TODO this try catch is really unclean in terms of catching NotFound
+    async update(
+        id: string,
+        updateAllergenDto: UpdateAllergenDto
+    ): Promise<AllergenDocument> {
+        let allergen: AllergenDocument;
         try {
-            const allergen = await this.allergenModel
+            allergen = await this.allergenModel
                 .findByIdAndUpdate(id, { ...updateAllergenDto }, { new: true })
                 .lean();
-            if (!allergen) throw new NotFoundException();
-            return allergen;
         } catch (error) {
             if (error.code === 11000) {
                 throw new ConflictException(
                     'This allergen title already exists'
                 );
-            } else {
-                if (error.status === 404) {
-                    throw error;
-                }
             }
             /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
+        if (!allergen) throw new NotFoundException();
+        return allergen;
     }
 
-    async remove(id: string) {
+    async remove(id: string): Promise<void> {
         // Only Hard delete, it is easier to create a new than retrieve the old
         // MD: Delete references too
         const menu: AllergenDocument =
