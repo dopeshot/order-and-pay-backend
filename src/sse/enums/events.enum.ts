@@ -1,4 +1,6 @@
-export enum Events {
-    order = 'order',
-    error = 'error'
+export enum OrderEventType {
+    new = 'new',
+    update = 'update',
+    close = 'close',
+    revoked = 'revoked'
 }

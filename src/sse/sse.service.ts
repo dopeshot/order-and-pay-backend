@@ -1,6 +1,8 @@
-import { Injectable, MessageEvent } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EventEmitter } from 'events';
-import { fromEvent, merge, Observable, Subject } from 'rxjs';
+import { fromEvent } from 'rxjs';
+import { OrderEventType } from './enums/events.enum';
+import { OrderSSEPayload } from './payloads/order.payload';
 
 @Injectable()
 export class SseService {
@@ -19,5 +21,9 @@ export class SseService {
     async emitTest(type, data) {
         console.log(type);
         this.emitter.emit(type, { data });
+    }
+
+    async emitOrderEvent(type: OrderEventType, payload: OrderSSEPayload) {
+        this.emitter.emit(type, payload);
     }
 }
