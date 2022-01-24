@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AdminModule } from './admin/admin.module';
+import { AllergensModule } from './allergens/allergens.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ClientModule } from './client/client.module';
@@ -39,7 +40,8 @@ import { UsersModule } from './users/users.module';
         DishesModule,
         TablesModule,
         SseModule,
-        LabelsModule
+        LabelsModule,
+        AllergensModule
     ]
 })
 export class AppModule {}
