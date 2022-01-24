@@ -19,7 +19,6 @@ export class SseService {
     }
 
     async emitTest(type, data) {
-        console.log(type);
         this.emitter.emit(type, { data });
     }
 

@@ -1,15 +1,6 @@
-import {
-    Body,
-    Controller,
-    Get,
-    Param,
-    Query,
-    Req,
-    Sse,
-    UseGuards
-} from '@nestjs/common';
+import { Controller, Get, Param, Query, Sse, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ENVGuard } from 'src/auth/strategies/env/environment.guard';
+import { ENVGuard } from '../auth/strategies/env/environment.guard';
 import { SseService } from './sse.service';
 
 @Controller('subscribable')

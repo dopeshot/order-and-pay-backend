@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongoose';
-import { ChoiceType } from '../../orders/enums/choice.enum';
 
 export class OrderSSEPayload {
     id: ObjectId;
@@ -10,7 +9,8 @@ export class OrderSSEPayload {
         note: string;
         choices: {
             id: number;
-            type: ChoiceType;
+            // coffee: TODO: change type to choices enum once order module is implemented
+            type: string;
             valueId: number | number[];
         }[];
     };
