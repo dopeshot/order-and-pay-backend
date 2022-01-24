@@ -1,6 +1,6 @@
 export enum OrderEventType {
-    new = 'new',
-    update = 'update',
-    close = 'close',
-    revoked = 'revoked'
+    new = 'order-new',
+    update = 'order-update',
+    close = 'order-close',
+    revoked = 'order-revoked'
 }

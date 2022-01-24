@@ -1,7 +1,7 @@
 <head>
-    <script  type="text/javascript">
+    <script type="text/javascript">
 
-        const evtSource = new EventSource("http://localhost:3001/subscribable/client?order=aaaaaaaaaaaaaaaaaaaaaaaa");
+        const evtSource = new EventSource("http://localhost:3001/subscribable/admin");
         evtSource.onmessage = function (event) {
             console.log(event);
             const newElement = document.createElement("li");
@@ -14,7 +14,8 @@
     <link href="https://www.fontzip.com/storage/2008/10/30/commo/webfonts/Commo-Monospaced.css" rel="stylesheet" />
     <style>
         body {
-            font-family: "Comic Sans MS", "Comic Sans", cursive;;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            ;
             color: #404000
         }
     </style>
@@ -22,5 +23,5 @@
 
 <body bgcolor=#c1c100>
     <h1>SSE Tester</h1>
-    <button onclick="fetch('http://localhost:3001/subscribable/order',{method: 'GET'});">Trigger SSE event</button>
+    <button onclick="fetch('http://localhost:3001/subscribable/test',{method: 'GET'});">Trigger SSE event</button>
     <ul id="list">
