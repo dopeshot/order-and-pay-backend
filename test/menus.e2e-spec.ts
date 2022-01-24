@@ -2,18 +2,22 @@ import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
+import * as request from 'supertest';
+import { AdminModule } from '../src/admin/admin.module';
+import { DeleteType } from '../src/admin/enums/delete-type.enum';
 import { MenuDocument } from '../src/menus/entities/menu.entity';
+import { Status } from '../src/menus/enums/status.enum';
+import { MenusModule } from '../src/menus/menus.module';
+import { MenuResponse } from '../src/menus/responses/menu.responses';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
-import { MenusModule } from '../src/menus/menus.module';
-import { getTestMenuData, getValidMenus, getWrongId } from './__mocks__/menuMockData';
-import * as request from 'supertest';
-import { MenuResponse } from '../src/menus/responses/menu.responses';
-import { AdminModule } from '../src/admin/admin.module';
-import { DeleteType } from '../src/admin/enums/delete-type.enum';
-import { Status } from '../src/menus/enums/status.enum';
+import {
+    getTestMenuData,
+    getValidMenus,
+    getWrongId
+} from './__mocks__/menus-mock-data';
 
 describe('MenuController (e2e)', () => {
     let app: INestApplication;
@@ -110,7 +114,8 @@ describe('MenuController (e2e)', () => {
                     const res = await request(app.getHttpServer())
                         .patch('/admin/menus/' + target._id)
                         .send({
-                            description:'where did you come from, where did you go, where did you come from',
+                            description:
+                                'where did you come from, where did you go, where did you come from',
                             title: 'Cotton eye joe'
                         })
                         .expect(HttpStatus.OK);
@@ -160,8 +165,8 @@ describe('MenuController (e2e)', () => {
                             type: DeleteType.HARD
                         })
                         .expect(HttpStatus.NO_CONTENT);
-                    
-                    expect(await(menuModel.findById(target._id))).toBe(null)
+
+                    expect(await menuModel.findById(target._id)).toBe(null);
                 });
 
                 it('should set menu deleted (SOFT delete)', async () => {
@@ -172,8 +177,12 @@ describe('MenuController (e2e)', () => {
                             type: DeleteType.SOFT
                         })
                         .expect(HttpStatus.NO_CONTENT);
-                    
-                    expect(await(await (menuModel.findById(target._id))).status).toBe(Status.DELETED)
+
+                    expect(
+                        await (
+                            await menuModel.findById(target._id)
+                        ).status
+                    ).toBe(Status.DELETED);
                 });
 
                 it('should set menu deleted (SOFT delete) without provided type', async () => {
@@ -181,12 +190,16 @@ describe('MenuController (e2e)', () => {
                     await request(app.getHttpServer())
                         .delete('/admin/menus/' + target._id)
                         .expect(HttpStatus.NO_CONTENT);
-                    
-                    expect(await(await (menuModel.findById(target._id))).status).toBe(Status.DELETED)
+
+                    expect(
+                        await (
+                            await menuModel.findById(target._id)
+                        ).status
+                    ).toBe(Status.DELETED);
                 });
 
                 it('should fail with invalid id', async () => {
-                     await request(app.getHttpServer())
+                    await request(app.getHttpServer())
                         .delete(`/admin/menus/${getWrongId()}`)
                         .query({
                             type: DeleteType.SOFT
@@ -195,7 +208,6 @@ describe('MenuController (e2e)', () => {
                 });
             });
         });
-        
 
         afterAll(async () => {
             await connection.close();

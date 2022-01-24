@@ -1,5 +1,4 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
-import { MailModule } from '../src/mail/mail.module';
 import { ConfigModule } from '@nestjs/config';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -9,6 +8,7 @@ import { AuthModule } from '../src/auth/auth.module';
 import { DiscordAuthGuard } from '../src/auth/strategies/discord/discord-auth.guard';
 import { FacebookAuthGuard } from '../src/auth/strategies/facebook/facebook-auth.guard';
 import { GoogleAuthGuard } from '../src/auth/strategies/google/google-auth.guard';
+import { MailModule } from '../src/mail/mail.module';
 import { UserDocument } from '../src/users/entities/user.entity';
 import { UserStatus } from '../src/users/enums/status.enum';
 import { UsersModule } from '../src/users/users.module';
@@ -18,7 +18,7 @@ import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
-import { getJWT, getTestUser } from './__mocks__/userMockData';
+import { getJWT, getTestUser } from './__mocks__/users-mock-data';
 const { mock } = require('nodemailer');
 
 describe('AuthController (e2e)', () => {

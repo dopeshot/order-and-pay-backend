@@ -1,4 +1,3 @@
-import { MailModule } from '../src/mail/mail.module';
 import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { getConnectionToken } from '@nestjs/mongoose';
@@ -8,6 +7,7 @@ import { Connection, Model } from 'mongoose';
 import { join } from 'path';
 import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
+import { MailModule } from '../src/mail/mail.module';
 import { UserDocument } from '../src/users/entities/user.entity';
 import { UserStatus } from '../src/users/enums/status.enum';
 import { UsersModule } from '../src/users/users.module';
@@ -21,7 +21,7 @@ import {
     getTestAdmin,
     getTestUser,
     getUserVerify
-} from './__mocks__/userMockData';
+} from './__mocks__/users-mock-data';
 const { mock } = require('nodemailer');
 
 describe('UserController (e2e)', () => {

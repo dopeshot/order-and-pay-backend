@@ -13,7 +13,7 @@ import {
     getMockTable,
     getTestSetupData,
     getWrongId
-} from './__mocks__/tableMockData';
+} from './__mocks__/tables-mock-data';
 
 describe('TableController (e2e)', () => {
     let app: INestApplication;
