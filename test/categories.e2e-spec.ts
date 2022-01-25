@@ -23,7 +23,7 @@ describe('CategoriesController (e2e)', () => {
     let app: INestApplication;
     let connection: Connection;
     let categoryModel: Model<CategoryDocument>;
-    const path = '/admin/categories';
+    const path = '/categories';
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({

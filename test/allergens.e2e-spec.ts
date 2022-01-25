@@ -24,7 +24,7 @@ describe('AllergensController (e2e)', () => {
     let app: INestApplication;
     let connection: Connection;
     let allergenModel: Model<AllergenDocument>;
-    const path = '/admin/allergens';
+    const path = '/allergens';
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({

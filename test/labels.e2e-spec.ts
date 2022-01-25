@@ -20,7 +20,7 @@ describe('LabelsController (e2e)', () => {
     let app: INestApplication;
     let connection: Connection;
     let labelModel: Model<LabelDocument>;
-    const path = '/admin/labels';
+    const path = '/labels';
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
