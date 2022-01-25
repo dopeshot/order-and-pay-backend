@@ -245,7 +245,7 @@ describe('AllergensController (e2e)', () => {
                 .expect(HttpStatus.NOT_FOUND);
         });
 
-        it('should return CONFLICT with wrong param', async () => {
+        it('should return CONFLICT with same title', async () => {
             await allergenModel.insertMany(getExtraAllergenSeeder());
             await request(app.getHttpServer())
                 .patch(`${path}/${getExtraAllergenSeeder()._id}`)
