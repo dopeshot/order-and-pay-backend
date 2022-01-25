@@ -9,11 +9,8 @@ import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
-import {
-    getMockTable,
-    getTestSetupData,
-    getWrongId
-} from './__mocks__/tables-mock-data';
+import { getWrongId } from './__mocks__/shared-mock-data';
+import { getMockTable, getTestSetupData } from './__mocks__/tables-mock-data';
 
 describe('TableController (e2e)', () => {
     let app: INestApplication;

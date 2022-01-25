@@ -13,11 +13,8 @@ import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
-import {
-    getTestMenuData,
-    getValidMenus,
-    getWrongId
-} from './__mocks__/menus-mock-data';
+import { getTestMenuData, getValidMenus } from './__mocks__/menus-mock-data';
+import { getWrongId } from './__mocks__/shared-mock-data';
 
 describe('MenuController (e2e)', () => {
     let app: INestApplication;

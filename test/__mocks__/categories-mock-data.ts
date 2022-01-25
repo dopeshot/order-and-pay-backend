@@ -108,5 +108,3 @@ export const getSampleCategory = () => ({
         }
     ]
 });
-
-export const getWrongId = () => '1aaaaaaaaaaaaaaaaaaaaaaa';

@@ -15,10 +15,9 @@ import {
 import {
     getAllergenSeeder,
     getExtraAllergenSeeder,
-    getSampleAllergen,
-    getStringOfLength,
-    getWrongId
+    getSampleAllergen
 } from './__mocks__/allergens-mock-data';
+import { getStringOfLength, getWrongId } from './__mocks__/shared-mock-data';
 
 describe('AllergensController (e2e)', () => {
     let app: INestApplication;
