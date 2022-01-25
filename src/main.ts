@@ -11,6 +11,7 @@ async function bootstrap() {
     app.setBaseViewsDir(join(__dirname, '..', 'views'));
     app.setViewEngine('ejs');
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+    app.setGlobalPrefix('admin', { exclude: ['client'] });
 
     const config = new DocumentBuilder()
         .setTitle('Order and Pay')
