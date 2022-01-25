@@ -17,7 +17,7 @@ import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
-import { getJWT, getTestUser } from './__mocks__/userMockData';
+import { getJWT, getTestUser } from './__mocks__/users-mock-data';
 
 const { mock } = require('nodemailer');
 

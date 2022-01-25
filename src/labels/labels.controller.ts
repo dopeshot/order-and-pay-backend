@@ -20,7 +20,7 @@ import { UpdateLabelDto } from './dto/update-label.dto';
 import { Label } from './entities/label.entity';
 import { LabelsService } from './labels.service';
 
-@Controller('admin/labels')
+@Controller('labels')
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({ strategy: 'excludeAll' })
 @ApiTags('labels')
@@ -93,7 +93,7 @@ export class LabelsController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The label has been updated',
-        type: Dish
+        type: Label
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,

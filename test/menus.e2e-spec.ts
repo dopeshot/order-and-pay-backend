@@ -17,7 +17,7 @@ import {
     getTestMenuData,
     getValidMenus,
     getWrongId
-} from './__mocks__/menuMockData';
+} from './__mocks__/menus-mock-data';
 
 describe('MenuController (e2e)', () => {
     let app: INestApplication;

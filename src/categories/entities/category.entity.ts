@@ -1,18 +1,107 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Expose, Transform, Type } from 'class-transformer';
+import {
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    Length,
+    ValidateNested
+} from 'class-validator';
 import { Document, ObjectId } from 'mongoose';
+import { Menu } from '../../menus/entities/menu.entity';
+import { Status } from '../../menus/enums/status.enum';
+import { ChoiceType } from '../enums/choice-type';
+
+Schema();
+export class Option {
+    @Expose()
+    @Prop()
+    @IsNumber()
+    @IsNotEmpty()
+    id: number;
+
+    @Expose()
+    @Prop()
+    @IsString()
+    @Length(2, 30)
+    name: string;
+
+    @Expose()
+    @Prop()
+    @IsNumber()
+    price: number;
+}
+@Schema()
+export class Choice {
+    @IsNumber()
+    @IsNotEmpty()
+    @Expose()
+    @Prop()
+    id: number;
+
+    @Expose()
+    @IsString()
+    @Length(2, 30)
+    @Prop({ required: true })
+    title: string;
+
+    @Expose()
+    @IsOptional()
+    @Prop()
+    default?: number;
+
+    @Expose()
+    @IsEnum(ChoiceType)
+    @Prop()
+    type: ChoiceType;
+
+    @Expose()
+    @Prop()
+    @ValidateNested()
+    @Type(() => Option)
+    options: Option[];
+}
 
 @Schema({ timestamps: true })
 export class Category {
+    @Expose()
+    @Transform((params) => params.obj._id.toString())
     _id: ObjectId;
 
-    @Prop({ required: true })
-    name: string;
+    @Expose()
+    @Prop({ required: true, unique: true })
+    title: string;
 
+    @Expose()
     @Prop({ required: true })
     description: string;
 
+    @Expose()
+    @Prop()
+    icon: string;
+
+    @Expose()
+    @Prop()
+    @Type(() => Choice) // MD: Is this needed?
+    choices: Choice[];
+
+    @Expose()
     @Prop()
     image: string;
+
+    @Expose()
+    @Prop()
+    status: Status;
+
+    @Expose()
+    @Prop({ ref: Menu.name })
+    menu: string;
+
+    constructor(partial: Partial<CategoryDocument>) {
+        Object.assign(this, partial);
+    }
 }
 
 export type CategoryDocument = Category & Document;
