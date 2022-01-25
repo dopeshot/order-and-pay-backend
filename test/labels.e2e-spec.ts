@@ -12,10 +12,9 @@ import {
 import {
     getExtraLabelSeeder,
     getLabelSeeder,
-    getSampleLabel,
-    getStringOfLength,
-    getWrongId
+    getSampleLabel
 } from './__mocks__/labels-mock-data';
+import { getStringOfLength, getWrongId } from './__mocks__/shared-mock-data';
 
 describe('LabelsController (e2e)', () => {
     let app: INestApplication;
@@ -238,7 +237,6 @@ describe('LabelsController (e2e)', () => {
         it('should return NOT_FOUND with wrong id', async () => {
             await request(app.getHttpServer())
                 .patch(`${path}/${getWrongId()}`)
-                .send({ wrongparam: 'something' })
                 .expect(HttpStatus.NOT_FOUND);
         });
 
