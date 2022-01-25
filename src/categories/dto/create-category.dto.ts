@@ -1,9 +1,12 @@
+import { Type } from 'class-transformer';
 import {
+    IsArray,
     IsMongoId,
     IsNotEmpty,
     IsOptional,
     IsString,
-    Length
+    Length,
+    ValidateNested
 } from 'class-validator';
 import { Choice } from '../entities/category.entity';
 
@@ -16,7 +19,9 @@ export class CreateCategoryDto {
     @Length(2, 200)
     description: string;
 
-    @IsOptional()
+    @IsArray()
+    @ValidateNested()
+    @Type(() => Choice)
     choices: Choice[];
 
     @IsOptional()

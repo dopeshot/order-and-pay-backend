@@ -20,7 +20,7 @@ import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { Category, CategoryDocument } from './entities/category.entity';
+import { Category } from './entities/category.entity';
 
 @ApiTags('categories')
 @Controller('admin/categories')
@@ -53,8 +53,10 @@ export class CategoriesController {
         type: Category
     })
     @Get()
-    async findAll(): Promise<CategoryDocument[]> {
-        return this.categoriesService.findAll();
+    async findAll() {
+        return (await this.categoriesService.findAll()).map(
+            (category) => new Category(category)
+        );
     }
 
     @ApiOperation({ summary: 'Get one category', tags: ['categories'] })

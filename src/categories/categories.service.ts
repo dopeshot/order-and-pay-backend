@@ -29,7 +29,9 @@ export class CategoriesService {
             return category.toObject() as CategoryDocument;
         } catch (error) {
             if (error.code == '11000') {
-                throw new ConflictException('This label title already exists');
+                throw new ConflictException(
+                    'This category title already exists'
+                );
             }
             /* istanbul ignore next */
             throw new InternalServerErrorException();
@@ -41,7 +43,11 @@ export class CategoriesService {
     }
 
     async findOne(id: string): Promise<CategoryDocument> {
-        return await this.categoryModel.findById(id).lean();
+        const category: CategoryDocument = await this.categoryModel
+            .findById(id)
+            .lean();
+        if (!category) throw new NotFoundException();
+        return category;
     }
 
     async findRefs(id: string): Promise<DishDocument[]> {
@@ -74,8 +80,7 @@ export class CategoriesService {
         // Hard delete
         // MD: Delete references too
         if (type === DeleteType.HARD) {
-            const category: CategoryDocument =
-                await this.categoryModel.findByIdAndDelete(id);
+            const category = await this.categoryModel.findByIdAndDelete(id);
 
             if (!category) throw new NotFoundException();
 
@@ -83,10 +88,9 @@ export class CategoriesService {
         }
 
         // Soft delete
-        const menu: CategoryDocument =
-            await this.categoryModel.findByIdAndUpdate(id, {
-                status: Status.DELETED
-            });
+        const menu = await this.categoryModel.findByIdAndUpdate(id, {
+            status: Status.DELETED
+        });
 
         if (!menu) throw new NotFoundException();
 

@@ -1,24 +1,67 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Expose, Transform } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
+import {
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    Length,
+    ValidateNested
+} from 'class-validator';
 import { Document, ObjectId } from 'mongoose';
 import { Menu } from '../../menus/entities/menu.entity';
 import { Status } from '../../menus/enums/status.enum';
-import { Timestamps } from '../../shared/global-validation/types/timestamps';
-import { Checkbox } from '../types/choice-checkbox';
-import { Radio } from '../types/choice-radio';
+import { ChoiceType } from '../enums/choice-type';
 
+Schema();
+export class Option {
+    @Expose()
+    @Prop()
+    @IsNumber()
+    @IsNotEmpty()
+    id: number;
+
+    @Expose()
+    @Prop()
+    @IsString()
+    @Length(2, 30)
+    name: string;
+
+    @Expose()
+    @Prop()
+    @IsNumber()
+    price: number;
+}
 @Schema()
 export class Choice {
+    @IsNumber()
+    @IsNotEmpty()
     @Expose()
-    _id: number;
+    @Prop()
+    id: number;
 
     @Expose()
+    @IsString()
+    @Length(2, 30)
     @Prop({ required: true })
     title: string;
 
     @Expose()
+    @IsOptional()
     @Prop()
     default?: number;
+
+    @Expose()
+    @IsEnum(ChoiceType)
+    @Prop()
+    type: ChoiceType;
+
+    @Expose()
+    @Prop()
+    @ValidateNested()
+    @Type(() => Option)
+    options: Option[];
 }
 
 @Schema({ timestamps: true })
@@ -40,8 +83,9 @@ export class Category {
     icon: string;
 
     @Expose()
-    @Prop({ type: Choice }) // MD: Is this needed?
-    choices: Choice[] & (Checkbox | Radio);
+    @Prop()
+    @Type(() => Choice) // MD: Is this needed?
+    choices: Choice[];
 
     @Expose()
     @Prop()
@@ -60,5 +104,5 @@ export class Category {
     }
 }
 
-export type CategoryDocument = Category & Document & Timestamps;
+export type CategoryDocument = Category & Document;
 export const CategorySchema = SchemaFactory.createForClass(Category);
