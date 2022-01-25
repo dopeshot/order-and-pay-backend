@@ -20,7 +20,7 @@ import { CreateAllergenDto } from './dto/create-allergen.dto';
 import { UpdateAllergenDto } from './dto/update-allergen.dto';
 import { Allergen } from './entities/allergen.entity';
 
-@Controller('admin/allergens')
+@Controller('allergens')
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({ strategy: 'excludeAll' })
 @ApiTags('allergens')

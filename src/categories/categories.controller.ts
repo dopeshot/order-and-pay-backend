@@ -23,7 +23,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from './entities/category.entity';
 
 @ApiTags('categories')
-@Controller('admin/categories')
+@Controller('categories')
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({ strategy: 'excludeAll' })
 export class CategoriesController {
