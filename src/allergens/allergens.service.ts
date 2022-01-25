@@ -41,7 +41,9 @@ export class AllergensService {
     }
 
     async findOne(id: string): Promise<AllergenDocument> {
-        const allergen = await this.allergenModel.findById(id).lean();
+        const allergen: AllergenDocument = await this.allergenModel
+            .findById(id)
+            .lean();
         if (!allergen) throw new NotFoundException();
         return allergen;
     }

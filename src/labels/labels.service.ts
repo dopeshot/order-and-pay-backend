@@ -37,7 +37,7 @@ export class LabelsService {
     }
 
     async findOne(id: string): Promise<LabelDocument> {
-        const label = await this.labelModel.findById(id).lean();
+        const label: LabelDocument = await this.labelModel.findById(id).lean();
         if (!label) throw new NotFoundException();
         return label;
     }

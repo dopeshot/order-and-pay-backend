@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose, Transform } from 'class-transformer';
-import { ObjectId } from 'mongoose';
+import { Document, ObjectId } from 'mongoose';
 
 @Schema({ timestamps: true, _id: true })
 export class Label {
