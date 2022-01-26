@@ -1,6 +1,9 @@
+import { OmitType } from '@nestjs/mapped-types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Expose, Transform } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { Document, ObjectId } from 'mongoose';
+import { Allergen } from '../../allergens/entities/allergen.entity';
+import { Label } from '../../labels/entities/label.entity';
 import { Status } from '../../shared/enums/status.enum';
 
 @Schema({ timestamps: true })
@@ -51,4 +54,16 @@ export class Dish {
 }
 
 export type DishDocument = Dish & Document;
+export class DishPopulated extends OmitType(Dish, ['allergens', 'labels']) {
+    @Expose()
+    @Type(() => Allergen)
+    allergens: Allergen;
+    @Expose()
+    @Type(() => Label)
+    labels: Label;
+    constructor(partial: Partial<DishPopulated>) {
+        super();
+        Object.assign(this, partial);
+    }
+}
 export const DishSchema = SchemaFactory.createForClass(Dish);
