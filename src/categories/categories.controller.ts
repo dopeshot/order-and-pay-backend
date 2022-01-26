@@ -89,9 +89,7 @@ export class CategoriesController {
     })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
-        const x = await this.categoriesService.findRefs(id);
-        console.log(x);
-        return x.map((dish) => new Dish(dish));
+        return await this.categoriesService.findRefs(id);
     }
 
     @ApiOperation({ summary: 'Patch a category', tags: ['categories'] })
