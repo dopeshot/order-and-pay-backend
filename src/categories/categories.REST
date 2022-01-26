@@ -1,5 +1,5 @@
 @HOST = http://localhost:3001
-@catId = aaaaaaaaaaaaaaaaaaaaaaaa
+@catId = 61f01a524a75d303641c9dbc
 
 ### POST one category
 POST {{HOST}}/admin/categories
@@ -56,6 +56,9 @@ GET {{HOST}}/admin/categories
 
 ### GET one category
 GET {{HOST}}/admin/categories/{{catId}}
+
+### GET one categories refs
+GET {{HOST}}/admin/categories/{{catId}}/refs
 
 ### PATCH one category
 PATCH {{HOST}}/admin/categories

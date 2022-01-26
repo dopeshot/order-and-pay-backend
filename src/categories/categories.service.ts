@@ -2,8 +2,7 @@ import {
     ConflictException,
     Injectable,
     InternalServerErrorException,
-    NotFoundException,
-    NotImplementedException
+    NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -18,7 +17,8 @@ import { CategoryDocument } from './entities/category.entity';
 export class CategoriesService {
     constructor(
         @InjectModel('Category')
-        private readonly categoryModel: Model<CategoryDocument>
+        private readonly categoryModel: Model<CategoryDocument>,
+        @InjectModel('Dish') private readonly dishModel: Model<DishDocument>
     ) {}
 
     async create(
@@ -51,7 +51,7 @@ export class CategoriesService {
     }
 
     async findRefs(id: string): Promise<DishDocument[]> {
-        throw new NotImplementedException();
+        return await this.dishModel.find({ category: id }).lean();
     }
 
     async update(
@@ -84,6 +84,8 @@ export class CategoriesService {
 
             if (!category) throw new NotFoundException();
 
+            // Delete dishes
+            await this.dishModel.deleteMany({ category: id });
             return;
         }
 

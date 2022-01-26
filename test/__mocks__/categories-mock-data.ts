@@ -108,3 +108,18 @@ export const getSampleCategory = () => ({
         }
     ]
 });
+
+export const getDishForCategorySeeder = () => [
+    {
+        _id: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+        title: 'Prosciutto',
+        description:
+            'Pizza with mortadella and the finest prosciutto crudo from napoli',
+        price: 950,
+        image: 'imagelink',
+        isAvailable: true,
+        category: 'aaaaaaaaaaaaaaaaaaaaaaab',
+        allergens: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
+        labels: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
+    }
+];

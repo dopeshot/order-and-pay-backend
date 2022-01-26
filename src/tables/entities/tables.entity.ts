@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, ObjectId } from 'mongoose';
-import { Timestamps } from 'src/shared/global-validation/types/timestamps';
+import { Timestamps } from '../../shared/global-validation/types/timestamps';
 
 @Schema({ timestamps: true, _id: true })
 export class Table {

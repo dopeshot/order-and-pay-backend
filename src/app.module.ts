@@ -13,7 +13,7 @@ import { MailModule } from './mail/mail.module';
 import { MenusModule } from './menus/menus.module';
 import { TablesModule } from './tables/tables.module';
 import { UsersModule } from './users/users.module';
-
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
     imports: [
@@ -41,7 +41,8 @@ import { UsersModule } from './users/users.module';
         TablesModule,
         SseModule,
         LabelsModule,
-        AllergensModule
+        AllergensModule,
+        OrdersModule
     ]
 })
 export class AppModule {}
