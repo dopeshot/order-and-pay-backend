@@ -1,10 +1,27 @@
-@HOST = http://localhost:3001/
+@HOST = http://localhost:3001/admin
 
-GET {{HOST}}dish
 
-### GET Dish by ID
+### POST one dish
+POST {{HOST}}/dishes
+Content-Type: application/json
 
-GET {{HOST}}dishes/:id
+{
+    "title": "Italiano",
+    "description":
+        "Pizza with mortadella and the finest prosciutto crudo from napoli",
+    "price": 950,
+    "image": "imagelink",
+    "isAvailable": true,
+    "category": "aaaaaaaaaaaaaaaaaaaaaaba",
+    "allergens": ["aaaaaaaaaaaaaaaaaaaaaaca", "aaaaaaaaaaaaaaaaaaaaaacb"],
+    "labels": ["aaaaaaaaaaaaaaaaaaaaaada", "aaaaaaaaaaaaaaaaaaaaaadb"]
+}
+
+### GET all dishes
+GET {{HOST}}/dishes
+
+### GET dishes by ID
+GET {{HOST}}/dishes/:id
 
 
 

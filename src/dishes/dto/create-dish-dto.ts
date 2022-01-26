@@ -3,10 +3,11 @@ import {
     IsBoolean,
     IsMongoId,
     IsNotEmpty,
+    IsNumber,
     IsOptional,
     IsString,
     Length,
-    ValidateNested
+    Min
 } from 'class-validator';
 
 export class CreateDishDto {
@@ -18,10 +19,10 @@ export class CreateDishDto {
     @Length(2, 200)
     description: string;
 
-    @IsOptional()
-    @IsString()
-    @Length(2, 100)
-    icon: string;
+    @IsNotEmpty()
+    @IsNumber()
+    @Min(0)
+    price: number;
 
     @IsOptional()
     @IsString()
@@ -30,19 +31,17 @@ export class CreateDishDto {
 
     @IsOptional()
     @IsBoolean()
-    availability = true;
+    isAvailable = true;
 
     @IsMongoId()
     @IsNotEmpty()
     category: string;
 
     @IsArray()
-    @ValidateNested({ each: true })
     @IsMongoId({ each: true })
     allergens: string[];
 
     @IsArray()
-    @ValidateNested({ each: true })
     @IsMongoId({ each: true })
     labels: string[];
 }

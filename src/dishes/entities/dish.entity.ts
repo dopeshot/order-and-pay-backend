@@ -17,12 +17,16 @@ export class Dish {
     description: string;
 
     @Expose()
+    @Prop({ required: true })
+    price: number;
+
+    @Expose()
     @Prop()
     image: string;
 
     @Expose()
     @Prop({ required: true, default: true })
-    availability: boolean;
+    isAvailable: boolean;
 
     @Expose()
     @Prop({ ref: 'Category', required: true })
@@ -35,10 +39,6 @@ export class Dish {
     @Expose()
     @Prop({ required: true, ref: 'Label' })
     labels: string[];
-
-    @Expose()
-    @Prop({ required: true })
-    price: number;
 
     constructor(partial: Partial<DishDocument>) {
         Object.assign(this, partial);

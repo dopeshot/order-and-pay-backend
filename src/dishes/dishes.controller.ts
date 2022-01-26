@@ -40,7 +40,9 @@ export class DishesController {
     })
     @Post()
     async create(@Body() createDishDto: CreateDishDto) {
-        return new Dish(await this.dishesService.create(createDishDto));
+        const x = new Dish(await this.dishesService.create(createDishDto));
+        console.log(x);
+        return x;
     }
 
     @ApiOperation({ summary: 'Get all dishes', tags: ['dishes'] })
