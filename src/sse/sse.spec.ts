@@ -25,7 +25,7 @@ describe('SSE functionality', () => {
             const helper = new SSEHelper(sseObject);
 
             // Trigger event
-            await sseService.emitTest('test', {});
+            await sseService.emit('test', {});
 
             expect(helper.calls).toBe(1);
         });
