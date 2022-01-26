@@ -43,10 +43,12 @@ export class MenusService {
         }
     }
 
-    async findOne(id: Schema.Types.ObjectId): Promise<Menu> {
-        const menu = this.menuModel.findById(id);
+    async findOne(id: string): Promise<MenuDocument> {
+        const menu: MenuDocument = await this.menuModel.findById(id).lean();
 
-        if (!menu) throw new NotFoundException();
+        if (!menu) {
+            throw new NotFoundException();
+        }
 
         return menu;
     }
@@ -73,10 +75,8 @@ export class MenusService {
 
         if (!updatedMenu) throw new NotFoundException('Menu not found');
 
-        if (
-            updateMenuDto.isActive == true ||
-            updateMenuDto.status === Status.ACTIVE
-        ) {
+        if (updatedMenu.status === Status.ACTIVE || updatedMenu.isActive) {
+            console.log('fixing activation');
             this.updateActivation(id);
         }
 

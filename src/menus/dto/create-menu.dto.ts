@@ -17,6 +17,7 @@ export class CreateMenuDto {
     isActive: boolean;
 
     @IsString()
+    @IsOptional()
     description: string;
 
     @IsEnum(Status)

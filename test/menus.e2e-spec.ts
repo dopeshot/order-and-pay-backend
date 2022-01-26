@@ -62,6 +62,25 @@ describe('MenuController (e2e)', () => {
                     );
                 });
             });
+
+            describe('menus/:id (GET)', () => {
+                it('should return the menu', async () => {
+                    const res = await request(app.getHttpServer())
+                        .get('/menus/' + getTestMenuData()[0]._id)
+                        .expect(HttpStatus.OK);
+
+                    expect(res.body).toMatchObject(
+                        new MenuResponse(getTestMenuData()[0])
+                    );
+                });
+
+                it('should fail with invalid Id', async () => {
+                    await menuModel.deleteMany();
+                    await request(app.getHttpServer())
+                        .get('/menus/' + getTestMenuData()[0]._id)
+                        .expect(HttpStatus.NOT_FOUND);
+                });
+            });
         });
 
         describe('POST request', () => {
@@ -80,6 +99,35 @@ describe('MenuController (e2e)', () => {
                     );
 
                     expect(res.body).toMatchObject(new MenuResponse(res.body));
+                });
+
+                it('should disable other menus if this is set to be active', async () => {
+                    const previousActive = getTestMenuData().filter(
+                        (menu) => menu.isActive || menu.status === Status.ACTIVE
+                    );
+                    console.log(previousActive);
+                    const res = await request(app.getHttpServer())
+                        .post('/menus')
+                        .send({
+                            title: 'new menu',
+                            description: 'mock me harder daddy',
+                            isActive: true
+                        })
+                        .expect(HttpStatus.CREATED);
+
+                    expect((await menuModel.find()).length).toBe(
+                        getTestMenuData().length + 1
+                    );
+
+                    expect(res.body).toMatchObject(new MenuResponse(res.body));
+                    expect(res.body.isActive).toBe(true);
+
+                    // Check if all endpoints have been disabled
+                    previousActive.forEach(async (m) => {
+                        const menu = await menuModel.findById(m._id);
+                        expect(menu.isActive).toBe(false);
+                        expect(menu.status).toBe(Status.INACTIVE);
+                    });
                 });
 
                 it('should fail with invalid data', async () => {
@@ -126,6 +174,33 @@ describe('MenuController (e2e)', () => {
                     );
                 });
 
+                it('should disable other menus if this is set to be active', async () => {
+                    const target = getTestMenuData()[0];
+                    const previousActive = getTestMenuData()
+                        .slice(1)
+                        .filter(
+                            (menu) =>
+                                menu.isActive || menu.status === Status.ACTIVE
+                        );
+                    console.log(previousActive);
+                    const res = await request(app.getHttpServer())
+                        .patch('/menus/' + target._id)
+                        .send({
+                            isActive: true
+                        })
+                        .expect(HttpStatus.OK);
+
+                    expect(res.body).toMatchObject(new MenuResponse(res.body));
+                    expect(res.body.isActive).toBe(true);
+
+                    // Check if all endpoints have been disabled
+                    previousActive.forEach(async (m) => {
+                        const menu = await menuModel.findById(m._id);
+                        expect(menu.isActive).toBe(false);
+                        expect(menu.status).toBe(Status.INACTIVE);
+                    });
+                });
+
                 it('should fail for duplicates', async () => {
                     const target = getTestMenuData()[0];
                     const another = getTestMenuData()[1];
@@ -145,7 +220,7 @@ describe('MenuController (e2e)', () => {
                     const res = await request(app.getHttpServer())
                         .patch('/menus/' + target._id)
                         .send({
-                            not: 'this is not a field'
+                            title: 'x'
                         })
                         .expect(HttpStatus.BAD_REQUEST);
                 });

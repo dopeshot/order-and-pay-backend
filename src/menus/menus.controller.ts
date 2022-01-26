@@ -16,6 +16,7 @@ import {
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 import { DeleteType } from '../shared/enums/delete-type.enum';
+import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { MenusService } from './menus.service';
@@ -47,7 +48,7 @@ export class MenusController {
         description: 'The menu has been updated',
         type: [MenuResponse]
     })
-    async findOne(@Param('id') id: ObjectId): Promise<MenuResponse> {
+    async findOne(@Param() { id }: MongoIdDto): Promise<MenuResponse> {
         return new MenuResponse(await this.menuService.findOne(id));
     }
 
