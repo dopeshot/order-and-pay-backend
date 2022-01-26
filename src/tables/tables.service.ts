@@ -11,7 +11,6 @@ import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
 import { TableDocument } from './entities/tables.entity';
 import { getMigrateTables } from './sampleTables/migrateTables';
-import { ResponseTable } from './types/response-table';
 
 @Injectable()
 export class TablesService {
@@ -60,6 +59,7 @@ export class TablesService {
                 await this.tableModel.findByIdAndUpdate(id, updateTableDto, {
                     new: true
                 });
+
             if (!table) {
                 throw new NotFoundException();
             }

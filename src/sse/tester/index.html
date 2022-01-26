@@ -1,7 +1,7 @@
 <head>
     <script type="text/javascript">
 
-        const evtSource = new EventSource("http://localhost:3001/subscribable/admin");
+        const evtSource = new EventSource("http://localhost:3001/admin/subscribable/orders");
         evtSource.onmessage = function (event) {
             console.log(event);
             const newElement = document.createElement("li");
