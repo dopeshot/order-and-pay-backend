@@ -1,5 +1,12 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import {
+    Body,
+    Controller,
+    Get,
+    HttpStatus,
+    Param,
+    Patch
+} from '@nestjs/common';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { UpdateOrderDto } from './dtos/update-order.dto';
 import { Order } from './entities/order.entity';
@@ -11,6 +18,11 @@ export class OrdersController {
 
     @Get()
     @ApiOperation({ summary: 'Get all orders' })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Returned all orders',
+        type: Order
+    })
     async getAll() {
         return (await this.orderService.findAll()).map(
             (order) => new Order(order)
@@ -21,6 +33,11 @@ export class OrdersController {
     @ApiOperation({
         summary: 'Get all active orders (received payment and note closed)'
     })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Returned currently active orders',
+        type: Order
+    })
     async getActive() {
         return (await this.orderService.findActive()).map(
             (order) => new Order(order)
@@ -29,6 +46,16 @@ export class OrdersController {
 
     @Patch(':id')
     @ApiOperation({ summary: 'Patch order by id' })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Updated order by id',
+        type: Order
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: 'No order with this id exists',
+        type: Order
+    })
     async updateOrder(
         @Body() updateData: UpdateOrderDto,
         @Param() @Param() { id }: MongoIdDto
