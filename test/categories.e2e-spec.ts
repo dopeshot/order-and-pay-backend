@@ -62,6 +62,9 @@ describe('CategoriesController (e2e)', () => {
             expect(await categoryModel.find()).toHaveLength(2);
             const category = new Category(res.body);
             expect(res.body).toMatchObject(category);
+
+            // Expect default status
+            expect(res.body.status).toBe(Status.ACTIVE);
         });
 
         it('should create a category without icon', async () => {

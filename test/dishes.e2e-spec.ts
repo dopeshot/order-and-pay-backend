@@ -13,17 +13,18 @@ import {
     LabelDocument,
     LabelSchema
 } from '../src/labels/entities/label.entity';
+import { Status } from '../src/shared/enums/status.enum';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
 import {
     getAllergensForDishesSeeder,
-    getDishesSeeder,
+    getDishSeeder,
     getLabelsForDishesSeeder,
     getSampleDish
 } from './__mocks__/dishes-mock-data';
-import { getStringOfLength } from './__mocks__/shared-mock-data';
+import { getStringOfLength, getWrongId } from './__mocks__/shared-mock-data';
 
 describe('DishController (e2e)', () => {
     let app: INestApplication;
@@ -58,7 +59,7 @@ describe('DishController (e2e)', () => {
 
     // Insert test data
     beforeEach(async () => {
-        await dishModel.insertMany(getDishesSeeder());
+        await dishModel.insertMany(getDishSeeder());
         await allergyModel.insertMany(getAllergensForDishesSeeder());
         await labelModel.insertMany(getLabelsForDishesSeeder());
     });
@@ -85,6 +86,9 @@ describe('DishController (e2e)', () => {
             expect(await dishModel.find()).toHaveLength(2);
             const dish = new Dish(res.body);
             expect(res.body).toMatchObject(dish);
+
+            // Expect default status
+            expect(res.body.status).toBe(Status.ACTIVE);
         });
 
         it('should create a dish without image', async () => {
@@ -129,6 +133,13 @@ describe('DishController (e2e)', () => {
             expect(await dishModel.find()).toHaveLength(2);
             const dish = new Dish(res.body);
             expect(res.body).toMatchObject(dish);
+        });
+
+        it('should return CONFLICT with duplicate title', async () => {
+            await request(app.getHttpServer())
+                .post(`${path}`)
+                .send(getDishSeeder())
+                .expect(HttpStatus.CONFLICT);
         });
 
         describe('dto tests for dish', () => {
@@ -285,8 +296,129 @@ describe('DishController (e2e)', () => {
             });
         });
     });
-    describe('admin/dishes (GET)', () => {});
-    describe('admin/dishes/:id (GET)', () => {});
-    describe('admin/dishes (PATCH)', () => {});
-    describe('admin/dishes (DELETE)', () => {});
+
+    describe('admin/dishes (GET)', () => {
+        it('should return all categories', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`${path}`)
+                .expect(HttpStatus.OK);
+
+            expect(res.body).toHaveLength(1);
+        });
+    });
+
+    describe('admin/dishes/:id (GET)', () => {
+        it('should return one dish', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`${path}/${getDishSeeder()._id}`)
+                .expect(HttpStatus.OK);
+
+            const dish = new Dish(res.body);
+            expect(res.body).toMatchObject(dish);
+        });
+
+        it('should return NOT_FOUND with wrong id', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`${path}/${getWrongId()}`)
+                .expect(HttpStatus.NOT_FOUND);
+
+            const dish = new Dish(res.body);
+            expect(res.body).toMatchObject(dish);
+        });
+    });
+
+    describe('admin/dishes (PATCH)', () => {
+        it('should return one element of dish with updated fields', async () => {
+            const res = await request(app.getHttpServer())
+                .patch(`${path}/${getDishSeeder()._id}`)
+                .send({ title: 'New Title' })
+                .expect(HttpStatus.OK);
+
+            const dish = new Dish(res.body);
+            expect(res.body).toMatchObject(dish);
+            expect(res.body.title).toBe('New Title');
+        });
+
+        it('should return OK without data', async () => {
+            const dish = new Dish(
+                await dishModel.findById(getDishSeeder()._id).lean()
+            );
+            const res = await request(app.getHttpServer())
+                .patch(`${path}/${getDishSeeder()._id}`)
+                .expect(HttpStatus.OK);
+
+            // Expect unchanged Object
+            const resDish = new Dish(res.body);
+            // Either delete __v updatedAt and createdAt or check the rest (chose 2nd)
+            expect(resDish.description).toBe(dish.description);
+            expect(resDish.image).toBe(dish.image);
+            expect(resDish.category).toBe(dish.category);
+            expect(resDish.title).toBe(dish.title);
+            expect(resDish.price).toBe(dish.price);
+            expect(resDish.allergens).toStrictEqual(dish.allergens);
+            expect(resDish.labels).toStrictEqual(dish.labels);
+        });
+
+        it('should return NOT_FOUND with wrong id', async () => {
+            await request(app.getHttpServer())
+                .patch(`${path}/${getWrongId()}`)
+                .expect(HttpStatus.NOT_FOUND);
+        });
+
+        it('should return CONFLICT with duplicate title', async () => {
+            await dishModel.insertMany(getSampleDish());
+            await request(app.getHttpServer())
+                .patch(`${path}/${getDishSeeder()._id}`)
+                .send({ title: getSampleDish().title })
+                .expect(HttpStatus.CONFLICT);
+        });
+    });
+
+    describe('admin/dishes (DELETE)', () => {
+        it('should return NO_CONTENT and empty the database with hard delete', async () => {
+            await request(app.getHttpServer())
+                .delete(`${path}/${getDishSeeder()._id}?type=hard`)
+                .expect(HttpStatus.NO_CONTENT);
+
+            expect(await dishModel.find()).toHaveLength(0);
+        });
+
+        it('should return NO_CONTENT and not empty the database with soft delete', async () => {
+            await request(app.getHttpServer())
+                .delete(`${path}/${getDishSeeder()._id}?type=soft`)
+                .expect(HttpStatus.NO_CONTENT);
+
+            expect(await dishModel.find()).toHaveLength(1);
+            expect((await dishModel.findById(getDishSeeder()._id)).status).toBe(
+                Status.DELETED
+            );
+        });
+
+        it('should return NO_CONTENT and not empty the database with no query', async () => {
+            await request(app.getHttpServer())
+                .delete(`${path}/${getDishSeeder()._id}`)
+                .expect(HttpStatus.NO_CONTENT);
+
+            expect(await dishModel.find()).toHaveLength(1);
+            expect((await dishModel.findById(getDishSeeder()._id)).status).toBe(
+                Status.DELETED
+            );
+        });
+
+        it('should return NOT_FOUND and not empty the database with wrong id', async () => {
+            await request(app.getHttpServer())
+                .delete(`${path}/${getWrongId()}`)
+                .expect(HttpStatus.NOT_FOUND);
+
+            expect(await dishModel.find()).toHaveLength(1);
+        });
+
+        it('should return NOT_FOUND and not empty the database with wrong id and type=hard', async () => {
+            await request(app.getHttpServer())
+                .delete(`${path}/${getWrongId()}?type=hard`)
+                .expect(HttpStatus.NOT_FOUND);
+
+            expect(await dishModel.find()).toHaveLength(1);
+        });
+    });
 });

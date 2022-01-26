@@ -1,4 +1,4 @@
-export const getDishesSeeder = () => ({
+export const getDishSeeder = () => ({
     _id: 'aaaaaaaaaaaaaaaaaaaaaaaa',
     title: 'Prosciutto',
     description:

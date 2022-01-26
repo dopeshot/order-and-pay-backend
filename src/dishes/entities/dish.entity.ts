@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose, Transform } from 'class-transformer';
 import { Document, ObjectId } from 'mongoose';
+import { Status } from '../../shared/enums/status.enum';
 
 @Schema({ timestamps: true })
 export class Dish {
@@ -9,7 +10,7 @@ export class Dish {
     _id: ObjectId;
 
     @Expose()
-    @Prop({ required: true })
+    @Prop({ required: true, unique: true })
     title: string;
 
     @Expose()
@@ -19,6 +20,10 @@ export class Dish {
     @Expose()
     @Prop({ required: true })
     price: number;
+
+    @Expose()
+    @Prop({ default: Status.ACTIVE })
+    status: Status;
 
     @Expose()
     @Prop()
