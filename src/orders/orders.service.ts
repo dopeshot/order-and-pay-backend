@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     HttpException,
     HttpStatus,
     Injectable,
@@ -10,9 +11,9 @@ import { Model } from 'mongoose';
 import { OrderEventType } from '../sse/enums/events.enum';
 import { SseService } from '../sse/sse.service';
 import { TablesService } from '../tables/tables.service';
-import { createOrderDto } from './dtos/create-order.dto';
-import { updateOrderDto } from './dtos/update-order.dto';
-import { Order, OrderDocument } from './entities/order.entity';
+import { CreateOrderDto } from './dtos/create-order.dto';
+import { UpdateOrderDto } from './dtos/update-order.dto';
+import { OrderDocument } from './entities/order.entity';
 import { OrderStatus } from './enums/order-status.enum';
 import { PaymentStatus } from './enums/payment-status.enum';
 import { Payment } from './types/payment.type';
@@ -33,12 +34,12 @@ export class OrdersService {
         return await this.orderModel
             .find({
                 Status: { $nin: [OrderStatus.CANCELLED, OrderStatus.FINISHED] },
-                'PaymentStatus.status': { $in: [PaymentStatus.RECEIVED] }
+                'PaymentStatus.status': PaymentStatus.RECEIVED
             })
             .lean();
     }
 
-    async create(order: createOrderDto): Promise<OrderDocument> {
+    async create(order: CreateOrderDto): Promise<OrderDocument> {
         // Validate the payment status
         // TODO: Implement this
         const paymentId = order.payment;
@@ -50,7 +51,11 @@ export class OrdersService {
             );
         }
 
-        //if (!this.tablesService.findOne(order.tableId)){ throw new BadRequestException()}
+        if (!this.tablesService.findOne(order.tableId.toString())) {
+            throw new BadRequestException();
+        }
+
+        // TODO: Validate that all items are actual dishes in db
 
         const paymentStatus: Payment = {
             status: PaymentStatus.RECEIVED,
@@ -66,7 +71,6 @@ export class OrdersService {
 
             receivedOrder = newOrder.toObject() as OrderDocument;
         } catch (e) {
-            console.log(e);
             throw new InternalServerErrorException();
         }
 
@@ -74,10 +78,7 @@ export class OrdersService {
         if (!receivedOrder) throw new InternalServerErrorException();
 
         // Emit SSE for admin frontend
-        this.sseService.emitOrderEvent(
-            OrderEventType.new,
-            new Order(receivedOrder)
-        );
+        this.sseService.emitOrderEvent(OrderEventType.new, receivedOrder);
 
         return receivedOrder;
     }
@@ -89,18 +90,32 @@ export class OrdersService {
 
     async update(
         id: string,
-        updateData: updateOrderDto
+        updateData: UpdateOrderDto
     ): Promise<OrderDocument> {
         let order: OrderDocument;
+
         try {
-            order = await this.orderModel.findByIdAndUpdate(id, updateData, {
-                new: true
-            });
+            order = await this.orderModel
+                .findByIdAndUpdate(id, updateData, {
+                    new: true
+                })
+                .lean();
         } catch (e) {
             throw new InternalServerErrorException();
         }
 
         if (!order) throw new NotFoundException();
+
+        // Send SSE event to restaurant
+        if (
+            updateData.Status === OrderStatus.FINISHED ||
+            updateData.Status === OrderStatus.CANCELLED
+        ) {
+            this.sseService.emitOrderEvent(OrderEventType.close, order);
+        } else {
+            this.sseService.emitOrderEvent(OrderEventType.update, order);
+        }
+
         return order;
     }
 }

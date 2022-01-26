@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
-import { updateOrderDto } from './dtos/update-order.dto';
+import { UpdateOrderDto } from './dtos/update-order.dto';
 import { Order } from './entities/order.entity';
 import { OrdersService } from './orders.service';
 
@@ -18,7 +18,9 @@ export class OrdersController {
     }
 
     @Get('current')
-    @ApiOperation({ summary: 'Get all active orders (received payment and )' })
+    @ApiOperation({
+        summary: 'Get all active orders (received payment and note closed)'
+    })
     async getActive() {
         return (await this.orderService.findActive()).map(
             (order) => new Order(order)
@@ -26,8 +28,9 @@ export class OrdersController {
     }
 
     @Patch(':id')
+    @ApiOperation({ summary: 'Patch order by id' })
     async updateOrder(
-        @Body() updateData: updateOrderDto,
+        @Body() updateData: UpdateOrderDto,
         @Param() @Param() { id }: MongoIdDto
     ) {
         return new Order(await this.orderService.update(id, updateData));

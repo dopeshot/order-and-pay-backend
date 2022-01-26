@@ -1,25 +1,18 @@
-import {
-    IsEnum,
-    IsOptional,
-    IsString,
-    MaxLength,
-    MinLength
-} from 'class-validator';
+import { OmitType, PartialType } from '@nestjs/mapped-types';
+import { Type } from 'class-transformer';
+import { IsEnum, IsOptional } from 'class-validator';
 import { OrderStatus } from '../enums/order-status.enum';
-import { Item } from '../types/item.type';
+import { Payment } from '../types/payment.type';
+import { CreateOrderDto } from './create-order.dto';
 
-export class updateOrderDto {
-    @IsString()
-    @MinLength(1)
-    @MaxLength(8)
+export class UpdateOrderDto extends PartialType(
+    OmitType(CreateOrderDto, ['tableId'])
+) {
     @IsOptional()
-    tableId: string;
+    @Type(() => Payment)
+    PaymentStatus: Payment;
 
-    items: Item[];
-
-    @IsString()
-    payment: string;
-
+    @IsOptional()
     @IsEnum(OrderStatus)
     Status: OrderStatus;
 }

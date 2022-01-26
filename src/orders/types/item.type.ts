@@ -1,20 +1,55 @@
+import { Prop, Schema } from '@nestjs/mongoose';
+import { Expose } from 'class-transformer';
+import {
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsString,
+    MaxLength,
+    ValidateNested
+} from 'class-validator';
+import { ObjectId, SchemaTypes } from 'mongoose';
 import { ChoiceType } from '../enums/choice-type.enum';
 
+@Schema()
 export class Item {
-    dishId: string;
+    @Expose()
+    @Prop({ type: SchemaTypes.ObjectId, ref: 'Dishes', required: true })
+    dish: ObjectId;
+
+    @Expose()
+    @Prop()
+    @IsNumber()
+    @IsNotEmpty()
     count: number;
-    pickedChoices: (PickedRadio | PickedCheckbox)[];
+
+    @Expose()
+    @Prop()
+    pickedChoices: [{ id: number; type: ChoiceType; valueId: [number] }];
+
+    @Expose()
+    @Prop()
+    @IsString()
+    @MaxLength(140)
     note: string;
 }
 
-export type PickedRadio = {
+@Schema()
+export class PickedChoices {
+    @Expose()
+    @Prop()
+    @IsNumber()
+    @IsNotEmpty()
     id: number;
-    type: ChoiceType.RADIO;
-    valueId: number;
-};
 
-export type PickedCheckbox = {
-    id: number;
-    type: ChoiceType.CHECKBOX;
-    valueId: number[];
-};
+    @Expose()
+    @IsEnum(ChoiceType)
+    @Prop()
+    type: ChoiceType;
+
+    @Expose()
+    @Prop()
+    @ValidateNested()
+    @IsNumber()
+    valueId: [number];
+}

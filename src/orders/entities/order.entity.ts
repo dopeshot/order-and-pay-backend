@@ -1,10 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Expose, Transform } from 'class-transformer';
-import { Document, ObjectId } from 'mongoose';
+import { Expose, Transform, Type } from 'class-transformer';
+import { Document, ObjectId, SchemaTypes } from 'mongoose';
 import { OrderStatus } from '../enums/order-status.enum';
 import { Item } from '../types/item.type';
 import { Payment } from '../types/payment.type';
-import { ItemSchema } from './item.entity';
 
 @Schema({ timestamps: true })
 export class Order {
@@ -14,14 +13,17 @@ export class Order {
 
     @Expose()
     @Transform((params) => params.obj.tableId.toString())
-    tableId: string;
+    @Prop({ type: SchemaTypes.ObjectId, ref: 'Tables', required: true })
+    tableId: ObjectId;
 
     @Expose()
-    @Prop({ required: false, type: [{ type: ItemSchema }] })
+    @Prop({ required: true })
+    @Type(() => Item)
     items: Item[];
 
     @Expose()
-    @Prop({ required: true, type: Payment })
+    @Prop({ required: true })
+    @Type(() => Payment)
     PaymentStatus: Payment;
 
     @Expose()

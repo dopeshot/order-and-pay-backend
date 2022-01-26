@@ -2,6 +2,7 @@ import { Observable } from 'rxjs';
 
 export class SSEHelper {
     public calls: number = 0;
+    public messages = [];
     sseObservable: Observable<any>;
 
     constructor(sse: Observable<any>) {
@@ -11,10 +12,11 @@ export class SSEHelper {
 
     public reset() {
         this.calls = 0;
+        this.messages = [];
     }
 
-    private callback() {
-        console.log('called');
+    private callback(data) {
+        this.messages.push(data);
         this.calls++;
     }
 }

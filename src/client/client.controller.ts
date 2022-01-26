@@ -1,12 +1,21 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+    Body,
+    ClassSerializerInterceptor,
+    Controller,
+    Post,
+    SerializeOptions,
+    UseInterceptors
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MenusService } from '../menus/menus.service';
-import { createOrderDto } from '../orders/dtos/create-order.dto';
+import { CreateOrderDto } from '../orders/dtos/create-order.dto';
 import { Order } from '../orders/entities/order.entity';
 import { OrdersService } from '../orders/orders.service';
 
 @Controller('client')
 @ApiTags('client')
+@UseInterceptors(ClassSerializerInterceptor)
+@SerializeOptions({ strategy: 'excludeAll' })
 export class ClientController {
     constructor(
         private readonly menuService: MenusService,
@@ -15,7 +24,8 @@ export class ClientController {
 
     @Post('order')
     @ApiOperation({ summary: 'Create new order' })
-    async create(@Body() order: createOrderDto) {
-        return new Order(await this.orderService.create(order));
+    async create(@Body() order: CreateOrderDto) {
+        const x = new Order(await this.orderService.create(order));
+        return x;
     }
 }

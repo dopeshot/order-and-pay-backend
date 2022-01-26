@@ -11,7 +11,6 @@ export class SseService {
     constructor() {
         // Inject some Service here and everything about SSE will stop to work.
         this.emitter = new EventEmitter();
-        this.emitter.on('order', () => console.log('send'));
     }
 
     subscribe(event: string): Observable<unknown> {
@@ -24,9 +23,14 @@ export class SseService {
     }
 
     async emitOrderEvent(type: OrderEventType, payload: Order) {
-        console.log('emmiting ', payload);
-        const data = { payload: payload, type: type };
-        //this.emitter.emit('order', { order: payload, type: type });
+        const data = {
+            payload: {
+                ...payload,
+                tableId: payload.tableId.toString(),
+                _id: payload._id.toString()
+            },
+            type: type
+        };
         this.emitter.emit('order', { data });
     }
 }
