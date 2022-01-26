@@ -40,6 +40,17 @@ export class MenusController {
         );
     }
 
+    @Get(':id')
+    @ApiOperation({ summary: 'Get all menus (simple form)', tags: ['menus'] })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'The menu has been updated',
+        type: [MenuResponse]
+    })
+    async findOne(@Param('id') id: ObjectId): Promise<MenuResponse> {
+        return new MenuResponse(await this.menuService.findOne(id));
+    }
+
     @Post()
     @ApiOperation({ summary: 'Create new menu', tags: ['menus'] })
     @ApiResponse({

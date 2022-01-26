@@ -1,8 +1,4 @@
-import { IsBoolean, IsOptional } from 'class-validator';
+import { PartialType } from '@nestjs/swagger';
 import { CreateMenuDto } from './create-menu.dto';
 
-export class UpdateMenuDto extends CreateMenuDto {
-    @IsBoolean()
-    @IsOptional()
-    isAvailable: boolean;
-}
+export class UpdateMenuDto extends PartialType(CreateMenuDto) {}

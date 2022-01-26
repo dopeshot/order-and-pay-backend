@@ -10,7 +10,7 @@ export class Menu {
     @Prop({})
     description: string;
 
-    @Prop({ default: Status.ACTIVE })
+    @Prop({ default: Status.INACTIVE })
     status: Status;
 
     @Prop({ default: false })
