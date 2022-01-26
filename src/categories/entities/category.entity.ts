@@ -92,7 +92,7 @@ export class Category {
     image: string;
 
     @Expose()
-    @Prop()
+    @Prop({ default: Status.ACTIVE })
     status: Status;
 
     @Expose()

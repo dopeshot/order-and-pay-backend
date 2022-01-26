@@ -88,11 +88,11 @@ export class CategoriesService {
         }
 
         // Soft delete
-        const menu = await this.categoryModel.findByIdAndUpdate(id, {
+        const category = await this.categoryModel.findByIdAndUpdate(id, {
             status: Status.DELETED
         });
 
-        if (!menu) throw new NotFoundException();
+        if (!category) throw new NotFoundException();
 
         return;
     }
