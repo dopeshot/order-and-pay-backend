@@ -52,6 +52,17 @@ export class MenusController {
         return new MenuResponse(await this.menuService.findOne(id));
     }
 
+    @Get(':id')
+    @ApiOperation({ summary: 'Get all menus (simple form)', tags: ['menus'] })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'The menu has been updated',
+        type: [MenuResponse]
+    })
+    async findEditorView(@Param() { id }: MongoIdDto): Promise<MenuResponse> {
+        return new MenuResponse(await this.menuService.findAndPopulate(id));
+    }
+
     @Post()
     @ApiOperation({ summary: 'Create new menu', tags: ['menus'] })
     @ApiResponse({

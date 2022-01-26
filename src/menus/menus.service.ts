@@ -6,6 +6,8 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Schema } from 'mongoose';
+import { CategoriesService } from '../categories/categories.service';
+import { DishesService } from '../dishes/dishes.service';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
@@ -14,7 +16,11 @@ import { Status } from './enums/status.enum';
 
 @Injectable()
 export class MenusService {
-    constructor(@InjectModel('Menu') private menuModel: Model<MenuDocument>) {}
+    constructor(
+        @InjectModel('Menu') private menuModel: Model<MenuDocument>,
+        private readonly categoriesService: CategoriesService,
+        private readonly dishesService: DishesService
+    ) {}
 
     async findAll(): Promise<Menu[]> {
         return await this.menuModel.find({ status: Status.ACTIVE }).lean();
@@ -124,5 +130,24 @@ export class MenusService {
         if (!menu) throw new NotFoundException();
 
         return;
+    }
+
+    async findAndPopulate(id: string): Promise<MenuDocument> {
+        const menu: MenuDocument = await this.menuModel.findById(id).lean();
+
+        if (!menu) throw new NotFoundException();
+
+        const categories = await this.categoriesService.findByMenu(id);
+
+        // {categories: (Category & {dishes: Dish & {allergies: Allergy[], labels: Label[]}[]})[] }
+        /*
+        let catgoriesWithDishes: {Category & {dishes: Dish & {allergies: Allergen[], labels: Label[]}} = {};
+        categories.forEach(
+            async (category: Category) => {
+                let dishes = await this.dishesService.findByCategory(category._id)
+            }
+        )
+        */
+        return menu;
     }
 }

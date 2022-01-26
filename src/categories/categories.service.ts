@@ -96,4 +96,8 @@ export class CategoriesService {
 
         return;
     }
+
+    async findByMenu(id: string): Promise<CategoryDocument[]> {
+        return this.categoryModel.find({ menu: id });
+    }
 }

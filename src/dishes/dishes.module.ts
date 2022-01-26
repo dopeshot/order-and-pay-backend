@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { DishesService } from './dishes.service';
-import { DishesController } from './dishes.controller';
 import { MongooseModule } from '@nestjs/mongoose';
+import { DishesController } from './dishes.controller';
+import { DishesService } from './dishes.service';
 import { DishSchema } from './entities/dish.entity';
-import { CategorySchema } from '../categories/entities/category.entity';
 
 @Module({
     imports: [
@@ -11,6 +10,6 @@ import { CategorySchema } from '../categories/entities/category.entity';
     ],
     controllers: [DishesController],
     providers: [DishesService],
-    exports: []
+    exports: [DishesService]
 })
 export class DishesModule {}
