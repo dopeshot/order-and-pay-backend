@@ -36,7 +36,6 @@ export class ClientController {
         type: Order
     })
     async create(@Body() order: CreateOrderDto) {
-        const x = new Order(await this.orderService.create(order));
-        return x;
+        return new Order(await this.orderService.create(order));
     }
 }
