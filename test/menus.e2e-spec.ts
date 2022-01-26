@@ -105,7 +105,6 @@ describe('MenuController (e2e)', () => {
                     const previousActive = getTestMenuData().filter(
                         (menu) => menu.isActive || menu.status === Status.ACTIVE
                     );
-                    console.log(previousActive);
                     const res = await request(app.getHttpServer())
                         .post('/menus')
                         .send({
@@ -126,7 +125,6 @@ describe('MenuController (e2e)', () => {
                     previousActive.forEach(async (m) => {
                         const menu = await menuModel.findById(m._id);
                         expect(menu.isActive).toBe(false);
-                        expect(menu.status).toBe(Status.INACTIVE);
                     });
                 });
 
@@ -182,7 +180,6 @@ describe('MenuController (e2e)', () => {
                             (menu) =>
                                 menu.isActive || menu.status === Status.ACTIVE
                         );
-                    console.log(previousActive);
                     const res = await request(app.getHttpServer())
                         .patch('/menus/' + target._id)
                         .send({
@@ -197,7 +194,6 @@ describe('MenuController (e2e)', () => {
                     previousActive.forEach(async (m) => {
                         const menu = await menuModel.findById(m._id);
                         expect(menu.isActive).toBe(false);
-                        expect(menu.status).toBe(Status.INACTIVE);
                     });
                 });
 
