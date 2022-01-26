@@ -1,6 +1,6 @@
-import { Type } from 'class-transformer';
 import {
     IsArray,
+    IsBoolean,
     IsMongoId,
     IsNotEmpty,
     IsOptional,
@@ -8,9 +8,8 @@ import {
     Length,
     ValidateNested
 } from 'class-validator';
-import { Choice } from '../entities/category.entity';
 
-export class CreateCategoryDto {
+export class CreateDishDto {
     @IsString()
     @Length(2, 30)
     title: string;
@@ -18,11 +17,6 @@ export class CreateCategoryDto {
     @IsString()
     @Length(2, 200)
     description: string;
-
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => Choice)
-    choices: Choice[];
 
     @IsOptional()
     @IsString()
@@ -34,7 +28,21 @@ export class CreateCategoryDto {
     @Length(2, 100)
     image: string;
 
+    @IsOptional()
+    @IsBoolean()
+    availability = true;
+
     @IsMongoId()
     @IsNotEmpty()
-    menu: string;
+    category: string;
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @IsMongoId({ each: true })
+    allergens: string[];
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @IsMongoId({ each: true })
+    labels: string[];
 }
