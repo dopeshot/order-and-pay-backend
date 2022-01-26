@@ -1,4 +1,4 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop } from '@nestjs/mongoose';
 import { Expose } from 'class-transformer';
 import {
     IsEnum,
@@ -9,7 +9,6 @@ import {
 } from 'class-validator';
 import { PaymentStatus } from '../enums/payment-status.enum';
 
-@Schema({ _id: false })
 export class Payment {
     @Expose()
     @Prop()

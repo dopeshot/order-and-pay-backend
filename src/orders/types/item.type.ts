@@ -1,9 +1,11 @@
-import { Prop, Schema } from '@nestjs/mongoose';
-import { Expose } from 'class-transformer';
+import { Prop } from '@nestjs/mongoose';
+import { Expose, Type } from 'class-transformer';
 import {
+    IsArray,
     IsEnum,
     IsNotEmpty,
     IsNumber,
+    IsOptional,
     IsString,
     MaxLength,
     ValidateNested
@@ -11,10 +13,9 @@ import {
 import { ObjectId, SchemaTypes } from 'mongoose';
 import { ChoiceType } from '../enums/choice-type.enum';
 
-@Schema()
 export class Item {
     @Expose()
-    @Prop({ type: SchemaTypes.ObjectId, ref: 'Dishes', required: true })
+    @Prop({ type: SchemaTypes.ObjectId, ref: 'Dish', required: true })
     dish: ObjectId;
 
     @Expose()
@@ -25,16 +26,18 @@ export class Item {
 
     @Expose()
     @Prop()
-    pickedChoices: [{ id: number; type: ChoiceType; valueId: [number] }];
+    @ValidateNested()
+    @Type(() => PickedChoices)
+    pickedChoices: PickedChoices[];
 
     @Expose()
     @Prop()
     @IsString()
     @MaxLength(140)
+    @IsOptional()
     note: string;
 }
 
-@Schema()
 export class PickedChoices {
     @Expose()
     @Prop()
@@ -49,7 +52,7 @@ export class PickedChoices {
 
     @Expose()
     @Prop()
-    @ValidateNested()
-    @IsNumber()
-    valueId: [number];
+    @IsArray()
+    @IsNumber({}, { each: true })
+    valueId: number[];
 }

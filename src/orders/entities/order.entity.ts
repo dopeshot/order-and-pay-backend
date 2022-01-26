@@ -13,7 +13,7 @@ export class Order {
 
     @Expose()
     @Transform((params) => params.obj.tableId.toString())
-    @Prop({ type: SchemaTypes.ObjectId, ref: 'Tables', required: true })
+    @Prop({ type: SchemaTypes.ObjectId, ref: 'Table', required: true })
     tableId: ObjectId;
 
     @Expose()

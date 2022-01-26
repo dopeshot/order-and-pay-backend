@@ -5,6 +5,7 @@ import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { ClientModule } from '../src/client/client.module';
 import { Order, OrderDocument } from '../src/orders/entities/order.entity';
+import { ChoiceType } from '../src/orders/enums/choice-type.enum';
 import { OrderStatus } from '../src/orders/enums/order-status.enum';
 import { PaymentStatus } from '../src/orders/enums/payment-status.enum';
 import { OrdersModule } from '../src/orders/orders.module';
@@ -74,7 +75,28 @@ describe('Ordercontroller (e2e)', () => {
                 .post('/client/order')
                 .send({
                     tableId: getTestTableData()[0]._id,
-                    items: [],
+                    items: [
+                        {
+                            dish: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+                            count: 2,
+                            note: 'my note',
+                            pickedChoices: {
+                                id: 1,
+                                type: ChoiceType.CHECKBOX,
+                                valueId: [1, 2, 3]
+                            }
+                        },
+                        {
+                            dish: 'aaaaaaaaaaaaaaaaaaaaaaa1',
+                            count: 1,
+                            note: 'your note',
+                            pickedChoices: {
+                                id: 2,
+                                type: ChoiceType.RADIO,
+                                valueId: [2]
+                            }
+                        }
+                    ],
                     payment: 'my transaction id'
                 })
                 .expect(HttpStatus.CREATED);
@@ -249,7 +271,6 @@ describe('Ordercontroller (e2e)', () => {
 
         it('should fail for invalid id', async () => {
             const sse = sseService.subscribe('order');
-            const helper = new SSEHelper(sse);
             // New unseen table that cannot be in any order data
             await request(app.getHttpServer())
                 .patch('/orders/' + getTestOrderData()[0]._id)
@@ -259,25 +280,48 @@ describe('Ordercontroller (e2e)', () => {
                 .expect(HttpStatus.NOT_FOUND);
         });
 
-        it('should fail for invalid status', async () => {
+        it('should fail for invalid Status', async () => {
             // New unseen table that cannot be in any order data
-            await orderModel.insertMany(getTestOrderData());
             await request(app.getHttpServer())
                 .patch('/orders/' + getTestOrderData()[0]._id)
                 .send({
-                    Status: 'unknown'
+                    Status: 'no value'
                 })
                 .expect(HttpStatus.BAD_REQUEST);
         });
 
-        it('should fail for invalid data', async () => {
+        it('should fail for invalid payment status', async () => {
             // New unseen table that cannot be in any order data
             await orderModel.insertMany(getTestOrderData());
             await request(app.getHttpServer())
                 .patch('/orders/' + getTestOrderData()[0]._id)
                 .send({
-                    data: 'what even is this?'
+                    PaymentStatus: {
+                        status: 'no value'
+                    }
                 })
+                .expect(HttpStatus.BAD_REQUEST);
+        });
+
+        it('should fail for invalid transactionId', async () => {
+            // New unseen table that cannot be in any order data
+            await orderModel.insertMany(getTestOrderData());
+            await request(app.getHttpServer())
+                .patch('/orders/' + getTestOrderData()[0]._id)
+                .send({
+                    PaymentStatus: {
+                        transactionId: 'short'
+                    }
+                })
+                .expect(HttpStatus.BAD_REQUEST);
+        });
+
+        it('should fail with no data', async () => {
+            // New unseen table that cannot be in any order data
+            await orderModel.insertMany(getTestOrderData());
+            await request(app.getHttpServer())
+                .patch('/orders/' + getTestOrderData()[0]._id)
+                .send({})
                 .expect(HttpStatus.OK);
         });
     });
