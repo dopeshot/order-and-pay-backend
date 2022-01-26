@@ -20,7 +20,7 @@ export class CreateCategoryDto {
     description: string;
 
     @IsArray()
-    @ValidateNested()
+    @ValidateNested({ each: true })
     @Type(() => Choice)
     choices: Choice[];
 

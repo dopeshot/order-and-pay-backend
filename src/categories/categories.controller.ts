@@ -76,7 +76,7 @@ export class CategoriesController {
 
     @ApiOperation({
         summary: 'Get dishes that reference the label',
-        tags: ['labels']
+        tags: ['categories']
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -85,7 +85,7 @@ export class CategoriesController {
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
-        description: 'The label could not be found'
+        description: 'The category could not be found'
     })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
@@ -110,10 +110,10 @@ export class CategoriesController {
     @Patch(':id')
     async update(
         @Param() { id }: MongoIdDto,
-        @Body() updateLabelDto: UpdateCategoryDto
+        @Body() updateCategoryDto: UpdateCategoryDto
     ) {
         return new Category(
-            await this.categoriesService.update(id, updateLabelDto)
+            await this.categoriesService.update(id, updateCategoryDto)
         );
     }
 
