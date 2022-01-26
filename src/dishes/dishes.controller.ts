@@ -47,7 +47,8 @@ export class DishesController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The dishes available in the database',
-        type: Dish
+        type: Dish,
+        isArray: true
     })
     @Get()
     async findAll() {
