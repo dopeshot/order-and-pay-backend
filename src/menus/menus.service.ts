@@ -26,6 +26,10 @@ export class MenusService {
                 ...createMenuDto
             });
 
+            if (menu.isActive) {
+                await this.updateActivation(menu._id);
+            }
+
             // There is no other way remove unwanted fields without toObject()
             return menu.toObject() as MenuDocument;
         } catch (error) {
@@ -37,6 +41,16 @@ export class MenusService {
             /* istanbul ignore next */ // Unable to test Internal server error here
             throw new InternalServerErrorException();
         }
+    }
+
+    async findOne(id: string): Promise<MenuDocument> {
+        const menu: MenuDocument = await this.menuModel.findById(id).lean();
+
+        if (!menu) {
+            throw new NotFoundException();
+        }
+
+        return menu;
     }
 
     async updateMenu(
@@ -61,7 +75,24 @@ export class MenusService {
 
         if (!updatedMenu) throw new NotFoundException('Menu not found');
 
+        if (updatedMenu.isActive) {
+            await this.updateActivation(id);
+        }
+
         return updatedMenu;
+    }
+
+    async updateActivation(excludeId: ObjectId) {
+        //Disable all but the given Menu
+        await this.menuModel.updateMany(
+            {
+                isActive: true,
+                _id: { $ne: excludeId }
+            },
+            {
+                isActive: false
+            }
+        );
     }
 
     async deleteMenu(
@@ -85,7 +116,8 @@ export class MenusService {
 
         // Soft delete
         const menu: MenuDocument = await this.menuModel.findByIdAndUpdate(id, {
-            status: Status.DELETED
+            status: Status.DELETED,
+            isActive: false
         });
 
         if (!menu) throw new NotFoundException();

@@ -11,7 +11,7 @@ Content-Type: application/json
         "Pizza with mortadella and the finest prosciutto crudo from napoli",
     "price": 950,
     "image": "imagelink",
-    "isAvailable": true,
+    "isActive": true,
     "category": "aaaaaaaaaaaaaaaaaaaaaaba",
     "allergens": ["aaaaaaaaaaaaaaaaaaaaaaca", "aaaaaaaaaaaaaaaaaaaaaacb"],
     "labels": ["aaaaaaaaaaaaaaaaaaaaaada", "aaaaaaaaaaaaaaaaaaaaaadb"]

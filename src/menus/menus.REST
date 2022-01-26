@@ -2,16 +2,22 @@
 
 @MENU = aaaaaababaaaaaaaaaaaaaae
 
+@MENU_ID = 61f1a3030b34b202b7eb4786
+
 ### GET all menus
 GET {{HOST}}
+
+### GET menu by id
+
+GET {{HOST}}/{{MENU_ID}}
 
 ### POST new menu
 POST {{HOST}}
 Content-Type: application/json
 
 {
-    "title": "cool menu",
-    "description": "desc"
+    "title": "{{MENU}}",
+    "isActive": true
 }
 
 ### Delete menu
