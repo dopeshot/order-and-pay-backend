@@ -49,7 +49,8 @@ export class AllergensController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The allergens available in the database',
-        type: Allergen
+        type: Allergen,
+        isArray: true
     })
     async findAll() {
         return (await this.allergensService.findAll()).map(
@@ -79,7 +80,8 @@ export class AllergensController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The dishes referencing the allergen',
-        type: Dish
+        type: Dish,
+        isArray: true
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,

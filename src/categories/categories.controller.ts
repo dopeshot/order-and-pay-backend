@@ -50,7 +50,8 @@ export class CategoriesController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The categories available in the database',
-        type: Category
+        type: Category,
+        isArray: true
     })
     @Get()
     async findAll() {
@@ -81,7 +82,8 @@ export class CategoriesController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The dishes referencing the label',
-        type: Dish
+        type: Dish,
+        isArray: true
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,

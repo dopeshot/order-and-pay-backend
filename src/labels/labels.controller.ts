@@ -47,7 +47,8 @@ export class LabelsController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The labels available in the database',
-        type: Label
+        type: Label,
+        isArray: true
     })
     async findAll() {
         return (await this.labelsService.findAll()).map(
@@ -77,7 +78,8 @@ export class LabelsController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The dishes referencing the label',
-        type: Dish
+        type: Dish,
+        isArray: true
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
