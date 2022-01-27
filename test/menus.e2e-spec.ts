@@ -221,7 +221,6 @@ describe('MenuController (e2e)', () => {
                     previousActive.forEach(async (m) => {
                         const menu = await menuModel.findById(m._id);
                         expect(menu.isActive).toBe(false);
-                        expect(menu.status).toBe(Status.INACTIVE);
                     });
                 });
 
@@ -291,7 +290,6 @@ describe('MenuController (e2e)', () => {
                     previousActive.forEach(async (m) => {
                         const menu = await menuModel.findById(m._id);
                         expect(menu.isActive).toBe(false);
-                        expect(menu.status).toBe(Status.INACTIVE);
                     });
                 });
 

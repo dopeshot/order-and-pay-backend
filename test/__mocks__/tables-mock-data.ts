@@ -1,4 +1,9 @@
 export const getTestSetupData = () => {
+    //TODO: remove calls for this method
+    return getTestTableData();
+};
+
+export const getTestTableData = () => {
     return [
         {
             _id: 'aaaaaaaaaaaaaaaaaaaaaaa0',

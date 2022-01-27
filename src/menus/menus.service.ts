@@ -33,8 +33,8 @@ export class MenusService {
                 ...createMenuDto
             });
 
-            if (menu.status === Status.ACTIVE || menu.isActive) {
-                this.updateActivation(menu._id);
+            if (menu.isActive) {
+                await this.updateActivation(menu._id);
             }
 
             // There is no other way remove unwanted fields without toObject()
@@ -92,8 +92,8 @@ export class MenusService {
 
         if (!updatedMenu) throw new NotFoundException('Menu not found');
 
-        if (updatedMenu.status === Status.ACTIVE || updatedMenu.isActive) {
-            this.updateActivation(id);
+        if (updatedMenu.isActive) {
+            await this.updateActivation(id);
         }
 
         return updatedMenu;
@@ -103,12 +103,11 @@ export class MenusService {
         //Disable all but the given Menu
         await this.menuModel.updateMany(
             {
-                $or: [{ isActive: true }, { status: Status.ACTIVE }],
+                isActive: true,
                 _id: { $ne: excludeId }
             },
             {
-                isActive: false,
-                status: Status.INACTIVE
+                isActive: false
             }
         );
     }
@@ -134,7 +133,8 @@ export class MenusService {
 
         // Soft delete
         const menu: MenuDocument = await this.menuModel.findByIdAndUpdate(id, {
-            status: Status.DELETED
+            status: Status.DELETED,
+            isActive: false
         });
 
         if (!menu) throw new NotFoundException();

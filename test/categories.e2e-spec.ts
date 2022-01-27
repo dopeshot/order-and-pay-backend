@@ -8,6 +8,7 @@ import {
     Category,
     CategoryDocument
 } from '../src/categories/entities/category.entity';
+import { Dish, DishDocument } from '../src/dishes/entities/dish.entity';
 import { Status } from '../src/menus/enums/status.enum';
 import {
     closeInMongodConnection,
@@ -15,6 +16,7 @@ import {
 } from './helpers/MongoMemoryHelpers';
 import {
     getCategorySeeder,
+    getDishForCategorySeeder,
     getSampleCategory
 } from './__mocks__/categories-mock-data';
 import { getStringOfLength, getWrongId } from './__mocks__/shared-mock-data';
@@ -23,6 +25,7 @@ describe('CategoriesController (e2e)', () => {
     let app: INestApplication;
     let connection: Connection;
     let categoryModel: Model<CategoryDocument>;
+    let dishModel: Model<DishDocument>;
     const path = '/categories';
 
     beforeAll(async () => {
@@ -32,6 +35,7 @@ describe('CategoriesController (e2e)', () => {
 
         connection = await module.get(getConnectionToken());
         categoryModel = connection.model('Category');
+        dishModel = connection.model('Dish');
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();
@@ -40,11 +44,13 @@ describe('CategoriesController (e2e)', () => {
     // Insert test data
     beforeEach(async () => {
         await categoryModel.insertMany(getCategorySeeder());
+        await dishModel.insertMany(getDishForCategorySeeder());
     });
 
     // Empty the collection from all possible impurities
     afterEach(async () => {
         await categoryModel.deleteMany();
+        await dishModel.deleteMany();
     });
 
     afterAll(async () => {
@@ -367,24 +373,23 @@ describe('CategoriesController (e2e)', () => {
         });
     });
 
-    // MD: Implement when dishes are done
     describe('admin/categories/:id/refs (GET)', () => {
         it('should return one element of type Label', async () => {
             const res = await request(app.getHttpServer())
                 .get(`${path}/${getCategorySeeder()._id}/refs`)
-                .expect(HttpStatus.NOT_IMPLEMENTED);
+                .expect(HttpStatus.OK);
 
-            // const label = new Label(res.body)
-            // expect(res.body).toMatchObject(label)
+            const dish = new Dish(res.body[0]);
+            expect(res.body[0]).toMatchObject(dish);
         });
 
-        // it('should return empty array', async () => {
-        //     const res = await request(app.getHttpServer())
-        //     .get(`${path}/${wrongId()}`)
-        //     .expect(HttpStatus.OK)
+        it('should return empty array', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`${path}/${getWrongId()}/refs`)
+                .expect(HttpStatus.OK);
 
-        //     expect(res.body).toHaveLength(0)
-        // })
+            expect(res.body).toHaveLength(0);
+        });
     });
 
     describe('admin/categories/:id (PATCH)', () => {
@@ -462,6 +467,8 @@ describe('CategoriesController (e2e)', () => {
                 .expect(HttpStatus.NO_CONTENT);
 
             expect(await categoryModel.find()).toHaveLength(0);
+            // Expect dishes to have also been removed
+            expect(await dishModel.find()).toHaveLength(0);
         });
 
         it('should return NO_CONTENT and not empty the database with soft delete', async () => {

@@ -1,5 +1,6 @@
+import { OmitType } from '@nestjs/mapped-types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Expose, Transform } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { Document, ObjectId } from 'mongoose';
 import { Allergen } from '../../allergens/entities/allergen.entity';
 import { Label } from '../../labels/entities/label.entity';
@@ -57,4 +58,5 @@ export type PopulatedDish = DishDocument & {
     allergens: Allergen[];
     labels: Label[];
 };
+
 export const DishSchema = SchemaFactory.createForClass(Dish);

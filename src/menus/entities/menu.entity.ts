@@ -11,7 +11,7 @@ export class Menu {
     @Prop({})
     description: string;
 
-    @Prop({ default: Status.INACTIVE })
+    @Prop({ default: Status.ACTIVE })
     status: Status;
 
     @Prop({ default: false })
