@@ -68,6 +68,13 @@ export class MenusController {
         );
     }
 
+    // TODO: Test this
+    @Get(':id/refs ')
+    @ApiOperation({ summary: 'Get all categories that ref to this menu' })
+    async getRefs(@Param() { id }: MongoIdDto) {
+        return await this.menuService.getRefs(id);
+    }
+
     @Post()
     @ApiOperation({ summary: 'Create new menu', tags: ['menus'] })
     @ApiResponse({

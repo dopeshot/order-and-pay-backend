@@ -159,4 +159,8 @@ export class MenusService {
 
         return { ...menu, categories: populated };
     }
+
+    async getRefs(id: string) {
+        return await this.categoriesService.findByMenu(id);
+    }
 }
