@@ -7,11 +7,12 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Schema } from 'mongoose';
 import { CategoriesService } from '../categories/categories.service';
+import { PopulatedCategory } from '../categories/entities/category.entity';
 import { DishesService } from '../dishes/dishes.service';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
-import { Menu, MenuDocument } from './entities/menu.entity';
+import { Menu, MenuDocument, PopulatedMenu } from './entities/menu.entity';
 import { Status } from './enums/status.enum';
 
 @Injectable()
@@ -82,7 +83,6 @@ export class MenusService {
         if (!updatedMenu) throw new NotFoundException('Menu not found');
 
         if (updatedMenu.status === Status.ACTIVE || updatedMenu.isActive) {
-            console.log('fixing activation');
             this.updateActivation(id);
         }
 
@@ -132,22 +132,21 @@ export class MenusService {
         return;
     }
 
-    async findAndPopulate(id: string): Promise<MenuDocument> {
+    async findAndPopulate(id: string): Promise<PopulatedMenu> {
         const menu: MenuDocument = await this.menuModel.findById(id).lean();
 
         if (!menu) throw new NotFoundException();
 
         const categories = await this.categoriesService.findByMenu(id);
 
-        // {categories: (Category & {dishes: Dish & {allergies: Allergy[], labels: Label[]}[]})[] }
-        /*
-        let catgoriesWithDishes: {Category & {dishes: Dish & {allergies: Allergen[], labels: Label[]}} = {};
-        categories.forEach(
-            async (category: Category) => {
-                let dishes = await this.dishesService.findByCategory(category._id)
-            }
-        )
-        */
-        return menu;
+        const populated: PopulatedCategory[] = [];
+        for (const category of categories) {
+            const dishes = await this.dishesService.findByCatgoryAndPopulate(
+                category._id
+            );
+            populated.push({ ...category, dishes });
+        }
+
+        return { ...menu, categories: populated };
     }
 }

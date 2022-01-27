@@ -10,7 +10,7 @@ import { Status } from '../menus/enums/status.enum';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { CreateDishDto } from './dto/create-dish-dto';
 import { UpdateDishDto } from './dto/update-dish-dto';
-import { DishDocument } from './entities/dish.entity';
+import { DishDocument, PopulatedDish } from './entities/dish.entity';
 
 @Injectable()
 export class DishesService {
@@ -79,7 +79,7 @@ export class DishesService {
         return;
     }
 
-    async findByCatgoryAndPopulate(id: ObjectId): Promise<DishDocument[]> {
+    async findByCatgoryAndPopulate(id: ObjectId): Promise<PopulatedDish[]> {
         return await this.dishModel
             .find({ category: id })
             .populate('allergens')

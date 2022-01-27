@@ -6,7 +6,7 @@ export const getDishSeeder = () => ({
     price: 950,
     image: 'imagelink',
     isAvailable: true,
-    category: 'aaaaaaaaaaaaaaaaaaaaaaba',
+    category: 'aaaaaaaaaaaaaaaaaaaaaaab',
     allergens: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
     labels: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
 });

@@ -10,6 +10,7 @@ import {
     ValidateNested
 } from 'class-validator';
 import { Document, ObjectId } from 'mongoose';
+import { PopulatedDish } from '../../dishes/entities/dish.entity';
 import { Menu } from '../../menus/entities/menu.entity';
 import { Status } from '../../menus/enums/status.enum';
 import { ChoiceType } from '../enums/choice-type';
@@ -105,4 +106,5 @@ export class Category {
 }
 
 export type CategoryDocument = Category & Document;
+export type PopulatedCategory = Category & { dishes: PopulatedDish[] };
 export const CategorySchema = SchemaFactory.createForClass(Category);

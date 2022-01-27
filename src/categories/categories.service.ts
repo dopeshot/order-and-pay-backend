@@ -98,6 +98,6 @@ export class CategoriesService {
     }
 
     async findByMenu(id: string): Promise<CategoryDocument[]> {
-        return this.categoryModel.find({ menu: id });
+        return this.categoryModel.find({ menu: id }).lean();
     }
 }

@@ -4,7 +4,7 @@ export const getCategorySeeder = () => ({
     description: 'Bread with stuff in between',
     icon: 'buger',
     image: 'burger',
-    menu: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+    menu: 'aaaaaaaaaaaaaaaaaaaaaaa0',
     choices: [
         {
             id: 0,

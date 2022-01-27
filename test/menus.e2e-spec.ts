@@ -4,30 +4,61 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { AdminModule } from '../src/admin/admin.module';
+import { AllergensModule } from '../src/allergens/allergens.module';
+import { AllergenDocument } from '../src/allergens/entities/allergen.entity';
+import { CategoriesModule } from '../src/categories/categories.module';
+import { CategoryDocument } from '../src/categories/entities/category.entity';
+import { DishesModule } from '../src/dishes/dishes.module';
+import { DishDocument } from '../src/dishes/entities/dish.entity';
+import { LabelDocument } from '../src/labels/entities/label.entity';
+import { LabelsModule } from '../src/labels/labels.module';
 import { MenuDocument } from '../src/menus/entities/menu.entity';
 import { Status } from '../src/menus/enums/status.enum';
 import { MenusModule } from '../src/menus/menus.module';
 import { MenuResponse } from '../src/menus/responses/menu.responses';
+import { PopulatedMenuResponse } from '../src/menus/responses/populated-menu.response';
 import { DeleteType } from '../src/shared/enums/delete-type.enum';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
+import { getCategorySeeder } from './__mocks__/categories-mock-data';
+import {
+    getAllergensForDishesSeeder,
+    getDishSeeder,
+    getLabelsForDishesSeeder
+} from './__mocks__/dishes-mock-data';
 import { getTestMenuData, getValidMenus } from './__mocks__/menus-mock-data';
 import { getWrongId } from './__mocks__/shared-mock-data';
 
 describe('MenuController (e2e)', () => {
     let app: INestApplication;
     let connection: Connection;
+    let dishModel: Model<DishDocument>;
+    let categoryModel: Model<CategoryDocument>;
+    let allergyModel: Model<AllergenDocument>;
+    let labelModel: Model<LabelDocument>;
     let menuModel: Model<MenuDocument>;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [rootMongooseTestModule(), MenusModule, AdminModule]
+            imports: [
+                rootMongooseTestModule(),
+                MenusModule,
+                AdminModule,
+                AllergensModule,
+                DishesModule,
+                LabelsModule,
+                CategoriesModule
+            ]
         }).compile();
 
         connection = await module.get(getConnectionToken());
         menuModel = connection.model('Menu');
+        dishModel = connection.model('Dish');
+        allergyModel = connection.model('Allergen');
+        labelModel = connection.model('Label');
+        categoryModel = connection.model('Category');
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();
@@ -81,6 +112,35 @@ describe('MenuController (e2e)', () => {
                         .expect(HttpStatus.NOT_FOUND);
                 });
             });
+
+            describe('menus/:id/editor (GET)', () => {
+                it('should return a thing', async () => {
+                    await dishModel.insertMany(getDishSeeder());
+                    await allergyModel.insertMany(
+                        getAllergensForDishesSeeder()
+                    );
+                    await categoryModel.insertMany(getCategorySeeder());
+                    await labelModel.insertMany(getLabelsForDishesSeeder());
+                    const res = await request(app.getHttpServer())
+                        .get('/menus/' + getTestMenuData()[0]._id + '/editor')
+                        .expect(HttpStatus.OK);
+
+                    // I am leaving these in so that anyone checking this for the media night can validate that it works...
+                    console.log('menu:', res.body);
+                    console.log('dish', res.body.categories[0].dishes[0]);
+
+                    expect(res.body).toMatchObject(
+                        new PopulatedMenuResponse(res.body)
+                    );
+                });
+
+                it('should fail with invalid Id', async () => {
+                    await menuModel.deleteMany();
+                    await request(app.getHttpServer())
+                        .get('/menus/' + getTestMenuData()[0]._id)
+                        .expect(HttpStatus.NOT_FOUND);
+                });
+            });
         });
 
         describe('POST request', () => {
@@ -105,7 +165,6 @@ describe('MenuController (e2e)', () => {
                     const previousActive = getTestMenuData().filter(
                         (menu) => menu.isActive || menu.status === Status.ACTIVE
                     );
-                    console.log(previousActive);
                     const res = await request(app.getHttpServer())
                         .post('/menus')
                         .send({
@@ -182,7 +241,6 @@ describe('MenuController (e2e)', () => {
                             (menu) =>
                                 menu.isActive || menu.status === Status.ACTIVE
                         );
-                    console.log(previousActive);
                     const res = await request(app.getHttpServer())
                         .patch('/menus/' + target._id)
                         .send({

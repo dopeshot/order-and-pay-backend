@@ -17,7 +17,6 @@ export class SseController {
     @Sse('client')
     @ApiOperation({ summary: 'SSE endpoints for clients' })
     clientSSE(@Query('order') order: string) {
-        console.log('subscribung to ', order);
         return this.sseService.subscribe(order);
     }
 

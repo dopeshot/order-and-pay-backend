@@ -21,6 +21,7 @@ import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { MenusService } from './menus.service';
 import { MenuResponse } from './responses/menu.responses';
+import { PopulatedMenuResponse } from './responses/populated-menu.response';
 
 @Controller('menus')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -52,15 +53,19 @@ export class MenusController {
         return new MenuResponse(await this.menuService.findOne(id));
     }
 
-    @Get(':id')
+    @Get(':id/editor')
     @ApiOperation({ summary: 'Get all menus (simple form)', tags: ['menus'] })
     @ApiResponse({
         status: HttpStatus.OK,
-        description: 'The menu has been updated',
+        description:
+            'You got your Menu, now leave me alone, I have no idea what this even does',
         type: [MenuResponse]
     })
-    async findEditorView(@Param() { id }: MongoIdDto): Promise<MenuResponse> {
-        return new MenuResponse(await this.menuService.findAndPopulate(id));
+    // Any because how do you even serialize something like this
+    async findEditorView(@Param() { id }: MongoIdDto) {
+        return new PopulatedMenuResponse(
+            await this.menuService.findAndPopulate(id)
+        );
     }
 
     @Post()

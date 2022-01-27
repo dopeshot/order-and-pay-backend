@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose, Transform } from 'class-transformer';
 import { Document, ObjectId } from 'mongoose';
+import { Allergen } from '../../allergens/entities/allergen.entity';
+import { Label } from '../../labels/entities/label.entity';
 import { Status } from '../../shared/enums/status.enum';
 
 @Schema({ timestamps: true })
@@ -51,4 +53,8 @@ export class Dish {
 }
 
 export type DishDocument = Dish & Document;
+export type PopulatedDish = DishDocument & {
+    allergens: Allergen[];
+    labels: Label[];
+};
 export const DishSchema = SchemaFactory.createForClass(Dish);

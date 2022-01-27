@@ -14,7 +14,6 @@ export class SSEHelper {
     }
 
     private callback() {
-        console.log('called');
         this.calls++;
     }
 }
