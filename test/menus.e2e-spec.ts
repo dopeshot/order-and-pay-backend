@@ -8,6 +8,7 @@ import { AllergensModule } from '../src/allergens/allergens.module';
 import { AllergenDocument } from '../src/allergens/entities/allergen.entity';
 import { CategoriesModule } from '../src/categories/categories.module';
 import { CategoryDocument } from '../src/categories/entities/category.entity';
+import { ClientModule } from '../src/client/client.module';
 import { DishesModule } from '../src/dishes/dishes.module';
 import { DishDocument } from '../src/dishes/entities/dish.entity';
 import { LabelDocument } from '../src/labels/entities/label.entity';
@@ -49,7 +50,8 @@ describe('MenuController (e2e)', () => {
                 AllergensModule,
                 DishesModule,
                 LabelsModule,
-                CategoriesModule
+                CategoriesModule,
+                ClientModule
             ]
         }).compile();
 
@@ -72,6 +74,10 @@ describe('MenuController (e2e)', () => {
     // Empty the collection from all possible impurities
     afterEach(async () => {
         await menuModel.deleteMany();
+        await dishModel.deleteMany();
+        await allergyModel.deleteMany();
+        await categoryModel.deleteMany();
+        await labelModel.deleteMany();
     });
 
     afterAll(async () => {
@@ -138,6 +144,36 @@ describe('MenuController (e2e)', () => {
                     await menuModel.deleteMany();
                     await request(app.getHttpServer())
                         .get('/menus/' + getTestMenuData()[0]._id)
+                        .expect(HttpStatus.NOT_FOUND);
+                });
+            });
+
+            // This is in here so the inenevitable client test does not have to import all the modules
+            describe('client/menu (GET)', () => {
+                it('should currently active manu', async () => {
+                    await dishModel.insertMany(getDishSeeder());
+                    await allergyModel.insertMany(
+                        getAllergensForDishesSeeder()
+                    );
+                    await categoryModel.insertMany(getCategorySeeder());
+                    await labelModel.insertMany(getLabelsForDishesSeeder());
+                    const res = await request(app.getHttpServer())
+                        .get('/client/menu')
+                        .expect(HttpStatus.OK);
+
+                    // I am leaving these in so that anyone checking this for the media night can validate that it works...
+                    console.log('menu:', res.body);
+                    console.log('dish', res.body.categories[0].dishes[0]);
+
+                    expect(res.body).toMatchObject(
+                        new PopulatedMenuResponse(res.body)
+                    );
+                });
+
+                it('should fail with invalid Id', async () => {
+                    await menuModel.deleteMany();
+                    await request(app.getHttpServer())
+                        .get('/client/menu')
                         .expect(HttpStatus.NOT_FOUND);
                 });
             });

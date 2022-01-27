@@ -60,6 +60,16 @@ export class MenusService {
         return menu;
     }
 
+    async findCurrent(): Promise<MenuDocument> {
+        const current = await this.menuModel.findOne({ isActive: true });
+
+        if (!current) {
+            throw new NotFoundException('No current menu found');
+        }
+
+        return current;
+    }
+
     async updateMenu(
         id: ObjectId,
         updateMenuDto: UpdateMenuDto
