@@ -7,12 +7,12 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Schema } from 'mongoose';
 import { CategoriesService } from '../categories/categories.service';
-import { PopulatedCategory } from '../categories/entities/category.entity';
+import { CategoryPopulated } from '../categories/entities/category.entity';
 import { DishesService } from '../dishes/dishes.service';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
-import { Menu, MenuDocument, PopulatedMenu } from './entities/menu.entity';
+import { Menu, MenuDocument, MenuPopulated } from './entities/menu.entity';
 import { Status } from './enums/status.enum';
 
 @Injectable()
@@ -142,16 +142,16 @@ export class MenusService {
         return;
     }
 
-    async findAndPopulate(id: string): Promise<PopulatedMenu> {
+    async findAndPopulate(id: string): Promise<MenuPopulated> {
         const menu: MenuDocument = await this.menuModel.findById(id).lean();
 
         if (!menu) throw new NotFoundException();
 
         const categories = await this.categoriesService.findByMenu(id);
 
-        const populated: PopulatedCategory[] = [];
+        const populated: CategoryPopulated[] = [];
         for (const category of categories) {
-            const dishes = await this.dishesService.findByCatgoryAndPopulate(
+            const dishes = await this.dishesService.findByCategory(
                 category._id
             );
             populated.push({ ...category, dishes });

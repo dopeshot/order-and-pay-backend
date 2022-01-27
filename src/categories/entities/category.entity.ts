@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { PartialType } from '@nestjs/swagger';
 import { Expose, Transform, Type } from 'class-transformer';
 import {
     IsEnum,
@@ -10,7 +11,7 @@ import {
     ValidateNested
 } from 'class-validator';
 import { Document, ObjectId } from 'mongoose';
-import { PopulatedDish } from '../../dishes/entities/dish.entity';
+import { DishPopulated } from '../../dishes/entities/dish.entity';
 import { Menu } from '../../menus/entities/menu.entity';
 import { Status } from '../../menus/enums/status.enum';
 import { ChoiceType } from '../enums/choice-type';
@@ -106,5 +107,16 @@ export class Category {
 }
 
 export type CategoryDocument = Category & Document;
-export type PopulatedCategory = Category & { dishes: PopulatedDish[] };
+export class CategoryPopulated extends PartialType(Category) {
+    @Expose()
+    @Type(() => DishPopulated)
+    dishes: DishPopulated[];
+
+    // No constructor necessary for now since we never pass CategoryPopulated through a controller
+
+    // constructor(partial: Partial<CategoryPopulated>) {
+    //     super();
+    //     Object.assign(this, partial);
+    // }
+}
 export const CategorySchema = SchemaFactory.createForClass(Category);

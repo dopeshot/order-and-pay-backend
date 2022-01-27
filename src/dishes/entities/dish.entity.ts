@@ -54,9 +54,21 @@ export class Dish {
 }
 
 export type DishDocument = Dish & Document;
-export type PopulatedDish = DishDocument & {
-    allergens: Allergen[];
-    labels: Label[];
-};
+export class DishPopulated extends OmitType(Dish, ['allergens', 'labels']) {
+    @Expose()
+    @Type(() => Allergen)
+    allergens: Allergen;
+
+    @Expose()
+    @Type(() => Label)
+    labels: Label;
+
+    // No constructor necessary for now since we never pass DishPopulated through a controller
+
+    // constructor(partial: Partial<DishPopulated>) {
+    //     super();
+    //     Object.assign(this, partial);
+    // }
+}
 
 export const DishSchema = SchemaFactory.createForClass(Dish);

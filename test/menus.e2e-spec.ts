@@ -13,11 +13,10 @@ import { DishesModule } from '../src/dishes/dishes.module';
 import { DishDocument } from '../src/dishes/entities/dish.entity';
 import { LabelDocument } from '../src/labels/entities/label.entity';
 import { LabelsModule } from '../src/labels/labels.module';
-import { MenuDocument } from '../src/menus/entities/menu.entity';
+import { MenuDocument, MenuPopulated } from '../src/menus/entities/menu.entity';
 import { Status } from '../src/menus/enums/status.enum';
 import { MenusModule } from '../src/menus/menus.module';
 import { MenuResponse } from '../src/menus/responses/menu.responses';
-import { PopulatedMenuResponse } from '../src/menus/responses/populated-menu.response';
 import { DeleteType } from '../src/shared/enums/delete-type.enum';
 import {
     closeInMongodConnection,
@@ -135,9 +134,7 @@ describe('MenuController (e2e)', () => {
                     console.log('menu:', res.body);
                     console.log('dish', res.body.categories[0].dishes[0]);
 
-                    expect(res.body).toMatchObject(
-                        new PopulatedMenuResponse(res.body)
-                    );
+                    expect(res.body).toMatchObject(new MenuPopulated(res.body));
                 });
 
                 it('should fail with invalid Id', async () => {
@@ -165,9 +162,7 @@ describe('MenuController (e2e)', () => {
                     console.log('menu:', res.body);
                     console.log('dish', res.body.categories[0].dishes[0]);
 
-                    expect(res.body).toMatchObject(
-                        new PopulatedMenuResponse(res.body)
-                    );
+                    expect(res.body).toMatchObject(new MenuPopulated(res.body));
                 });
 
                 it('should fail with invalid Id', async () => {

@@ -9,8 +9,8 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { MenuPopulated } from '../menus/entities/menu.entity';
 import { MenusService } from '../menus/menus.service';
-import { PopulatedMenuResponse } from '../menus/responses/populated-menu.response';
 import { CreateOrderDto } from '../orders/dtos/create-order.dto';
 import { Order } from '../orders/entities/order.entity';
 import { OrdersService } from '../orders/orders.service';
@@ -28,7 +28,7 @@ export class ClientController {
     @Get('menu')
     @ApiOperation({ summary: 'Get currently active menu' })
     async getMenu() {
-        return new PopulatedMenuResponse(
+        return new MenuPopulated(
             await this.menusService.findAndPopulate(
                 (
                     await this.menusService.findCurrent()

@@ -19,9 +19,9 @@ import { DeleteType } from '../shared/enums/delete-type.enum';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
+import { MenuPopulated } from './entities/menu.entity';
 import { MenusService } from './menus.service';
 import { MenuResponse } from './responses/menu.responses';
-import { PopulatedMenuResponse } from './responses/populated-menu.response';
 
 @Controller('menus')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -63,9 +63,7 @@ export class MenusController {
     })
     // Any because how do you even serialize something like this
     async findEditorView(@Param() { id }: MongoIdDto) {
-        return new PopulatedMenuResponse(
-            await this.menuService.findAndPopulate(id)
-        );
+        return new MenuPopulated(await this.menuService.findAndPopulate(id));
     }
 
     // TODO: Test this
