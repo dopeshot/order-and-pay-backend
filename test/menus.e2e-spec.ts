@@ -120,7 +120,7 @@ describe('MenuController (e2e)', () => {
             });
 
             describe('menus/:id/editor (GET)', () => {
-                it('should return a thing', async () => {
+                it('should return a populated menu', async () => {
                     await dishModel.insertMany(getDishSeeder());
                     await allergyModel.insertMany(
                         getAllergensForDishesSeeder()
@@ -131,11 +131,36 @@ describe('MenuController (e2e)', () => {
                         .get('/menus/' + getTestMenuData()[0]._id + '/editor')
                         .expect(HttpStatus.OK);
 
-                    // I am leaving these in so that anyone checking this for the media night can validate that it works...
-                    console.log('menu:', res.body);
-                    console.log('dish', res.body.categories[0].dishes[0]);
+                    // Check contents of populated menu
+                    let expectedCategory = getCategorySeeder();
+                    expect(res.body.categories[0].title).toEqual(
+                        expectedCategory.title
+                    );
+                    expect(res.body.categories[0]._id).toEqual(
+                        expectedCategory._id
+                    );
+                    let dishes = [getDishSeeder()];
+                    res.body.categories.forEach((category) => {
+                        category.dishes.forEach((dish) => {
+                            expect(dish.category).toEqual(category._id);
+                            expect(
+                                dishes.findIndex(
+                                    (d) =>
+                                        d._id.toString() === dish._id.toString()
+                                )
+                            ).toBeGreaterThan(-1);
+                        });
+                    });
 
                     expect(res.body).toMatchObject(new MenuPopulated(res.body));
+                });
+
+                it('should return empty with an empty menu', async () => {
+                    console.log(await categoryModel.find());
+                    const res = await request(app.getHttpServer())
+                        .get('/menus/' + getTestMenuData()[0]._id)
+                        .expect(HttpStatus.OK);
+                    console.log('res.body', res.body);
                 });
 
                 it('should fail with invalid Id', async () => {
@@ -148,7 +173,7 @@ describe('MenuController (e2e)', () => {
 
             // This is in here so the inenevitable client test does not have to import all the modules
             describe('client/menu (GET)', () => {
-                it('should currently active manu', async () => {
+                it('should currently active menu', async () => {
                     await dishModel.insertMany(getDishSeeder());
                     await allergyModel.insertMany(
                         getAllergensForDishesSeeder()
@@ -160,8 +185,8 @@ describe('MenuController (e2e)', () => {
                         .expect(HttpStatus.OK);
 
                     // I am leaving these in so that anyone checking this for the media night can validate that it works...
-                    console.log('menu:', res.body);
-                    console.log('dish', res.body.categories[0].dishes[0]);
+                    //console.log('menu:', res.body);
+                    //console.log('dish', res.body.categories[0].dishes[0]);
 
                     expect(res.body).toMatchObject(new MenuPopulated(res.body));
                 });
