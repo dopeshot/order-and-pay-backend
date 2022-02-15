@@ -9,6 +9,7 @@ import { Model, ObjectId, Schema } from 'mongoose';
 import { CategoriesService } from '../categories/categories.service';
 import { CategoryPopulated } from '../categories/entities/category.entity';
 import { DishesService } from '../dishes/dishes.service';
+import { DishPopulated } from '../dishes/entities/dish.entity';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
@@ -149,18 +150,20 @@ export class MenusService {
 
         const categories = await this.categoriesService.findByMenu(id);
 
-        const populated: CategoryPopulated[] = [];
-        for (const category of categories) {
-            const dishes = await this.dishesService.findByCategory(
-                category._id
-            );
-            populated.push({ ...category, dishes });
-        }
+        const populated: CategoryPopulated[] = await Promise.all(
+            categories.map(async (category) => {
+                const dishes: DishPopulated[] =
+                    await this.dishesService.findByCategoryAndPopulate(
+                        category._id
+                    );
+                return { ...category, dishes };
+            })
+        );
 
         return { ...menu, categories: populated };
     }
 
-    async getRefs(id: string) {
+    async getCategoriesByMenu(id: string) {
         return await this.categoriesService.findByMenu(id);
     }
 }

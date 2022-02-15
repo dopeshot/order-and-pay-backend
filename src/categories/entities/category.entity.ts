@@ -111,12 +111,5 @@ export class CategoryPopulated extends PartialType(Category) {
     @Expose()
     @Type(() => DishPopulated)
     dishes: DishPopulated[];
-
-    // No constructor necessary for now since we never pass CategoryPopulated through a controller
-
-    // constructor(partial: Partial<CategoryPopulated>) {
-    //     super();
-    //     Object.assign(this, partial);
-    // }
 }
 export const CategorySchema = SchemaFactory.createForClass(Category);

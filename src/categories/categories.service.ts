@@ -50,8 +50,12 @@ export class CategoriesService {
         return category;
     }
 
-    async findRefs(id: string): Promise<DishDocument[]> {
+    async findByCategory(id: string): Promise<DishDocument[]> {
         return await this.dishModel.find({ category: id }).lean();
+    }
+
+    async findByMenu(id: string): Promise<CategoryDocument[]> {
+        return this.categoryModel.find({ menu: id }).lean();
     }
 
     async update(
@@ -97,9 +101,5 @@ export class CategoriesService {
         if (!category) throw new NotFoundException();
 
         return;
-    }
-
-    async findByMenu(id: string): Promise<CategoryDocument[]> {
-        return this.categoryModel.find({ menu: id }).lean();
     }
 }

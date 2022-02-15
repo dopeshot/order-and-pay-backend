@@ -13,10 +13,13 @@ import { DishesModule } from '../src/dishes/dishes.module';
 import { DishDocument } from '../src/dishes/entities/dish.entity';
 import { LabelDocument } from '../src/labels/entities/label.entity';
 import { LabelsModule } from '../src/labels/labels.module';
-import { MenuDocument, MenuPopulated } from '../src/menus/entities/menu.entity';
+import {
+    Menu,
+    MenuDocument,
+    MenuPopulated
+} from '../src/menus/entities/menu.entity';
 import { Status } from '../src/menus/enums/status.enum';
 import { MenusModule } from '../src/menus/menus.module';
-import { MenuResponse } from '../src/menus/responses/menu.responses';
 import { DeleteType } from '../src/shared/enums/delete-type.enum';
 import {
     closeInMongodConnection,
@@ -93,9 +96,7 @@ describe('MenuController (e2e)', () => {
                         .expect(HttpStatus.OK);
 
                     expect(res.body.length).toBe(getValidMenus().length);
-                    expect(res.body[0]).toMatchObject(
-                        new MenuResponse(res.body[0])
-                    );
+                    expect(res.body[0]).toMatchObject(new Menu(res.body[0]));
                 });
             });
 
@@ -106,7 +107,7 @@ describe('MenuController (e2e)', () => {
                         .expect(HttpStatus.OK);
 
                     expect(res.body).toMatchObject(
-                        new MenuResponse(getTestMenuData()[0])
+                        new Menu(getTestMenuData()[0])
                     );
                 });
 
@@ -189,7 +190,7 @@ describe('MenuController (e2e)', () => {
                         getTestMenuData().length + 1
                     );
 
-                    expect(res.body).toMatchObject(new MenuResponse(res.body));
+                    expect(res.body).toMatchObject(new Menu(res.body));
                 });
 
                 it('should disable other menus if this is set to be active', async () => {
@@ -209,7 +210,7 @@ describe('MenuController (e2e)', () => {
                         getTestMenuData().length + 1
                     );
 
-                    expect(res.body).toMatchObject(new MenuResponse(res.body));
+                    expect(res.body).toMatchObject(new Menu(res.body));
                     expect(res.body.isActive).toBe(true);
 
                     // Check if all endpoints have been disabled
@@ -258,9 +259,7 @@ describe('MenuController (e2e)', () => {
                         'where did you come from, where did you go, where did you come from'
                     );
                     expect(res.body.title).toBe('Cotton eye joe');
-                    expect(res.body).not.toMatchObject(
-                        new MenuResponse(target)
-                    );
+                    expect(res.body).not.toMatchObject(new Menu(target));
                 });
 
                 it('should disable other menus if this is set to be active', async () => {
@@ -278,7 +277,7 @@ describe('MenuController (e2e)', () => {
                         })
                         .expect(HttpStatus.OK);
 
-                    expect(res.body).toMatchObject(new MenuResponse(res.body));
+                    expect(res.body).toMatchObject(new Menu(res.body));
                     expect(res.body.isActive).toBe(true);
 
                     // Check if all endpoints have been disabled

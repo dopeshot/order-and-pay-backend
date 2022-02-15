@@ -27,6 +27,7 @@ export class Menu {
     @Prop({ default: false })
     isActive: boolean;
 
+    // TODO: Plaintoclass?!
     constructor(partial: Partial<MenuDocument>) {
         Object.assign(this, partial);
     }

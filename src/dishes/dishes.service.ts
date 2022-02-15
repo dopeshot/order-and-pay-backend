@@ -39,6 +39,14 @@ export class DishesService {
         return dish;
     }
 
+    async findByCategoryAndPopulate(id: ObjectId): Promise<DishPopulated[]> {
+        return await this.dishModel
+            .find({ category: id })
+            .populate('allergens')
+            .populate('labels')
+            .lean();
+    }
+
     async update(
         id: string,
         updateDishDto: UpdateDishDto
@@ -77,13 +85,5 @@ export class DishesService {
         if (!dish) throw new NotFoundException();
 
         return;
-    }
-
-    async findByCategory(id: ObjectId): Promise<DishPopulated[]> {
-        return await this.dishModel
-            .find({ category: id })
-            .populate('allergens')
-            .populate('labels')
-            .lean();
     }
 }
