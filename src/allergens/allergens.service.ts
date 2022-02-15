@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { DishesService } from '../dishes/dishes.service';
 import { DishDocument } from '../dishes/entities/dish.entity';
 import { CreateAllergenDto } from './dto/create-allergen.dto';
 import { UpdateAllergenDto } from './dto/update-allergen.dto';
@@ -15,7 +16,8 @@ import { AllergenDocument } from './entities/allergen.entity';
 export class AllergensService {
     constructor(
         @InjectModel('Allergen')
-        private readonly allergenModel: Model<AllergenDocument>
+        private readonly allergenModel: Model<AllergenDocument>,
+        private readonly dishesService: DishesService
     ) {}
 
     async create(
@@ -76,7 +78,10 @@ export class AllergensService {
 
     async remove(id: string): Promise<void> {
         // Only Hard delete, it is easier to create a new than retrieve the old
-        // MD: Delete references too
+
+        // Delete references first, if this fails after the allergen delete: the references will remain
+        await this.dishesService.recursiveRemoveAllergen(id);
+
         const allergen: AllergenDocument =
             await this.allergenModel.findByIdAndDelete(id);
 

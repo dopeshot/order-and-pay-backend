@@ -1,11 +1,11 @@
 @host = http://localhost:3001
-@allergenId = 61ed3d81ab90636455d34ffa
+@allergenId = 620bbd085ea9f3527497f13c
 ### POST one allergen
 POST {{host}}/admin/allergens
 Content-Type: application/json
 
 {
-    "title": "Muck",
+    "title": "Steve",
     "icon": "dave"
 }
 
@@ -26,3 +26,6 @@ Content-Type: application/json
     "title": "Muck",
     "icon": "dave"
 }
+
+### Delete Allergen and recursively remove from Dishes
+DELETE {{host}}/admin/allergens/{{allergenId}}

@@ -78,4 +78,21 @@ export class DishesService {
 
         return;
     }
+
+    async recursiveRemoveAllergen(id: string): Promise<void> {
+        const result = await this.dishModel.updateMany(
+            { allergens: id },
+            { $pull: { allergens: id } }
+        );
+
+        // TODO: add Logger here after @Coffe implemented it
+        //console.log(result);
+    }
+
+    async recursiveRemoveLabel(id: string): Promise<void> {
+        await this.dishModel.updateMany(
+            { labels: id },
+            { $pull: { labels: id } }
+        );
+    }
 }
