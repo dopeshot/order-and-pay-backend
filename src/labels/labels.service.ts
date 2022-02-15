@@ -2,6 +2,7 @@ import {
     ConflictException,
     Injectable,
     InternalServerErrorException,
+    Logger,
     NotFoundException,
     NotImplementedException
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import { LabelDocument } from './entities/label.entity';
 
 @Injectable()
 export class LabelsService {
+    private readonly logger = new Logger(LabelsService.name);
     constructor(
         @InjectModel('Label') private readonly labelModel: Model<LabelDocument>
     ) {}
@@ -24,8 +26,15 @@ export class LabelsService {
             return label.toObject() as LabelDocument;
         } catch (error) {
             if (error.code == '11000') {
+                this.logger.debug(
+                    `Creating a label (title = ${createLabelDto.title}) failed due to a conflict.`
+                );
                 throw new ConflictException('This label title already exists');
             }
+
+            this.logger.error(
+                `An error has occured while creating a new label (${error})`
+            );
             /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
@@ -57,8 +66,14 @@ export class LabelsService {
                 .lean();
         } catch (error) {
             if (error.code === 11000) {
+                this.logger.debug(
+                    `Updating a label (title = ${updateLabelDto.title}) failed due to a conflict.`
+                );
                 throw new ConflictException('This label title already exists');
             }
+            this.logger.error(
+                `An error has occured while updating a label (${error})`
+            );
             /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
@@ -74,6 +89,8 @@ export class LabelsService {
         );
 
         if (!label) throw new NotFoundException();
+
+        this.logger.debug(`Label (id = ${id}) has been deleted successfully.`);
 
         return;
     }

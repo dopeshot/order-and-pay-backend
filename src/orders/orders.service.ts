@@ -4,6 +4,7 @@ import {
     HttpStatus,
     Injectable,
     InternalServerErrorException,
+    Logger,
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -20,6 +21,7 @@ import { Payment } from './types/payment.type';
 
 @Injectable()
 export class OrdersService {
+    private readonly logger = new Logger(OrdersService.name);
     constructor(
         private readonly sseService: SseService,
         @InjectModel('Order') private readonly orderModel: Model<OrderDocument>,
@@ -45,6 +47,7 @@ export class OrdersService {
         const paymentId = order.payment;
         const amount = 10; // This should be calculated
         if (!this.validatePayment(paymentId, amount)) {
+            this.logger.warn(`Invalid Payment for order`);
             throw new HttpException(
                 'Invalid Payment',
                 HttpStatus.PAYMENT_REQUIRED
@@ -52,6 +55,9 @@ export class OrdersService {
         }
 
         if (!this.tablesService.findOne(order.tableId.toString())) {
+            this.logger.warn(
+                `Order for invalid table. This might indicate someone fiddling with the URL`
+            );
             throw new BadRequestException();
         }
 
@@ -71,6 +77,7 @@ export class OrdersService {
 
             receivedOrder = newOrder.toObject() as OrderDocument;
         } catch (e) {
+            this.logger.error(`Error occured while creating order(${e})`);
             throw new InternalServerErrorException();
         }
 
@@ -84,6 +91,9 @@ export class OrdersService {
     }
 
     validatePayment(paymentId: string, amount: number) {
+        this.logger.warn(
+            `Payment validation has been called, however this is not implemented correctly yet`
+        );
         //TODO: Implement this
         return true;
     }
@@ -101,12 +111,16 @@ export class OrdersService {
                 })
                 .lean();
         } catch (e) {
+            this.logger.error(`Error occured while updating order(${e})`);
             throw new InternalServerErrorException();
         }
 
         if (!order) throw new NotFoundException();
 
         // Send SSE event to restaurant
+        this.logger.debug(
+            `Order ${id} has been updated to ${updateData.Status}`
+        );
         if (
             updateData.Status === OrderStatus.FINISHED ||
             updateData.Status === OrderStatus.CANCELLED

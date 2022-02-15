@@ -2,6 +2,7 @@ import {
     ConflictException,
     Injectable,
     InternalServerErrorException,
+    Logger,
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -14,6 +15,7 @@ import { Status } from './enums/status.enum';
 
 @Injectable()
 export class MenusService {
+    private readonly logger = new Logger(MenusService.name);
     constructor(@InjectModel('Menu') private menuModel: Model<MenuDocument>) {}
 
     async findAll(): Promise<Menu[]> {
@@ -33,11 +35,18 @@ export class MenusService {
             // There is no other way remove unwanted fields without toObject()
             return menu.toObject() as MenuDocument;
         } catch (error) {
-            if (error.code === 11000 && error.keyPattern.title)
+            if (error.code === 11000 && error.keyPattern.title) {
+                this.logger.debug(
+                    `Creating a menu (title = ${createMenuDto}) failed due to a conflict.`
+                );
                 throw new ConflictException(
                     'A menu with this name already exists'
                 );
+            }
 
+            this.logger.error(
+                `An error has occured while creating a new menu (${error})`
+            );
             /* istanbul ignore next */ // Unable to test Internal server error here
             throw new InternalServerErrorException();
         }
@@ -66,23 +75,33 @@ export class MenusService {
                 })
                 .lean();
         } catch (error) {
-            if (error.code === 11000 && error.keyPattern.title)
+            if (error.code === 11000 && error.keyPattern.title) {
+                this.logger.debug(
+                    `Updating a menu (title = ${updateMenuDto}) failed due to a conflict.`
+                );
                 throw new ConflictException(
                     'A menu with this name already exists'
                 );
-            else throw new InternalServerErrorException('Menu update failed');
+            }
+            this.logger.error(
+                `An error has occured while updating a menu (${error})`
+            );
+            throw new InternalServerErrorException('Menu update failed');
         }
 
         if (!updatedMenu) throw new NotFoundException('Menu not found');
 
         if (updatedMenu.isActive) {
+            this.logger.log(
+                `Update of menu ${updatedMenu.title} has altered activation status`
+            );
             await this.updateActivation(id);
         }
-
         return updatedMenu;
     }
 
     async updateActivation(excludeId: ObjectId) {
+        this.logger.debug(`Updating activation for menus`);
         //Disable all but the given Menu
         await this.menuModel.updateMany(
             {
@@ -111,6 +130,9 @@ export class MenusService {
 
             if (!menu) throw new NotFoundException();
 
+            this.logger.debug(
+                `The menu (id = ${id}) has been deleted successfully.`
+            );
             return;
         }
 
@@ -121,6 +143,10 @@ export class MenusService {
         });
 
         if (!menu) throw new NotFoundException();
+
+        this.logger.debug(
+            `The menu (id = ${id}) has been soft deleted successfully.`
+        );
 
         return;
     }

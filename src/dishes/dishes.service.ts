@@ -2,6 +2,7 @@ import {
     ConflictException,
     Injectable,
     InternalServerErrorException,
+    Logger,
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -14,6 +15,8 @@ import { DishDocument } from './entities/dish.entity';
 
 @Injectable()
 export class DishesService {
+    private readonly logger = new Logger(DishesService.name);
+
     constructor(@InjectModel('Dish') private dishModel: Model<DishDocument>) {}
 
     async create(createDishDto: CreateDishDto): Promise<DishDocument> {
@@ -22,8 +25,15 @@ export class DishesService {
             return dish.toObject() as DishDocument;
         } catch (error) {
             if (error.code == '11000') {
+                this.logger.debug(
+                    `Creating a dish (title = ${createDishDto.title}) failed due to a conflict.`
+                );
                 throw new ConflictException('This dish title already exists');
             }
+
+            this.logger.error(
+                `An error has occured while creating a new dish (${error})`
+            );
             /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
@@ -50,8 +60,15 @@ export class DishesService {
                 .lean();
         } catch (error) {
             if (error.code === 11000) {
+                this.logger.debug(
+                    `Updating a dish (title = ${updateDishDto.title}) failed due to a conflict.`
+                );
                 throw new ConflictException('This dish title already exists');
             }
+
+            this.logger.error(
+                `An error has occured while updating a dish (${error})`
+            );
             /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
@@ -66,6 +83,10 @@ export class DishesService {
 
             if (!dish) throw new NotFoundException();
 
+            this.logger.debug(
+                `The dish (id = ${id}) has been deleted successfully.`
+            );
+
             return;
         }
 
@@ -75,6 +96,10 @@ export class DishesService {
         });
 
         if (!dish) throw new NotFoundException();
+
+        this.logger.debug(
+            `The dish (id = ${id}) has been soft deleted successfully.`
+        );
 
         return;
     }
