@@ -2,6 +2,7 @@ import {
     ConflictException,
     Injectable,
     InternalServerErrorException,
+    Logger,
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,6 +19,7 @@ import { Status } from './enums/status.enum';
 
 @Injectable()
 export class MenusService {
+    private readonly logger = new Logger(MenusService.name);
     constructor(
         @InjectModel('Menu') private menuModel: Model<MenuDocument>,
         private readonly categoriesService: CategoriesService,
@@ -38,14 +40,24 @@ export class MenusService {
                 await this.updateActivation(menu._id);
             }
 
+            this.logger.debug(
+                `The menu (id = ${menu._id}) has been created successfully.`
+            );
             // There is no other way remove unwanted fields without toObject()
             return menu.toObject() as MenuDocument;
         } catch (error) {
-            if (error.code === 11000 && error.keyPattern.title)
+            if (error.code === 11000 && error.keyPattern.title) {
+                this.logger.warn(
+                    `Creating a menu (title = ${createMenuDto}) failed due to a conflict.`
+                );
                 throw new ConflictException(
                     'A menu with this name already exists'
                 );
+            }
 
+            this.logger.error(
+                `An error has occured while creating a new menu (${error})`
+            );
             /* istanbul ignore next */ // Unable to test Internal server error here
             throw new InternalServerErrorException();
         }
@@ -55,6 +67,9 @@ export class MenusService {
         const menu: MenuDocument = await this.menuModel.findById(id).lean();
 
         if (!menu) {
+            this.logger.debug(
+                `A menu (id = ${id}) was requested but could not be found.`
+            );
             throw new NotFoundException();
         }
 
@@ -81,25 +96,42 @@ export class MenusService {
                 })
                 .lean();
         } catch (error) {
-            if (error.code === 11000 && error.keyPattern.title)
+            if (error.code === 11000 && error.keyPattern.title) {
+                this.logger.warn(
+                    `Updating a menu (title = ${updateMenuDto}) failed due to a conflict.`
+                );
                 throw new ConflictException(
                     'A menu with this name already exists'
                 );
-
+            }
+            this.logger.error(
+                `An error has occured while updating a menu (${error})`
+            );
             /* istanbul ignore next */
             throw new InternalServerErrorException('Menu update failed');
         }
 
-        if (!updatedMenu) throw new NotFoundException('Menu not found');
-
+        if (!updatedMenu) {
+            this.logger.warn(
+                `Updating menu (id = ${id}) failed as it could not be found.`
+            );
+            throw new NotFoundException('Menu not found');
+        }
         if (updatedMenu.isActive) {
+            this.logger.log(
+                `Update of menu ${updatedMenu.title} has altered activation status`
+            );
             await this.updateActivation(id);
         }
 
+        this.logger.debug(
+            `The menu (id = ${id}) has been created successfully.`
+        );
         return updatedMenu;
     }
 
     async updateActivation(excludeId: string) {
+        this.logger.debug(`Updating activation for menus`);
         //Disable all but the given Menu
         await this.menuModel.updateMany(
             {
@@ -122,10 +154,16 @@ export class MenusService {
                 id
             );
 
-            if (!menu) throw new NotFoundException();
-
+            if (!menu) {
+                this.logger.warn(
+                    `Deleting menu (id = ${id}) failed as it could not be found.`
+                );
+                throw new NotFoundException();
+            }
+            this.logger.debug(
+                `The menu (id = ${id}) has been deleted successfully.`
+            );
             await this.categoriesService.recursiveRemoveByMenu(id);
-
             return;
         }
 
@@ -135,7 +173,16 @@ export class MenusService {
             isActive: false
         });
 
-        if (!menu) throw new NotFoundException();
+        if (!menu) {
+            this.logger.warn(
+                `Deleting menu (id = ${id}) failed as it could not be found.`
+            );
+            throw new NotFoundException();
+        }
+
+        this.logger.debug(
+            `The menu (id = ${id}) has been soft deleted successfully.`
+        );
 
         return;
     }
