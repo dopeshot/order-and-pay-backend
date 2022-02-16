@@ -25,9 +25,13 @@ import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
-import { getCategorySeeder } from './__mocks__/categories-mock-data';
+import {
+    getCategoriesSeeder,
+    getCategorySeeder
+} from './__mocks__/categories-mock-data';
 import {
     getAllergensForDishesSeeder,
+    getDishesSeeder,
     getDishSeeder,
     getLabelsForDishesSeeder
 } from './__mocks__/dishes-mock-data';
@@ -121,34 +125,64 @@ describe('MenuController (e2e)', () => {
 
             describe('menus/:id/editor (GET)', () => {
                 it('should return a populated menu', async () => {
-                    await dishModel.insertMany(getDishSeeder());
+                    await dishModel.insertMany(getDishesSeeder());
                     await allergyModel.insertMany(
                         getAllergensForDishesSeeder()
                     );
-                    await categoryModel.insertMany(getCategorySeeder());
+                    await categoryModel.insertMany(getCategoriesSeeder());
                     await labelModel.insertMany(getLabelsForDishesSeeder());
                     const res = await request(app.getHttpServer())
                         .get('/menus/' + getTestMenuData()[0]._id + '/editor')
                         .expect(HttpStatus.OK);
 
                     // Check contents of populated menu
-                    let expectedCategory = getCategorySeeder();
-                    expect(res.body.categories[0].title).toEqual(
-                        expectedCategory.title
+                    let expectedCategories = getCategoriesSeeder();
+                    let dishes = getDishesSeeder();
+                    let allergens = getAllergensForDishesSeeder();
+                    let labels = getLabelsForDishesSeeder();
+
+                    // Check if categories are populated correctly
+                    expect(res.body.categories.length).toBe(
+                        expectedCategories.length
                     );
-                    expect(res.body.categories[0]._id).toEqual(
-                        expectedCategory._id
-                    );
-                    let dishes = [getDishSeeder()];
+
                     res.body.categories.forEach((category) => {
+                        expect(
+                            res.body.categories.find(
+                                (c) => c._id === expectedCategories[0]._id
+                            )
+                        ).toBeDefined();
+                        // Check if dishes are populated correctly
                         category.dishes.forEach((dish) => {
                             expect(dish.category).toEqual(category._id);
                             expect(
-                                dishes.findIndex(
+                                dishes.find(
                                     (d) =>
                                         d._id.toString() === dish._id.toString()
                                 )
-                            ).toBeGreaterThan(-1);
+                            ).toBeDefined();
+
+                            // Check if labels are populated correctly
+                            dish.labels.forEach((label) => {
+                                expect(
+                                    labels.find(
+                                        (l) =>
+                                            l._id.toString() ===
+                                            label._id.toString()
+                                    )
+                                ).toBeDefined();
+                            });
+
+                            // Check if allergens are populated correctly
+                            dish.allergens.forEach((allergen) => {
+                                expect(
+                                    allergens.find(
+                                        (a) =>
+                                            a._id.toString() ===
+                                            allergen._id.toString()
+                                    )
+                                ).toBeDefined();
+                            });
                         });
                     });
 
@@ -156,11 +190,9 @@ describe('MenuController (e2e)', () => {
                 });
 
                 it('should return empty with an empty menu', async () => {
-                    console.log(await categoryModel.find());
                     const res = await request(app.getHttpServer())
                         .get('/menus/' + getTestMenuData()[0]._id)
                         .expect(HttpStatus.OK);
-                    console.log('res.body', res.body);
                 });
 
                 it('should fail with invalid Id', async () => {
@@ -183,10 +215,6 @@ describe('MenuController (e2e)', () => {
                     const res = await request(app.getHttpServer())
                         .get('/client/menu')
                         .expect(HttpStatus.OK);
-
-                    // I am leaving these in so that anyone checking this for the media night can validate that it works...
-                    //console.log('menu:', res.body);
-                    //console.log('dish', res.body.categories[0].dishes[0]);
 
                     expect(res.body).toMatchObject(new MenuPopulated(res.body));
                 });
