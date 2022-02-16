@@ -33,18 +33,23 @@ export class MenusController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The menu has been updated',
-        type: [Menu]
+        type: Menu,
+        isArray: true
     })
     async findAll(): Promise<Menu[]> {
         return (await this.menuService.findAll()).map((set) => new Menu(set));
     }
 
     @Get(':id')
-    @ApiOperation({ summary: 'Get all menus (simple form)', tags: ['menus'] })
+    @ApiOperation({ summary: 'Get one menu (simple form)', tags: ['menus'] })
     @ApiResponse({
         status: HttpStatus.OK,
-        description: 'The menu has been updated',
-        type: [Menu]
+        description: 'The menu has been found',
+        type: Menu
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: 'No menu with this id found'
     })
     async findOne(@Param() { id }: MongoIdDto): Promise<Menu> {
         return new Menu(await this.menuService.findOne(id));
@@ -75,7 +80,12 @@ export class MenusController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'Menu successfully populated with categories and dishes',
-        type: [Menu]
+        type: Menu,
+        isArray: true
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: 'No menu with this id found'
     })
     async findEditorView(@Param() { id }: MongoIdDto) {
         return new MenuPopulated(await this.menuService.findAndPopulate(id));
