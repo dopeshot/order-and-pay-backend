@@ -108,7 +108,7 @@ export class TablesService {
 
         if (!table) {
             this.logger.warn(
-                `Deleting table (id = ${table._id}) failed as it could not be found.`
+                `Deleting table (id = ${id}) failed as it could not be found.`
             );
             throw new NotFoundException();
         }
