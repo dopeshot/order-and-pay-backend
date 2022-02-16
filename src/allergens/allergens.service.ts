@@ -49,7 +49,7 @@ export class AllergensService {
         return allergen;
     }
 
-    async findRefs(id: string): Promise<DishDocument[]> {
+    async findDishes(id: string): Promise<DishDocument[]> {
         const dishes = await this.dishesService.findByAllergen(id);
         return dishes;
     }

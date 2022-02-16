@@ -43,7 +43,8 @@ export class LabelsService {
         return label;
     }
 
-    async findRefs(id: string): Promise<DishDocument[]> {
+    // TODO Rename to match convention
+    async findDishes(id: string): Promise<DishDocument[]> {
         const dishes = await this.dishesService.findByLabel(id);
         return dishes;
     }

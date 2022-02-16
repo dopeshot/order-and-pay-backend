@@ -85,7 +85,7 @@ export class AllergensController {
     })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
-        return (await this.allergensService.findRefs(id)).map(
+        return (await this.allergensService.findDishes(id)).map(
             (dish) => new Dish(dish)
         );
     }

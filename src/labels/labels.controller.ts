@@ -83,7 +83,7 @@ export class LabelsController {
     })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
-        return (await this.labelsService.findRefs(id)).map(
+        return (await this.labelsService.findDishes(id)).map(
             (dish) => new Dish(dish)
         );
     }

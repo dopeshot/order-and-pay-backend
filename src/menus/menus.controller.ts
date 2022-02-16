@@ -19,8 +19,8 @@ import { DeleteType } from '../shared/enums/delete-type.enum';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
+import { Menu, MenuPopulated } from './entities/menu.entity';
 import { MenusService } from './menus.service';
-import { MenuResponse } from './responses/menu.responses';
 
 @Controller('menus')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -33,12 +33,10 @@ export class MenusController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The menu has been updated',
-        type: [MenuResponse]
+        type: [Menu]
     })
-    async findAll(): Promise<MenuResponse[]> {
-        return (await this.menuService.findAll()).map(
-            (set) => new MenuResponse(set)
-        );
+    async findAll(): Promise<Menu[]> {
+        return (await this.menuService.findAll()).map((set) => new Menu(set));
     }
 
     @Get(':id')
@@ -46,10 +44,31 @@ export class MenusController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The menu has been updated',
-        type: [MenuResponse]
+        type: [Menu]
     })
-    async findOne(@Param() { id }: MongoIdDto): Promise<MenuResponse> {
-        return new MenuResponse(await this.menuService.findOne(id));
+    async findOne(@Param() { id }: MongoIdDto): Promise<Menu> {
+        return new Menu(await this.menuService.findOne(id));
+    }
+
+    @Get(':id/editor')
+    @ApiOperation({
+        summary: 'Get one Menu in populated form)',
+        tags: ['menus']
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Menu successfully populated with categories and dishes',
+        type: [Menu]
+    })
+    async findEditorView(@Param() { id }: MongoIdDto) {
+        return new MenuPopulated(await this.menuService.findAndPopulate(id));
+    }
+
+    // TODO: Test this
+    @Get(':id/refs ')
+    @ApiOperation({ summary: 'Get all categories that ref to this menu' })
+    async getRefs(@Param() { id }: MongoIdDto) {
+        return await this.menuService.getCategoriesByMenu(id);
     }
 
     @Post()
@@ -57,7 +76,7 @@ export class MenusController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The menu has been created',
-        type: MenuResponse
+        type: Menu
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
@@ -67,8 +86,8 @@ export class MenusController {
         status: HttpStatus.CONFLICT,
         description: 'There is a conflict with an existing menu'
     })
-    async createNew(@Body() newMenu: CreateMenuDto): Promise<MenuResponse> {
-        return new MenuResponse(await this.menuService.createMenu(newMenu));
+    async createNew(@Body() newMenu: CreateMenuDto): Promise<Menu> {
+        return new Menu(await this.menuService.createMenu(newMenu));
     }
 
     @Patch(':id')
@@ -76,7 +95,7 @@ export class MenusController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The menu has been updated',
-        type: MenuResponse
+        type: Menu
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
@@ -89,10 +108,8 @@ export class MenusController {
     async updateMenu(
         @Body() updateMenuDto: UpdateMenuDto,
         @Param('id') id: ObjectId
-    ): Promise<MenuResponse> {
-        return new MenuResponse(
-            await this.menuService.updateMenu(id, updateMenuDto)
-        );
+    ): Promise<Menu> {
+        return new Menu(await this.menuService.updateMenu(id, updateMenuDto));
     }
 
     @Delete(':id')

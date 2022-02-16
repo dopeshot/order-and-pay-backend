@@ -2,12 +2,14 @@ import {
     Body,
     ClassSerializerInterceptor,
     Controller,
+    Get,
     HttpStatus,
     Post,
     SerializeOptions,
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { MenuPopulated } from '../menus/entities/menu.entity';
 import { MenusService } from '../menus/menus.service';
 import { CreateOrderDto } from '../orders/dtos/create-order.dto';
 import { Order } from '../orders/entities/order.entity';
@@ -19,9 +21,21 @@ import { OrdersService } from '../orders/orders.service';
 @SerializeOptions({ strategy: 'excludeAll' })
 export class ClientController {
     constructor(
-        private readonly menuService: MenusService,
+        private readonly menusService: MenusService,
         private readonly orderService: OrdersService
     ) {}
+
+    @Get('menu')
+    @ApiOperation({ summary: 'Get currently active menu' })
+    async getMenu() {
+        return new MenuPopulated(
+            await this.menusService.findAndPopulate(
+                (
+                    await this.menusService.findCurrent()
+                )._id
+            )
+        );
+    }
 
     @Post('order')
     @ApiOperation({ summary: 'Create new order' })
@@ -35,7 +49,7 @@ export class ClientController {
         description: 'Failed to create order due to payment issues ',
         type: Order
     })
-    async create(@Body() order: CreateOrderDto) {
+    async createOrder(@Body() order: CreateOrderDto) {
         return new Order(await this.orderService.create(order));
     }
 }

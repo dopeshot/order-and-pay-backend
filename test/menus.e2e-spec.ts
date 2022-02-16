@@ -4,30 +4,69 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { AdminModule } from '../src/admin/admin.module';
-import { MenuDocument } from '../src/menus/entities/menu.entity';
+import { AllergensModule } from '../src/allergens/allergens.module';
+import { AllergenDocument } from '../src/allergens/entities/allergen.entity';
+import { CategoriesModule } from '../src/categories/categories.module';
+import { CategoryDocument } from '../src/categories/entities/category.entity';
+import { ClientModule } from '../src/client/client.module';
+import { DishesModule } from '../src/dishes/dishes.module';
+import { DishDocument } from '../src/dishes/entities/dish.entity';
+import { LabelDocument } from '../src/labels/entities/label.entity';
+import { LabelsModule } from '../src/labels/labels.module';
+import {
+    Menu,
+    MenuDocument,
+    MenuPopulated
+} from '../src/menus/entities/menu.entity';
 import { Status } from '../src/menus/enums/status.enum';
 import { MenusModule } from '../src/menus/menus.module';
-import { MenuResponse } from '../src/menus/responses/menu.responses';
 import { DeleteType } from '../src/shared/enums/delete-type.enum';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
+import {
+    getCategoriesSeeder,
+    getCategorySeeder
+} from './__mocks__/categories-mock-data';
+import {
+    getAllergensForDishesSeeder,
+    getDishesSeeder,
+    getDishSeeder,
+    getLabelsForDishesSeeder
+} from './__mocks__/dishes-mock-data';
 import { getTestMenuData, getValidMenus } from './__mocks__/menus-mock-data';
 import { getWrongId } from './__mocks__/shared-mock-data';
 
 describe('MenuController (e2e)', () => {
     let app: INestApplication;
     let connection: Connection;
+    let dishModel: Model<DishDocument>;
+    let categoryModel: Model<CategoryDocument>;
+    let allergyModel: Model<AllergenDocument>;
+    let labelModel: Model<LabelDocument>;
     let menuModel: Model<MenuDocument>;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [rootMongooseTestModule(), MenusModule, AdminModule]
+            imports: [
+                rootMongooseTestModule(),
+                MenusModule,
+                AdminModule,
+                AllergensModule,
+                DishesModule,
+                LabelsModule,
+                CategoriesModule,
+                ClientModule
+            ]
         }).compile();
 
         connection = await module.get(getConnectionToken());
         menuModel = connection.model('Menu');
+        dishModel = connection.model('Dish');
+        allergyModel = connection.model('Allergen');
+        labelModel = connection.model('Label');
+        categoryModel = connection.model('Category');
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();
@@ -41,6 +80,10 @@ describe('MenuController (e2e)', () => {
     // Empty the collection from all possible impurities
     afterEach(async () => {
         await menuModel.deleteMany();
+        await dishModel.deleteMany();
+        await allergyModel.deleteMany();
+        await categoryModel.deleteMany();
+        await labelModel.deleteMany();
     });
 
     afterAll(async () => {
@@ -57,9 +100,7 @@ describe('MenuController (e2e)', () => {
                         .expect(HttpStatus.OK);
 
                     expect(res.body.length).toBe(getValidMenus().length);
-                    expect(res.body[0]).toMatchObject(
-                        new MenuResponse(res.body[0])
-                    );
+                    expect(res.body[0]).toMatchObject(new Menu(res.body[0]));
                 });
             });
 
@@ -70,7 +111,7 @@ describe('MenuController (e2e)', () => {
                         .expect(HttpStatus.OK);
 
                     expect(res.body).toMatchObject(
-                        new MenuResponse(getTestMenuData()[0])
+                        new Menu(getTestMenuData()[0])
                     );
                 });
 
@@ -78,6 +119,110 @@ describe('MenuController (e2e)', () => {
                     await menuModel.deleteMany();
                     await request(app.getHttpServer())
                         .get('/menus/' + getTestMenuData()[0]._id)
+                        .expect(HttpStatus.NOT_FOUND);
+                });
+            });
+
+            describe('menus/:id/editor (GET)', () => {
+                it('should return a populated menu', async () => {
+                    await dishModel.insertMany(getDishesSeeder());
+                    await allergyModel.insertMany(
+                        getAllergensForDishesSeeder()
+                    );
+                    await categoryModel.insertMany(getCategoriesSeeder());
+                    await labelModel.insertMany(getLabelsForDishesSeeder());
+                    const res = await request(app.getHttpServer())
+                        .get('/menus/' + getTestMenuData()[0]._id + '/editor')
+                        .expect(HttpStatus.OK);
+
+                    // Check contents of populated menu
+                    let expectedCategories = getCategoriesSeeder();
+                    let dishes = getDishesSeeder();
+                    let allergens = getAllergensForDishesSeeder();
+                    let labels = getLabelsForDishesSeeder();
+
+                    // Check if categories are populated correctly
+                    expect(res.body.categories.length).toBe(
+                        expectedCategories.length
+                    );
+
+                    res.body.categories.forEach((category) => {
+                        expect(
+                            res.body.categories.find(
+                                (c) => c._id === expectedCategories[0]._id
+                            )
+                        ).toBeDefined();
+                        // Check if dishes are populated correctly
+                        category.dishes.forEach((dish) => {
+                            expect(dish.category).toEqual(category._id);
+                            expect(
+                                dishes.find(
+                                    (d) =>
+                                        d._id.toString() === dish._id.toString()
+                                )
+                            ).toBeDefined();
+
+                            // Check if labels are populated correctly
+                            dish.labels.forEach((label) => {
+                                expect(
+                                    labels.find(
+                                        (l) =>
+                                            l._id.toString() ===
+                                            label._id.toString()
+                                    )
+                                ).toBeDefined();
+                            });
+
+                            // Check if allergens are populated correctly
+                            dish.allergens.forEach((allergen) => {
+                                expect(
+                                    allergens.find(
+                                        (a) =>
+                                            a._id.toString() ===
+                                            allergen._id.toString()
+                                    )
+                                ).toBeDefined();
+                            });
+                        });
+                    });
+
+                    expect(res.body).toMatchObject(new MenuPopulated(res.body));
+                });
+
+                it('should return empty with an empty menu', async () => {
+                    const res = await request(app.getHttpServer())
+                        .get('/menus/' + getTestMenuData()[0]._id)
+                        .expect(HttpStatus.OK);
+                });
+
+                it('should fail with invalid Id', async () => {
+                    await menuModel.deleteMany();
+                    await request(app.getHttpServer())
+                        .get('/menus/' + getTestMenuData()[0]._id)
+                        .expect(HttpStatus.NOT_FOUND);
+                });
+            });
+
+            // This is in here so the inenevitable client test does not have to import all the modules
+            describe('client/menu (GET)', () => {
+                it('should currently active menu', async () => {
+                    await dishModel.insertMany(getDishSeeder());
+                    await allergyModel.insertMany(
+                        getAllergensForDishesSeeder()
+                    );
+                    await categoryModel.insertMany(getCategorySeeder());
+                    await labelModel.insertMany(getLabelsForDishesSeeder());
+                    const res = await request(app.getHttpServer())
+                        .get('/client/menu')
+                        .expect(HttpStatus.OK);
+
+                    expect(res.body).toMatchObject(new MenuPopulated(res.body));
+                });
+
+                it('should fail with invalid Id', async () => {
+                    await menuModel.deleteMany();
+                    await request(app.getHttpServer())
+                        .get('/client/menu')
                         .expect(HttpStatus.NOT_FOUND);
                 });
             });
@@ -98,7 +243,7 @@ describe('MenuController (e2e)', () => {
                         getTestMenuData().length + 1
                     );
 
-                    expect(res.body).toMatchObject(new MenuResponse(res.body));
+                    expect(res.body).toMatchObject(new Menu(res.body));
                 });
 
                 it('should disable other menus if this is set to be active', async () => {
@@ -118,7 +263,7 @@ describe('MenuController (e2e)', () => {
                         getTestMenuData().length + 1
                     );
 
-                    expect(res.body).toMatchObject(new MenuResponse(res.body));
+                    expect(res.body).toMatchObject(new Menu(res.body));
                     expect(res.body.isActive).toBe(true);
 
                     // Check if all endpoints have been disabled
@@ -167,9 +312,7 @@ describe('MenuController (e2e)', () => {
                         'where did you come from, where did you go, where did you come from'
                     );
                     expect(res.body.title).toBe('Cotton eye joe');
-                    expect(res.body).not.toMatchObject(
-                        new MenuResponse(target)
-                    );
+                    expect(res.body).not.toMatchObject(new Menu(target));
                 });
 
                 it('should disable other menus if this is set to be active', async () => {
@@ -187,7 +330,7 @@ describe('MenuController (e2e)', () => {
                         })
                         .expect(HttpStatus.OK);
 
-                    expect(res.body).toMatchObject(new MenuResponse(res.body));
+                    expect(res.body).toMatchObject(new Menu(res.body));
                     expect(res.body.isActive).toBe(true);
 
                     // Check if all endpoints have been disabled
