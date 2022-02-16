@@ -19,3 +19,11 @@ export const getSampleLabel = () => ({
     title: 'string',
     icon: 'string'
 });
+
+export const getDishWithReference = () => ({
+    _id: '12345aaaaaaaaaaaaaaaaaaa',
+    title: 'title',
+    price: 100,
+    category: '1234567aaaaaaaaaaaaaaaaa',
+    labels: ['123aaaaaaaaaaaaaaaaaaaaa', getLabelSeeder()._id]
+});

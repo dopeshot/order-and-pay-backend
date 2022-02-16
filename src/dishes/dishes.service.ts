@@ -39,6 +39,19 @@ export class DishesService {
         return dish;
     }
 
+    async findByAllergen(id: string): Promise<DishDocument[]> {
+        const dishes: DishDocument[] = await this.dishModel
+            .find({ allergens: id })
+            .lean();
+        return dishes;
+    }
+    async findByLabel(id: string): Promise<DishDocument[]> {
+        const dishes: DishDocument[] = await this.dishModel
+            .find({ labels: id })
+            .lean();
+        return dishes;
+    }
+
     async update(
         id: string,
         updateDishDto: UpdateDishDto

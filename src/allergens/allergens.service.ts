@@ -2,8 +2,7 @@ import {
     ConflictException,
     Injectable,
     InternalServerErrorException,
-    NotFoundException,
-    NotImplementedException
+    NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -50,8 +49,9 @@ export class AllergensService {
         return allergen;
     }
 
-    async findRefs(id: string): Promise<DishDocument> {
-        throw new NotImplementedException();
+    async findRefs(id: string): Promise<DishDocument[]> {
+        const dishes = await this.dishesService.findByAllergen(id);
+        return dishes;
     }
 
     async update(

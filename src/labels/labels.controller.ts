@@ -81,14 +81,11 @@ export class LabelsController {
         type: Dish,
         isArray: true
     })
-    @ApiResponse({
-        status: HttpStatus.NOT_FOUND,
-        description: 'The label could not be found'
-    })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
-        return await this.labelsService.findRefs(id);
-        //return new Label(await this.labelsService.findRefs(id));
+        return (await this.labelsService.findRefs(id)).map(
+            (dish) => new Dish(dish)
+        );
     }
 
     @ApiOperation({ summary: 'Patch a label', tags: ['labels'] })
