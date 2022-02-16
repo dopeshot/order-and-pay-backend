@@ -5,12 +5,12 @@ import {
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { Status } from '../menus/enums/status.enum';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { CreateDishDto } from './dto/create-dish-dto';
 import { UpdateDishDto } from './dto/update-dish-dto';
-import { DishDocument } from './entities/dish.entity';
+import { DishDocument, DishPopulated } from './entities/dish.entity';
 
 @Injectable()
 export class DishesService {
@@ -37,6 +37,14 @@ export class DishesService {
         const dish: DishDocument = await this.dishModel.findById(id).lean();
         if (!dish) throw new NotFoundException();
         return dish;
+    }
+
+    async findByCategoryAndPopulate(id: ObjectId): Promise<DishPopulated[]> {
+        return await this.dishModel
+            .find({ category: id })
+            .populate('allergens')
+            .populate('labels')
+            .lean();
     }
 
     async update(

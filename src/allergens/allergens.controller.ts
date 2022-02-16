@@ -89,8 +89,7 @@ export class AllergensController {
     })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
-        return await this.allergensService.findRefs(id);
-        //return new Allergen(await this.allergensService.findRefs(id));
+        return await this.allergensService.findDishes(id);
     }
 
     @ApiOperation({ summary: 'Patch a allergen', tags: ['allergens'] })
