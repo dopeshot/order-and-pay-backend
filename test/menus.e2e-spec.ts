@@ -168,6 +168,7 @@ describe('MenuController (e2e)', () => {
 
                 res.body.categories.forEach((category) => {
                     expect(
+                        // TODO: @Coffe c is not a naming convention we use!
                         res.body.categories.find(
                             (c) => c._id === expectedCategories[0]._id
                         )
@@ -208,16 +209,16 @@ describe('MenuController (e2e)', () => {
                 expect(res.body).toMatchObject(new MenuPopulated(res.body));
             });
 
+            // TODO: @Coffe this test does not check for anything empty, nor has it /editor at the end?
             it('should return empty with an empty menu', async () => {
                 const res = await request(app.getHttpServer())
                     .get('/menus/' + getTestMenuData()[0]._id)
                     .expect(HttpStatus.OK);
             });
 
-            it('should fail with invalid Id', async () => {
-                await menuModel.deleteMany();
+            it('should return NOT_FOUND with wrong Id', async () => {
                 await request(app.getHttpServer())
-                    .get('/menus/' + getTestMenuData()[0]._id)
+                    .get(`/menus/${getWrongId()}/editor`)
                     .expect(HttpStatus.NOT_FOUND);
             });
         });
@@ -379,6 +380,12 @@ describe('MenuController (e2e)', () => {
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
+
+            it('should return NOT_FOUND with wrong id', async () => {
+                await request(app.getHttpServer())
+                    .patch(`/menus/${getWrongId()}`)
+                    .expect(HttpStatus.NOT_FOUND);
+            });
         });
     });
 
@@ -431,11 +438,20 @@ describe('MenuController (e2e)', () => {
                 ).toBe(Status.DELETED);
             });
 
-            it('should fail with invalid id', async () => {
+            it('should return NOT_FOUND with wrong id on Soft delete', async () => {
                 await request(app.getHttpServer())
                     .delete(`/menus/${getWrongId()}`)
                     .query({
                         type: DeleteType.SOFT
+                    })
+                    .expect(HttpStatus.NOT_FOUND);
+            });
+
+            it('should return NOT_FOUND with wrong id on Hard delete', async () => {
+                await request(app.getHttpServer())
+                    .delete(`/menus/${getWrongId()}`)
+                    .query({
+                        type: DeleteType.HARD
                     })
                     .expect(HttpStatus.NOT_FOUND);
             });
