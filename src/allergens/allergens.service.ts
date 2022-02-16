@@ -2,6 +2,7 @@ import {
     ConflictException,
     Injectable,
     InternalServerErrorException,
+    Logger,
     NotFoundException,
     NotImplementedException
 } from '@nestjs/common';
@@ -13,6 +14,7 @@ import { UpdateAllergenDto } from './dto/update-allergen.dto';
 import { AllergenDocument } from './entities/allergen.entity';
 @Injectable()
 export class AllergensService {
+    private readonly logger = new Logger(AllergensService.name);
     constructor(
         @InjectModel('Allergen')
         private readonly allergenModel: Model<AllergenDocument>
@@ -23,13 +25,20 @@ export class AllergensService {
     ): Promise<AllergenDocument> {
         try {
             const allergen = await this.allergenModel.create(createAllergenDto);
+            this.logger.debug('New allergen has been created');
             return allergen.toObject() as AllergenDocument;
         } catch (error) {
             if (error.code == '11000') {
+                this.logger.warn(
+                    `Creating an allergen (title = ${createAllergenDto.title}) failed due to a conflict.`
+                );
                 throw new ConflictException(
                     'This allergen title already exists'
                 );
             }
+            this.logger.error(
+                `An error has occured while creating a new allergen (${error})`
+            );
             /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
@@ -44,11 +53,17 @@ export class AllergensService {
         const allergen: AllergenDocument = await this.allergenModel
             .findById(id)
             .lean();
-        if (!allergen) throw new NotFoundException();
+        if (!allergen) {
+            this.logger.debug(
+                `A allergen with id ${id} was requested but could not be found`
+            );
+            throw new NotFoundException();
+        }
         return allergen;
     }
 
     async findDishes(id: string): Promise<DishDocument> {
+     this.logger.warn(`An unimplemented funtion has been called (findRefs)`);
         throw new NotImplementedException();
     }
 
@@ -63,14 +78,28 @@ export class AllergensService {
                 .lean();
         } catch (error) {
             if (error.code === 11000) {
+                this.logger.warn(
+                    `Updating an allergen (title = ${updateAllergenDto.title}) failed due to a conflict.`
+                );
                 throw new ConflictException(
                     'This allergen title already exists'
                 );
             }
+
+            this.logger.error(
+                `An error has occured while creating a new allergen (${error})`
+            );
             /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
-        if (!allergen) throw new NotFoundException();
+        if (!allergen) {
+            this.logger.warn(
+                `Updating allgergen with id ${id} failed because it could not be found`
+            );
+            throw new NotFoundException();
+        }
+
+        this.logger.debug(`Allergen with id ${id} has been updated`);
         return allergen;
     }
 
@@ -80,7 +109,13 @@ export class AllergensService {
         const allergen: AllergenDocument =
             await this.allergenModel.findByIdAndDelete(id);
 
-        if (!allergen) throw new NotFoundException();
+        if (!allergen) {
+            this.logger.warn(
+                `An allgergen with id ${id} was not deleted because it could not be found`
+            );
+            throw new NotFoundException();
+        }
+        this.logger.debug(`Allgergen with id ${id} has been deleted`);
 
         return;
     }

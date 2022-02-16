@@ -2,6 +2,7 @@ import {
     ConflictException,
     Injectable,
     InternalServerErrorException,
+    Logger,
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -15,6 +16,7 @@ import { CategoryDocument } from './entities/category.entity';
 
 @Injectable()
 export class CategoriesService {
+    private readonly logger = new Logger(CategoriesService.name);
     constructor(
         @InjectModel('Category')
         private readonly categoryModel: Model<CategoryDocument>,
@@ -26,13 +28,22 @@ export class CategoriesService {
     ): Promise<CategoryDocument> {
         try {
             const category = await this.categoryModel.create(createCategoryDto);
+            this.logger.debug(
+                `The Category (id = ${category._id}) has been created successfully.`
+            );
             return category.toObject() as CategoryDocument;
         } catch (error) {
             if (error.code == '11000') {
+                this.logger.warn(
+                    `Creating an category (title = ${createCategoryDto.title}) failed due to a conflict.`
+                );
                 throw new ConflictException(
                     'This category title already exists'
                 );
             }
+            this.logger.error(
+                `An error has occured while creating a new category (${error})`
+            );
             /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
@@ -46,7 +57,12 @@ export class CategoriesService {
         const category: CategoryDocument = await this.categoryModel
             .findById(id)
             .lean();
-        if (!category) throw new NotFoundException();
+        if (!category) {
+            this.logger.debug(
+                `A category (id = ${id}) was requested but could not be found.`
+            );
+            throw new NotFoundException();
+        }
         return category;
     }
 
@@ -69,14 +85,30 @@ export class CategoriesService {
                 .lean();
         } catch (error) {
             if (error.code === 11000) {
+                this.logger.warn(
+                    `Updating a category (title = ${updateCategoryDto.title}) failed due to a conflict.`
+                );
                 throw new ConflictException(
                     'This category title already exists'
                 );
             }
+
+            this.logger.error(
+                `An error has occured while updating a category (${error})`
+            );
             /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
-        if (!category) throw new NotFoundException();
+        if (!category) {
+            this.logger.warn(
+                `A category (id = ${id}) update failed  as it could not be found.`
+            );
+            throw new NotFoundException();
+        }
+
+        this.logger.debug(
+            `The category (id = ${id}) has been updated successfully.`
+        );
         return category;
     }
 
@@ -86,10 +118,19 @@ export class CategoriesService {
         if (type === DeleteType.HARD) {
             const category = await this.categoryModel.findByIdAndDelete(id);
 
-            if (!category) throw new NotFoundException();
+            if (!category) {
+                this.logger.warn(
+                    `A category (id = ${id}) was requested but could not be found.`
+                );
+                throw new NotFoundException();
+            }
 
             // Delete dishes
             await this.dishModel.deleteMany({ category: id });
+
+            this.logger.debug(
+                `The category (id = ${id}) has been deleted successfully.`
+            );
             return;
         }
 
@@ -98,7 +139,16 @@ export class CategoriesService {
             status: Status.DELETED
         });
 
-        if (!category) throw new NotFoundException();
+        if (!category) {
+            this.logger.warn(
+                `A category (id = ${id}) was requested but could not be found.`
+            );
+            throw new NotFoundException();
+        }
+
+        this.logger.debug(
+            `The category (id = ${id}) has been soft deleted successfully.`
+        );
 
         return;
     }

@@ -1,8 +1,13 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import {
+    Injectable,
+    Logger,
+    ServiceUnavailableException
+} from '@nestjs/common';
 import { render } from 'ejs';
 import { readFile as _readFile } from 'fs';
-import { promisify } from 'util';
 import * as nodemailer from 'nodemailer';
+import { promisify } from 'util';
+import { LabelsService } from '../labels/labels.service';
 
 const readFile = promisify(_readFile);
 
@@ -11,6 +16,7 @@ export class MailService {
     mailTransport: nodemailer.Transporter<any>;
     maxRetries: number;
     errorDelay: number;
+    private readonly logger = new Logger(LabelsService.name);
 
     constructor() {
         this.mailTransport = nodemailer.createTransport({
@@ -49,8 +55,13 @@ export class MailService {
                 await delay(this.errorDelay);
                 continue;
             }
+            // This might be a bit broad of a log, but this is the only log that does not contain sensitive data
+            this.logger.debug(`An email has been send successfully`);
             return;
         }
+        this.logger.error(
+            `A connection to the mailserver could not be established`
+        );
         // getting here means sending the mail is not possible => throw an error
         throw new ServiceUnavailableException(
             'Unable to connect to mailserver'
@@ -68,6 +79,7 @@ export class MailService {
             'utf-8'
         );
         const mailContent = render(mailTemplate, mailData as any);
+        this.logger.debug(`Template: ${template} has been rendered`);
         await this.passToMailserver(recipient, subject, mailContent);
     }
 }
