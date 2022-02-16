@@ -88,7 +88,9 @@ export class MenusService {
                 throw new ConflictException(
                     'A menu with this name already exists'
                 );
-            else throw new InternalServerErrorException('Menu update failed');
+
+            /* istanbul ignore next */
+            throw new InternalServerErrorException('Menu update failed');
         }
 
         if (!updatedMenu) throw new NotFoundException('Menu not found');
