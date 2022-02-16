@@ -3,7 +3,7 @@ import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
-import { DishDocument } from '../src/dishes/entities/dish.entity';
+import { Dish, DishDocument } from '../src/dishes/entities/dish.entity';
 import { Label, LabelDocument } from '../src/labels/entities/label.entity';
 import { LabelsModule } from '../src/labels/labels.module';
 import {
@@ -175,6 +175,9 @@ describe('LabelsController (e2e)', () => {
             const res = await request(app.getHttpServer())
                 .get(`${path}/${getLabelSeeder()._id}/refs`)
                 .expect(HttpStatus.OK);
+
+            const dish = new Dish(res.body[0]);
+            expect(res.body[0]).toMatchObject(dish);
 
             expect(res.body).toHaveLength(1);
         });

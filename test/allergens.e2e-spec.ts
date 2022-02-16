@@ -9,7 +9,7 @@ import {
     AllergenDocument
 } from '../src/allergens/entities/allergen.entity';
 import { DishesModule } from '../src/dishes/dishes.module';
-import { DishDocument } from '../src/dishes/entities/dish.entity';
+import { Dish, DishDocument } from '../src/dishes/entities/dish.entity';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
@@ -179,6 +179,9 @@ describe('AllergensController (e2e)', () => {
             const res = await request(app.getHttpServer())
                 .get(`${path}/${getAllergenSeeder()._id}/refs`)
                 .expect(HttpStatus.OK);
+
+            const dish = new Dish(res.body[0]);
+            expect(res.body[0]).toMatchObject(dish);
 
             expect(res.body).toHaveLength(1);
         });
