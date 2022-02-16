@@ -35,7 +35,11 @@ import {
     getDishSeeder,
     getLabelsForDishesSeeder
 } from './__mocks__/dishes-mock-data';
-import { getTestMenuData, getValidMenus } from './__mocks__/menus-mock-data';
+import {
+    getCategoryForMenu,
+    getTestMenuData,
+    getValidMenus
+} from './__mocks__/menus-mock-data';
 import { getWrongId } from './__mocks__/shared-mock-data';
 
 describe('MenuController (e2e)', () => {
@@ -117,6 +121,26 @@ describe('MenuController (e2e)', () => {
                 await request(app.getHttpServer())
                     .get('/menus/' + getTestMenuData()[0]._id)
                     .expect(HttpStatus.NOT_FOUND);
+            });
+        });
+
+        describe('menus/:id/refs (GET)', () => {
+            it('return an array of categories', async () => {
+                await categoryModel.insertMany(getCategoryForMenu());
+                const res = await request(app.getHttpServer())
+                    .get(`/menus/${getTestMenuData()[0]._id}/refs`)
+                    .expect(HttpStatus.OK);
+
+                expect(res.body).toHaveLength(1);
+            });
+
+            it('should return empty array', async () => {
+                await categoryModel.insertMany(getCategoryForMenu());
+                const res = await request(app.getHttpServer())
+                    .get(`/menus/${getWrongId()}/refs`)
+                    .expect(HttpStatus.OK);
+
+                expect(res.body).toHaveLength(0);
             });
         });
 

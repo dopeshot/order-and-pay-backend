@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
+import { Category } from '../categories/entities/category.entity';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { CreateMenuDto } from './dto/create-menu.dto';
@@ -50,6 +51,23 @@ export class MenusController {
         return new Menu(await this.menuService.findOne(id));
     }
 
+    @ApiOperation({
+        summary: 'Get all categories that ref to this menu',
+        tags: ['menus']
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'The dishes referencing the label',
+        type: Category,
+        isArray: true
+    })
+    @Get(':id/refs')
+    async findRefs(@Param() { id }: MongoIdDto) {
+        return (await this.menuService.findCategories(id)).map(
+            (category) => new Category(category)
+        );
+    }
+
     @Get(':id/editor')
     @ApiOperation({
         summary: 'Get one Menu in populated form)',
@@ -62,13 +80,6 @@ export class MenusController {
     })
     async findEditorView(@Param() { id }: MongoIdDto) {
         return new MenuPopulated(await this.menuService.findAndPopulate(id));
-    }
-
-    // TODO: Test this
-    @Get(':id/refs ')
-    @ApiOperation({ summary: 'Get all categories that ref to this menu' })
-    async getRefs(@Param() { id }: MongoIdDto) {
-        return await this.menuService.getCategoriesByMenu(id);
     }
 
     @Post()

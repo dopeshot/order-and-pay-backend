@@ -1,6 +1,6 @@
 import { Status } from '../../src/menus/enums/status.enum';
 
-const menuMockData = [
+export const getTestMenuData = () => [
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaa0',
         isActive: true,
@@ -66,10 +66,15 @@ const menuMockData = [
     }
 ];
 
-export const getTestMenuData = () => {
-    return menuMockData;
+export const getValidMenus = () => {
+    return getTestMenuData().filter((menu) => menu.status === Status.ACTIVE);
 };
 
-export const getValidMenus = () => {
-    return menuMockData.filter((menu) => menu.status === Status.ACTIVE);
-};
+export const getCategoryForMenu = () => ({
+    _id: 'aaaaaaaaaaaaaaaaaaaaaaab',
+    title: 'Burger',
+    description: 'Bread with stuff in between',
+    icon: 'buger',
+    image: 'burger',
+    menu: 'aaaaaaaaaaaaaaaaaaaaaaa0'
+});

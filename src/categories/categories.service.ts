@@ -51,7 +51,7 @@ export class CategoriesService {
         return category;
     }
 
-    async findRefs(id: string): Promise<Dish[]> {
+    async findDishes(id: string): Promise<Dish[]> {
         return await this.dishesService.findByCategory(id);
     }
 
