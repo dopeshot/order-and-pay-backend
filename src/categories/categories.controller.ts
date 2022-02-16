@@ -85,13 +85,11 @@ export class CategoriesController {
         type: Dish,
         isArray: true
     })
-    @ApiResponse({
-        status: HttpStatus.NOT_FOUND,
-        description: 'The category could not be found'
-    })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
-        return await this.categoriesService.findByCategory(id);
+        return (await this.categoriesService.findByCategory(id)).map(
+            (dish) => new Dish(dish)
+        );
     }
 
     @ApiOperation({ summary: 'Patch a category', tags: ['categories'] })

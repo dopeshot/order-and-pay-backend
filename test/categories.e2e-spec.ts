@@ -58,6 +58,7 @@ describe('CategoriesController (e2e)', () => {
         closeInMongodConnection();
         await app.close();
     });
+
     describe('admin/categories (POST)', () => {
         it('should create a category', async () => {
             const res = await request(app.getHttpServer())
@@ -379,8 +380,13 @@ describe('CategoriesController (e2e)', () => {
                 .get(`${path}/${getCategorySeeder()._id}/refs`)
                 .expect(HttpStatus.OK);
 
+            console.log(res.body[0]);
+
             const dish = new Dish(res.body[0]);
+            console.log(dish);
+
             expect(res.body[0]).toMatchObject(dish);
+            expect(res.body).toHaveLength(1);
         });
 
         it('should return empty array', async () => {
@@ -416,7 +422,7 @@ describe('CategoriesController (e2e)', () => {
             const resCategory = new Category(res.body);
             expect(resCategory.choices).toMatchObject(category.choices);
 
-            // Either delete __v updatedAt and createdAt or check the rest (chose 2nd)
+            // Either delete __v updatedAt and createdAt or check the rest (2nd option is better)
             expect(resCategory.description).toBe(category.description);
             expect(resCategory.icon).toBe(category.icon);
             expect(resCategory.image).toBe(category.image);
