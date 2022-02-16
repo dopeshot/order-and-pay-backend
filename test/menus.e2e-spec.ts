@@ -419,10 +419,5 @@ describe('MenuController (e2e)', () => {
                 });
             });
         });
-
-        afterAll(async () => {
-            await connection.close();
-            closeInMongodConnection();
-        });
     });
 });
