@@ -53,6 +53,10 @@ export class DishesService {
         return dishes;
     }
 
+    async findByCategory(id: string): Promise<DishDocument[]> {
+        return await this.dishModel.find({ category: id }).lean();
+    }
+
     async findByCategoryAndPopulate(id: ObjectId): Promise<DishPopulated[]> {
         return await this.dishModel
             .find({ category: id })
@@ -109,15 +113,24 @@ export class DishesService {
 
         // TODO: add Logger here after @Coffe implemented it
         //console.log(result);
+        return;
     }
 
     async recursiveRemoveLabel(id: string): Promise<void> {
-        await this.dishModel.updateMany(
+        const result = await this.dishModel.updateMany(
             { labels: id },
             { $pull: { labels: id } }
         );
 
         // TODO: add Logger here after @Coffe implemented it
         //console.log(result);
+        return;
+    }
+
+    async recursiveRemoveByCategory(id: string): Promise<void> {
+        const result = await this.dishModel.deleteMany({ category: id });
+        // TODO: add Logger here after @Coffe implemented it
+        //console.log(result);
+        return;
     }
 }

@@ -87,7 +87,7 @@ export class CategoriesController {
     })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
-        return (await this.categoriesService.findByCategory(id)).map(
+        return (await this.categoriesService.findRefs(id)).map(
             (dish) => new Dish(dish)
         );
     }

@@ -6,7 +6,8 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { DishDocument } from '../dishes/entities/dish.entity';
+import { DishesService } from '../dishes/dishes.service';
+import { Dish } from '../dishes/entities/dish.entity';
 import { Status } from '../menus/enums/status.enum';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -18,7 +19,7 @@ export class CategoriesService {
     constructor(
         @InjectModel('Category')
         private readonly categoryModel: Model<CategoryDocument>,
-        @InjectModel('Dish') private readonly dishModel: Model<DishDocument>
+        private readonly dishesService: DishesService
     ) {}
 
     async create(
@@ -50,8 +51,8 @@ export class CategoriesService {
         return category;
     }
 
-    async findByCategory(id: string): Promise<DishDocument[]> {
-        return await this.dishModel.find({ category: id }).lean();
+    async findRefs(id: string): Promise<Dish[]> {
+        return await this.dishesService.findByCategory(id);
     }
 
     async findByMenu(id: string): Promise<CategoryDocument[]> {
@@ -89,7 +90,7 @@ export class CategoriesService {
             if (!category) throw new NotFoundException();
 
             // Delete dishes
-            await this.dishModel.deleteMany({ category: id });
+            await this.dishesService.recursiveRemoveByCategory(id);
             return;
         }
 

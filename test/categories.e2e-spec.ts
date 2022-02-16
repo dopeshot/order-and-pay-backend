@@ -8,6 +8,7 @@ import {
     Category,
     CategoryDocument
 } from '../src/categories/entities/category.entity';
+import { DishesModule } from '../src/dishes/dishes.module';
 import { Dish, DishDocument } from '../src/dishes/entities/dish.entity';
 import { Status } from '../src/menus/enums/status.enum';
 import {
@@ -30,7 +31,7 @@ describe('CategoriesController (e2e)', () => {
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [rootMongooseTestModule(), CategoriesModule]
+            imports: [rootMongooseTestModule(), CategoriesModule, DishesModule]
         }).compile();
 
         connection = await module.get(getConnectionToken());
@@ -380,11 +381,7 @@ describe('CategoriesController (e2e)', () => {
                 .get(`${path}/${getCategorySeeder()._id}/refs`)
                 .expect(HttpStatus.OK);
 
-            console.log(res.body[0]);
-
             const dish = new Dish(res.body[0]);
-            console.log(dish);
-
             expect(res.body[0]).toMatchObject(dish);
             expect(res.body).toHaveLength(1);
         });
