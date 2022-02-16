@@ -1,5 +1,6 @@
 import {
     ConflictException,
+    HttpStatus,
     Injectable,
     InternalServerErrorException,
     NotFoundException
@@ -101,6 +102,26 @@ export class CategoriesService {
 
         if (!category) throw new NotFoundException();
 
+        return;
+    }
+
+    async recursiveRemoveByMenu(id: string): Promise<void> {
+        const categories = await this.findByMenu(id);
+
+        // Try catch to ensure everything is deleted even if one in the middle is not found
+        categories.forEach(async (category) => {
+            try {
+                await this.remove(category._id, DeleteType.HARD);
+            } catch (error) {
+                /* istanbul ignore next */
+                // This should not be happening since the find and delete calls are back to back
+                if (error.status === HttpStatus.NOT_FOUND) {
+                    // TODO: log here @Coffe
+                } else {
+                    throw new InternalServerErrorException();
+                }
+            }
+        });
         return;
     }
 }

@@ -5,7 +5,7 @@ import {
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId, Schema } from 'mongoose';
+import { Model } from 'mongoose';
 import { CategoriesService } from '../categories/categories.service';
 import { CategoryPopulated } from '../categories/entities/category.entity';
 import { DishesService } from '../dishes/dishes.service';
@@ -71,10 +71,7 @@ export class MenusService {
         return current;
     }
 
-    async updateMenu(
-        id: ObjectId,
-        updateMenuDto: UpdateMenuDto
-    ): Promise<Menu> {
+    async updateMenu(id: string, updateMenuDto: UpdateMenuDto): Promise<Menu> {
         let updatedMenu: Menu;
 
         try {
@@ -102,7 +99,7 @@ export class MenusService {
         return updatedMenu;
     }
 
-    async updateActivation(excludeId: ObjectId) {
+    async updateActivation(excludeId: string) {
         //Disable all but the given Menu
         await this.menuModel.updateMany(
             {
@@ -115,21 +112,19 @@ export class MenusService {
         );
     }
 
-    async deleteMenu(
-        id: Schema.Types.ObjectId,
-        type: DeleteType
-    ): Promise<void> {
+    async deleteMenu(id: string, type: DeleteType): Promise<void> {
         // Default to soft delete
         if (!type) type = DeleteType.SOFT;
 
         // Hard delete
         if (type === DeleteType.HARD) {
-            // Coffee TODO: Maybe deleting the reference to this menu in dishes, categories, etc. should  be added as well
             const menu: MenuDocument = await this.menuModel.findByIdAndDelete(
                 id
             );
 
             if (!menu) throw new NotFoundException();
+
+            await this.categoriesService.recursiveRemoveByMenu(id);
 
             return;
         }

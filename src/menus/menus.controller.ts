@@ -14,7 +14,6 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ObjectId } from 'mongoose';
 import { Category } from '../categories/entities/category.entity';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
@@ -118,7 +117,7 @@ export class MenusController {
     })
     async updateMenu(
         @Body() updateMenuDto: UpdateMenuDto,
-        @Param('id') id: ObjectId
+        @Param() { id }: MongoIdDto
     ): Promise<Menu> {
         return new Menu(await this.menuService.updateMenu(id, updateMenuDto));
     }
@@ -135,7 +134,7 @@ export class MenusController {
         description: 'No menu with this id exists'
     })
     async deleteMenu(
-        @Param('id') id: ObjectId,
+        @Param() { id }: MongoIdDto,
         @Query('type') type: DeleteType
     ): Promise<void> {
         return await this.menuService.deleteMenu(id, type);

@@ -37,6 +37,7 @@ import {
 } from './__mocks__/dishes-mock-data';
 import {
     getCategoryForMenu,
+    getDishForMenu,
     getTestMenuData,
     getValidMenus
 } from './__mocks__/menus-mock-data';
@@ -312,7 +313,7 @@ describe('MenuController (e2e)', () => {
     });
 
     describe('PATCH requests', () => {
-        describe('admin/menu (PATCH)', () => {
+        describe('menus/:id (PATCH)', () => {
             it('should update set', async () => {
                 const target = getTestMenuData()[0];
                 const res = await request(app.getHttpServer())
@@ -382,17 +383,23 @@ describe('MenuController (e2e)', () => {
     });
 
     describe('DELETE requests', () => {
-        describe('menus (PATCH)', () => {
-            it('should delete menu (HARD delete)', async () => {
-                const target = getTestMenuData()[0];
+        describe('menus/:id (DELETE)', () => {
+            it('should delete menu (HARD delete) and recursively remove categoies and dishes', async () => {
+                await categoryModel.insertMany(getCategoryForMenu());
+                await dishModel.insertMany(getDishForMenu());
+
                 await request(app.getHttpServer())
-                    .delete('/menus/' + target._id)
+                    .delete('/menus/' + getTestMenuData()[0]._id)
                     .query({
                         type: DeleteType.HARD
                     })
                     .expect(HttpStatus.NO_CONTENT);
 
-                expect(await menuModel.findById(target._id)).toBe(null);
+                expect(
+                    await menuModel.findById(getTestMenuData()[0]._id)
+                ).toBeNull();
+                expect(await categoryModel.find()).toHaveLength(0);
+                expect(await dishModel.find()).toHaveLength(0);
             });
 
             it('should set menu deleted (SOFT delete)', async () => {

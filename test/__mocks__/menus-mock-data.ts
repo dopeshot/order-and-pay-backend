@@ -74,7 +74,19 @@ export const getCategoryForMenu = () => ({
     _id: 'aaaaaaaaaaaaaaaaaaaaaaab',
     title: 'Burger',
     description: 'Bread with stuff in between',
-    icon: 'buger',
+    icon: 'burger',
     image: 'burger',
-    menu: 'aaaaaaaaaaaaaaaaaaaaaaa0'
+    menu: getTestMenuData()[0]._id
+});
+
+export const getDishForMenu = () => ({
+    _id: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+    title: 'Awesome Burger',
+    description: 'Burger made by an awesome chef',
+    price: 950,
+    image: 'imagelink',
+    isAvailable: true,
+    category: getCategoryForMenu()._id,
+    allergens: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
+    labels: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
 });
