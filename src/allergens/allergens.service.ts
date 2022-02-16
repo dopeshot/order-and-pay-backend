@@ -62,8 +62,8 @@ export class AllergensService {
         return allergen;
     }
 
-    async findRefs(id: string): Promise<DishDocument> {
-        this.logger.warn(`An unimplemented funtion has been called (findRefs)`);
+    async findDishes(id: string): Promise<DishDocument> {
+     this.logger.warn(`An unimplemented funtion has been called (findRefs)`);
         throw new NotImplementedException();
     }
 

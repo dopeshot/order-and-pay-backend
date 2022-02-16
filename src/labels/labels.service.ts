@@ -59,6 +59,7 @@ export class LabelsService {
         return label;
     }
 
+    // TODO Rename to match convention
     async findRefs(id: string): Promise<DishDocument[]> {
         this.logger.warn(`An unimplemented method has been called`);
         throw new NotImplementedException();

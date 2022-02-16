@@ -13,6 +13,7 @@ import { CategorySchema } from './entities/category.entity';
         MongooseModule.forFeature([{ name: 'Dish', schema: DishSchema }])
     ],
     providers: [CategoriesService],
-    controllers: [CategoriesController]
+    controllers: [CategoriesController],
+    exports: [CategoriesService]
 })
 export class CategoriesModule {}

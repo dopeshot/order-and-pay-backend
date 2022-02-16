@@ -7,16 +7,25 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Schema } from 'mongoose';
+import { CategoriesService } from '../categories/categories.service';
+import { CategoryPopulated } from '../categories/entities/category.entity';
+import { DishesService } from '../dishes/dishes.service';
+import { DishPopulated } from '../dishes/entities/dish.entity';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
-import { Menu, MenuDocument } from './entities/menu.entity';
+import { Menu, MenuDocument, MenuPopulated } from './entities/menu.entity';
 import { Status } from './enums/status.enum';
 
 @Injectable()
 export class MenusService {
     private readonly logger = new Logger(MenusService.name);
-    constructor(@InjectModel('Menu') private menuModel: Model<MenuDocument>) {}
+    constructor(
+        @InjectModel('Menu') private menuModel: Model<MenuDocument>,
+        private readonly categoriesService: CategoriesService,
+        private readonly dishesService: DishesService
+    ) {}
+
 
     async findAll(): Promise<Menu[]> {
         return await this.menuModel.find({ status: Status.ACTIVE }).lean();
@@ -66,6 +75,16 @@ export class MenusService {
         }
 
         return menu;
+    }
+
+    async findCurrent(): Promise<MenuDocument> {
+        const current = await this.menuModel.findOne({ isActive: true });
+
+        if (!current) {
+            throw new NotFoundException('No current menu found');
+        }
+
+        return current;
     }
 
     async updateMenu(
@@ -172,5 +191,29 @@ export class MenusService {
         );
 
         return;
+    }
+
+    async findAndPopulate(id: string): Promise<MenuPopulated> {
+        const menu: MenuDocument = await this.menuModel.findById(id).lean();
+
+        if (!menu) throw new NotFoundException();
+
+        const categories = await this.categoriesService.findByMenu(id);
+
+        const populated: CategoryPopulated[] = await Promise.all(
+            categories.map(async (category) => {
+                const dishes: DishPopulated[] =
+                    await this.dishesService.findByCategoryAndPopulate(
+                        category._id
+                    );
+                return { ...category, dishes };
+            })
+        );
+
+        return { ...menu, categories: populated || [] };
+    }
+
+    async getCategoriesByMenu(id: string) {
+        return await this.categoriesService.findByMenu(id);
     }
 }
