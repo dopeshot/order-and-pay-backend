@@ -26,10 +26,14 @@ export class TablesService {
             const table: TableDocument = await this.tableModel.create(
                 createTableDto
             );
+
+            this.logger.debug(
+                `The table (number = ${table.tableNumber}, id = ${table._id}) has been created successfully.`
+            );
             return table;
         } catch (error) {
             if (error.code == '11000') {
-                this.logger.debug(
+                this.logger.warn(
                     `Creating a table (number = ${createTableDto.tableNumber}) failed due to a conflict.`
                 );
                 throw new ConflictException('This table number already exists');
@@ -52,6 +56,9 @@ export class TablesService {
         const table: TableDocument = await this.tableModel.findById(id);
 
         if (!table) {
+            this.logger.debug(
+                `A table (id = ${id}) was requested but could not be found.`
+            );
             throw new NotFoundException();
         }
 
@@ -82,9 +89,15 @@ export class TablesService {
             throw new InternalServerErrorException();
         }
         if (!table) {
+            this.logger.warn(
+                `Updating table (id = ${id}) failed as it could not be found.`
+            );
             throw new NotFoundException();
         }
 
+        this.logger.debug(
+            `The table (id = ${table._id}) has been updated successfully.`
+        );
         return table;
     }
 
@@ -94,11 +107,14 @@ export class TablesService {
         );
 
         if (!table) {
+            this.logger.warn(
+                `Deleting table (id = ${table._id}) failed as it could not be found.`
+            );
             throw new NotFoundException();
         }
 
         this.logger.debug(
-            `The menu (id = ${id}) has been deleted successfully.`
+            `The table (id = ${id}) has been deleted successfully.`
         );
 
         return;
@@ -109,11 +125,14 @@ export class TablesService {
             _id: { $in: ids }
         });
         if (deletes.deletedCount === 0) {
+            this.logger.debug(
+                `Bulk delete failed as no tables were deleted. (Check passed Id list)`
+            );
             throw new NotFoundException();
         }
         // This is warn as it is something that could be dangerous
         this.logger.warn(
-            `The menus (ids = ${ids}) have been deleted successfully.`
+            `The tables (ids = ${ids}) have been deleted successfully.`
         );
     }
 

@@ -23,10 +23,13 @@ export class LabelsService {
     async create(createLabelDto: CreateLabelDto): Promise<LabelDocument> {
         try {
             const label = await this.labelModel.create(createLabelDto);
+            this.logger.debug(
+                `The label (id = ${label._id}) has been created successfully.`
+            );
             return label.toObject() as LabelDocument;
         } catch (error) {
             if (error.code == '11000') {
-                this.logger.debug(
+                this.logger.warn(
                     `Creating a label (title = ${createLabelDto.title}) failed due to a conflict.`
                 );
                 throw new ConflictException('This label title already exists');
@@ -47,11 +50,17 @@ export class LabelsService {
 
     async findOne(id: string): Promise<LabelDocument> {
         const label: LabelDocument = await this.labelModel.findById(id).lean();
-        if (!label) throw new NotFoundException();
+        if (!label) {
+            this.logger.debug(
+                `A label (id = ${id}) was requested but could not be found.`
+            );
+            throw new NotFoundException();
+        }
         return label;
     }
 
     async findRefs(id: string): Promise<DishDocument[]> {
+        this.logger.warn(`An unimplemented method has been called`);
         throw new NotImplementedException();
     }
 
@@ -66,7 +75,7 @@ export class LabelsService {
                 .lean();
         } catch (error) {
             if (error.code === 11000) {
-                this.logger.debug(
+                this.logger.warn(
                     `Updating a label (title = ${updateLabelDto.title}) failed due to a conflict.`
                 );
                 throw new ConflictException('This label title already exists');
@@ -77,7 +86,16 @@ export class LabelsService {
             /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
-        if (!label) throw new NotFoundException();
+        if (!label) {
+            this.logger.warn(
+                `Updating label (id = ${id}) failed as it could not be found.`
+            );
+            throw new NotFoundException();
+        }
+
+        this.logger.debug(
+            `The Category (id = ${id}) has been updated successfully.`
+        );
         return label;
     }
 
@@ -88,7 +106,12 @@ export class LabelsService {
             id
         );
 
-        if (!label) throw new NotFoundException();
+        if (!label) {
+            this.logger.warn(
+                `Deleting label (id = ${id}) failed as it could not be found.`
+            );
+            throw new NotFoundException();
+        }
 
         this.logger.debug(`Label (id = ${id}) has been deleted successfully.`);
 

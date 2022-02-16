@@ -28,10 +28,13 @@ export class CategoriesService {
     ): Promise<CategoryDocument> {
         try {
             const category = await this.categoryModel.create(createCategoryDto);
+            this.logger.debug(
+                `The Category (id = ${category._id}) has been created successfully.`
+            );
             return category.toObject() as CategoryDocument;
         } catch (error) {
             if (error.code == '11000') {
-                this.logger.debug(
+                this.logger.warn(
                     `Creating an category (title = ${createCategoryDto.title}) failed due to a conflict.`
                 );
                 throw new ConflictException(
@@ -54,7 +57,12 @@ export class CategoriesService {
         const category: CategoryDocument = await this.categoryModel
             .findById(id)
             .lean();
-        if (!category) throw new NotFoundException();
+        if (!category) {
+            this.logger.debug(
+                `A category (id = ${id}) was requested but could not be found.`
+            );
+            throw new NotFoundException();
+        }
         return category;
     }
 
@@ -73,7 +81,7 @@ export class CategoriesService {
                 .lean();
         } catch (error) {
             if (error.code === 11000) {
-                this.logger.debug(
+                this.logger.warn(
                     `Updating a category (title = ${updateCategoryDto.title}) failed due to a conflict.`
                 );
                 throw new ConflictException(
@@ -87,7 +95,16 @@ export class CategoriesService {
             /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
-        if (!category) throw new NotFoundException();
+        if (!category) {
+            this.logger.warn(
+                `A category (id = ${id}) update failed  as it could not be found.`
+            );
+            throw new NotFoundException();
+        }
+
+        this.logger.debug(
+            `The category (id = ${id}) has been updated successfully.`
+        );
         return category;
     }
 
@@ -97,7 +114,12 @@ export class CategoriesService {
         if (type === DeleteType.HARD) {
             const category = await this.categoryModel.findByIdAndDelete(id);
 
-            if (!category) throw new NotFoundException();
+            if (!category) {
+                this.logger.warn(
+                    `A category (id = ${id}) was requested but could not be found.`
+                );
+                throw new NotFoundException();
+            }
 
             // Delete dishes
             await this.dishModel.deleteMany({ category: id });
@@ -113,7 +135,12 @@ export class CategoriesService {
             status: Status.DELETED
         });
 
-        if (!category) throw new NotFoundException();
+        if (!category) {
+            this.logger.warn(
+                `A category (id = ${id}) was requested but could not be found.`
+            );
+            throw new NotFoundException();
+        }
 
         this.logger.debug(
             `The category (id = ${id}) has been soft deleted successfully.`

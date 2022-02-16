@@ -32,11 +32,14 @@ export class MenusService {
                 await this.updateActivation(menu._id);
             }
 
+            this.logger.debug(
+                `The menu (id = ${menu._id}) has been created successfully.`
+            );
             // There is no other way remove unwanted fields without toObject()
             return menu.toObject() as MenuDocument;
         } catch (error) {
             if (error.code === 11000 && error.keyPattern.title) {
-                this.logger.debug(
+                this.logger.warn(
                     `Creating a menu (title = ${createMenuDto}) failed due to a conflict.`
                 );
                 throw new ConflictException(
@@ -56,6 +59,9 @@ export class MenusService {
         const menu: MenuDocument = await this.menuModel.findById(id).lean();
 
         if (!menu) {
+            this.logger.debug(
+                `A menu (id = ${id}) was requested but could not be found.`
+            );
             throw new NotFoundException();
         }
 
@@ -76,7 +82,7 @@ export class MenusService {
                 .lean();
         } catch (error) {
             if (error.code === 11000 && error.keyPattern.title) {
-                this.logger.debug(
+                this.logger.warn(
                     `Updating a menu (title = ${updateMenuDto}) failed due to a conflict.`
                 );
                 throw new ConflictException(
@@ -89,14 +95,22 @@ export class MenusService {
             throw new InternalServerErrorException('Menu update failed');
         }
 
-        if (!updatedMenu) throw new NotFoundException('Menu not found');
-
+        if (!updatedMenu) {
+            this.logger.warn(
+                `Updating menu (id = ${id}) failed as it could not be found.`
+            );
+            throw new NotFoundException('Menu not found');
+        }
         if (updatedMenu.isActive) {
             this.logger.log(
                 `Update of menu ${updatedMenu.title} has altered activation status`
             );
             await this.updateActivation(id);
         }
+
+        this.logger.debug(
+            `The menu (id = ${id}) has been created successfully.`
+        );
         return updatedMenu;
     }
 
@@ -128,8 +142,12 @@ export class MenusService {
                 id
             );
 
-            if (!menu) throw new NotFoundException();
-
+            if (!menu) {
+                this.logger.warn(
+                    `Deleting menu (id = ${id}) failed as it could not be found.`
+                );
+                throw new NotFoundException();
+            }
             this.logger.debug(
                 `The menu (id = ${id}) has been deleted successfully.`
             );
@@ -142,7 +160,12 @@ export class MenusService {
             isActive: false
         });
 
-        if (!menu) throw new NotFoundException();
+        if (!menu) {
+            this.logger.warn(
+                `Deleting menu (id = ${id}) failed as it could not be found.`
+            );
+            throw new NotFoundException();
+        }
 
         this.logger.debug(
             `The menu (id = ${id}) has been soft deleted successfully.`

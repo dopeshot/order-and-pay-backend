@@ -22,10 +22,13 @@ export class DishesService {
     async create(createDishDto: CreateDishDto): Promise<DishDocument> {
         try {
             const dish = await this.dishModel.create(createDishDto);
+            this.logger.debug(
+                `The dish (id = ${dish._id}) has been created successfully.`
+            );
             return dish.toObject() as DishDocument;
         } catch (error) {
             if (error.code == '11000') {
-                this.logger.debug(
+                this.logger.warn(
                     `Creating a dish (title = ${createDishDto.title}) failed due to a conflict.`
                 );
                 throw new ConflictException('This dish title already exists');
@@ -45,7 +48,12 @@ export class DishesService {
 
     async findOne(id: string): Promise<DishDocument> {
         const dish: DishDocument = await this.dishModel.findById(id).lean();
-        if (!dish) throw new NotFoundException();
+        if (!dish) {
+            this.logger.debug(
+                `A dish (id = ${id}) was requested but could not be found.`
+            );
+            throw new NotFoundException();
+        }
         return dish;
     }
 
@@ -60,7 +68,7 @@ export class DishesService {
                 .lean();
         } catch (error) {
             if (error.code === 11000) {
-                this.logger.debug(
+                this.logger.warn(
                     `Updating a dish (title = ${updateDishDto.title}) failed due to a conflict.`
                 );
                 throw new ConflictException('This dish title already exists');
@@ -72,7 +80,14 @@ export class DishesService {
             /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
-        if (!dish) throw new NotFoundException();
+        if (!dish) {
+            this.logger.warn(
+                `Updating dish (id = ${id}) failed as it could not be found.`
+            );
+            throw new NotFoundException();
+        }
+
+        this.logger.debug(`Dish (id = ${id}) has been updated successfully.`);
         return dish;
     }
 
@@ -81,7 +96,12 @@ export class DishesService {
         if (type === DeleteType.HARD) {
             const dish = await this.dishModel.findByIdAndDelete(id);
 
-            if (!dish) throw new NotFoundException();
+            if (!dish) {
+                this.logger.warn(
+                    `Deleting dish (id = ${id}) failed as it could not be found.`
+                );
+                throw new NotFoundException();
+            }
 
             this.logger.debug(
                 `The dish (id = ${id}) has been deleted successfully.`
@@ -95,7 +115,12 @@ export class DishesService {
             status: Status.DELETED
         });
 
-        if (!dish) throw new NotFoundException();
+        if (!dish) {
+            this.logger.warn(
+                `Deleting dish (id = ${id}) failed as it could not be found.`
+            );
+            throw new NotFoundException();
+        }
 
         this.logger.debug(
             `The dish (id = ${id}) has been soft deleted successfully.`

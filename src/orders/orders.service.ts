@@ -82,10 +82,16 @@ export class OrdersService {
         }
 
         // This should never happen
-        if (!receivedOrder) throw new InternalServerErrorException();
-
+        if (!receivedOrder) {
+            this.logger.error(`An error occured while creating order`);
+            throw new InternalServerErrorException();
+        }
         // Emit SSE for admin frontend
         this.sseService.emitOrderEvent(OrderEventType.new, receivedOrder);
+
+        this.logger.debug(
+            `The Category (id = ${receivedOrder._id}) has been created successfully.`
+        );
 
         return receivedOrder;
     }
@@ -115,7 +121,12 @@ export class OrdersService {
             throw new InternalServerErrorException();
         }
 
-        if (!order) throw new NotFoundException();
+        if (!order) {
+            this.logger.warn(
+                `Updating order (id = ${id}) failed as it could not be found.`
+            );
+            throw new NotFoundException();
+        }
 
         // Send SSE event to restaurant
         this.logger.debug(
@@ -129,7 +140,9 @@ export class OrdersService {
         } else {
             this.sseService.emitOrderEvent(OrderEventType.update, order);
         }
-
+        this.logger.debug(
+            `The order (id = ${order._id}) has been updated successfully.`
+        );
         return order;
     }
 }

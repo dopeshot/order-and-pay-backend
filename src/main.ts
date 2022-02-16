@@ -1,4 +1,9 @@
-import { Logger, RequestMethod, ValidationPipe } from '@nestjs/common';
+import {
+    Logger,
+    LogLevel,
+    RequestMethod,
+    ValidationPipe
+} from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -6,8 +11,9 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+    // Typecast as this is the only way to read loglevel from env
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-        logger: ['error', 'warn']
+        logger: process.env.LOGLEVEL.split(',') as LogLevel[]
     });
 
     app.setBaseViewsDir(join(__dirname, '..', 'views'));
