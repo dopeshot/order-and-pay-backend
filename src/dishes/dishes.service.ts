@@ -116,5 +116,8 @@ export class DishesService {
             { labels: id },
             { $pull: { labels: id } }
         );
+
+        // TODO: add Logger here after @Coffe implemented it
+        //console.log(result);
     }
 }
