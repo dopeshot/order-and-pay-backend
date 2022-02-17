@@ -13,6 +13,7 @@ import {
     UseGuards,
     UseInterceptors
 } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
@@ -37,9 +38,7 @@ export class UsersController {
         isArray: true
     })
     async getAllUsers(): Promise<User[]> {
-        return (await this.usersService.findAll()).map(
-            (user) => new User(user)
-        );
+        return plainToClass(User, await this.usersService.findAll());
     }
 
     @Get('/profile')
@@ -50,7 +49,10 @@ export class UsersController {
         type: User
     })
     async getProfile(@Request() req): Promise<User> {
-        return new User(await this.usersService.findOneById(req.user.userId));
+        return plainToClass(
+            User,
+            await this.usersService.findOneById(req.user.userId)
+        );
     }
 
     @Patch('/:id')
@@ -74,7 +76,7 @@ export class UsersController {
             updateUserDto,
             req.user
         );
-        return new User(user);
+        return plainToClass(User, user);
     }
 
     @Delete('/:id')

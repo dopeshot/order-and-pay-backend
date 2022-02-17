@@ -1,5 +1,5 @@
 @HOST = http://localhost:3001
-@catId = 61f01a524a75d303641c9dbc
+@categoryId = 61f01b2d7b82bb3d86f9035b
 
 ### POST one category
 POST {{HOST}}/admin/categories
@@ -55,10 +55,10 @@ Content-Type: application/json
 GET {{HOST}}/admin/categories
 
 ### GET one category
-GET {{HOST}}/admin/categories/{{catId}}
+GET {{HOST}}/admin/categories/{{categoryId}}
 
 ### GET one categories refs
-GET {{HOST}}/admin/categories/{{catId}}/refs
+GET {{HOST}}/admin/categories/{{categoryId}}/refs
 
 ### PATCH one category
 PATCH {{HOST}}/admin/categories
@@ -111,4 +111,4 @@ Content-Type: application/json
 }
 
 ### DELETE one category
-DELETE {{HOST}}/admin/categories/{{catId}}
+DELETE {{HOST}}/admin/categories/{{categoryId}}?type=hard

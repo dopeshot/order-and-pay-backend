@@ -7,6 +7,7 @@ import {
     Patch
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { UpdateOrderDto } from './dtos/update-order.dto';
 import { Order } from './entities/order.entity';
@@ -24,9 +25,7 @@ export class OrdersController {
         type: Order
     })
     async getAll() {
-        return (await this.orderService.findAll()).map(
-            (order) => new Order(order)
-        );
+        return plainToClass(Order, await this.orderService.findAll());
     }
 
     @Get('current')
@@ -39,9 +38,7 @@ export class OrdersController {
         type: Order
     })
     async getActive() {
-        return (await this.orderService.findActive()).map(
-            (order) => new Order(order)
-        );
+        return plainToClass(Order, await this.orderService.findActive());
     }
 
     @Patch(':id')
@@ -60,6 +57,9 @@ export class OrdersController {
         @Body() updateData: UpdateOrderDto,
         @Param() @Param() { id }: MongoIdDto
     ) {
-        return new Order(await this.orderService.update(id, updateData));
+        return plainToClass(
+            Order,
+            await this.orderService.update(id, updateData)
+        );
     }
 }

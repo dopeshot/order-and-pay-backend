@@ -14,6 +14,7 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 import { Dish } from '../dishes/entities/dish.entity';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
@@ -41,7 +42,8 @@ export class CategoriesController {
     })
     @Post()
     async create(@Body() createCategoryDto: CreateCategoryDto) {
-        return new Category(
+        return plainToClass(
+            Category,
             await this.categoriesService.create(createCategoryDto)
         );
     }
@@ -55,9 +57,7 @@ export class CategoriesController {
     })
     @Get()
     async findAll() {
-        return (await this.categoriesService.findAll()).map(
-            (category) => new Category(category)
-        );
+        return plainToClass(Category, await this.categoriesService.findAll());
     }
 
     @ApiOperation({ summary: 'Get one category', tags: ['categories'] })
@@ -72,7 +72,7 @@ export class CategoriesController {
     })
     @Get(':id')
     async findOne(@Param() { id }: MongoIdDto) {
-        return new Category(await this.categoriesService.findOne(id));
+        return plainToClass(Category, await this.categoriesService.findOne(id));
     }
 
     @ApiOperation({
@@ -87,9 +87,7 @@ export class CategoriesController {
     })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
-        return (await this.categoriesService.findDishes(id)).map(
-            (dish) => new Dish(dish)
-        );
+        return plainToClass(Dish, await this.categoriesService.findDishes(id));
     }
 
     @ApiOperation({ summary: 'Patch a category', tags: ['categories'] })
@@ -111,7 +109,8 @@ export class CategoriesController {
         @Param() { id }: MongoIdDto,
         @Body() updateCategoryDto: UpdateCategoryDto
     ) {
-        return new Category(
+        return plainToClass(
+            Category,
             await this.categoriesService.update(id, updateCategoryDto)
         );
     }

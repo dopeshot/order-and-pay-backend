@@ -47,10 +47,6 @@ export class Dish {
     @Expose()
     @Prop({ required: true, ref: 'Label' })
     labels: string[];
-
-    constructor(partial: Partial<DishDocument>) {
-        Object.assign(this, partial);
-    }
 }
 
 export type DishDocument = Dish & Document;

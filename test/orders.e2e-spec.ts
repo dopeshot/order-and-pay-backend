@@ -1,6 +1,7 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToClass } from 'class-transformer';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { ClientModule } from '../src/client/client.module';
@@ -12,7 +13,7 @@ import { OrdersModule } from '../src/orders/orders.module';
 import { OrderEventType } from '../src/sse/enums/events.enum';
 import { SseModule } from '../src/sse/sse.module';
 import { SseService } from '../src/sse/sse.service';
-import { TableDocument } from '../src/tables/entities/tables.entity';
+import { TableDocument } from '../src/tables/entities/table.entity';
 import { TablesModule } from '../src/tables/tables.module';
 import {
     closeInMongodConnection,
@@ -107,7 +108,9 @@ describe('Ordercontroller (e2e)', () => {
             expect(res.body.PaymentStatus.status).toBe(PaymentStatus.RECEIVED);
 
             // Test response type
-            expect(res.body).toMatchObject(new Order(res.body));
+            expect(res.body).toMatchObject(
+                plainToClass(Order, res.body, { exposeUnsetFields: false })
+            );
         });
 
         it('should send a sse message (with valid input)', async () => {

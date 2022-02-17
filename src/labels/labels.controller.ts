@@ -13,6 +13,7 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 import { Dish } from '../dishes/entities/dish.entity';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { CreateLabelDto } from './dto/create-label.dto';
@@ -39,7 +40,10 @@ export class LabelsController {
         description: 'The label title already exists'
     })
     async create(@Body() createLabelDto: CreateLabelDto) {
-        return new Label(await this.labelsService.create(createLabelDto));
+        return plainToClass(
+            Label,
+            await this.labelsService.create(createLabelDto)
+        );
     }
 
     @Get()
@@ -51,9 +55,7 @@ export class LabelsController {
         isArray: true
     })
     async findAll() {
-        return (await this.labelsService.findAll()).map(
-            (label) => new Label(label)
-        );
+        return plainToClass(Label, await this.labelsService.findAll());
     }
 
     @Get(':id')
@@ -68,7 +70,7 @@ export class LabelsController {
         description: 'The label could not be found'
     })
     async findOne(@Param() { id }: MongoIdDto) {
-        return new Label(await this.labelsService.findOne(id));
+        return plainToClass(Label, await this.labelsService.findOne(id));
     }
 
     @ApiOperation({
@@ -83,9 +85,7 @@ export class LabelsController {
     })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
-        return (await this.labelsService.findDishes(id)).map(
-            (dish) => new Dish(dish)
-        );
+        return plainToClass(Dish, await this.labelsService.findDishes(id));
     }
 
     @ApiOperation({ summary: 'Patch a label', tags: ['labels'] })
@@ -107,7 +107,10 @@ export class LabelsController {
         @Param() { id }: MongoIdDto,
         @Body() updateLabelDto: UpdateLabelDto
     ) {
-        return new Label(await this.labelsService.update(id, updateLabelDto));
+        return plainToClass(
+            Label,
+            await this.labelsService.update(id, updateLabelDto)
+        );
     }
 
     @ApiOperation({

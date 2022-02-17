@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { PartialType } from '@nestjs/swagger';
 import { Expose, Transform, Type } from 'class-transformer';
 import {
     IsEnum,
@@ -16,7 +15,6 @@ import { Menu } from '../../menus/entities/menu.entity';
 import { Status } from '../../menus/enums/status.enum';
 import { ChoiceType } from '../enums/choice-type';
 
-Schema();
 export class Option {
     @Expose()
     @Prop()
@@ -35,7 +33,7 @@ export class Option {
     @IsNumber()
     price: number;
 }
-@Schema()
+
 export class Choice {
     @IsNumber()
     @IsNotEmpty()
@@ -100,14 +98,10 @@ export class Category {
     @Expose()
     @Prop({ ref: Menu.name })
     menu: string;
-
-    constructor(partial: Partial<CategoryDocument>) {
-        Object.assign(this, partial);
-    }
 }
 
 export type CategoryDocument = Category & Document;
-export class CategoryPopulated extends PartialType(Category) {
+export class CategoryPopulated extends Category {
     @Expose()
     @Type(() => DishPopulated)
     dishes: DishPopulated[];

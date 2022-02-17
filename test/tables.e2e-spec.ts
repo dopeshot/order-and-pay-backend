@@ -1,9 +1,10 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToClass } from 'class-transformer';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
-import { TableDocument } from '../src/tables/entities/tables.entity';
+import { Table, TableDocument } from '../src/tables/entities/table.entity';
 import { TablesModule } from '../src/tables/tables.module';
 import {
     closeInMongodConnection,
@@ -52,9 +53,9 @@ describe('TableController (e2e)', () => {
                     .send(getSampleTable())
                     .expect(HttpStatus.CREATED);
 
-                // // Test for class ResponseTable
-                // const responseTable = new ResponseTable(res.body);
-                // expect(res.body).toMatchObject(responseTable);
+                // Test for class Table
+                const table = plainToClass(Table, res.body);
+                expect(res.body).toMatchObject(table);
 
                 expect(res.body.tableNumber).toEqual(
                     getSampleTable().tableNumber
@@ -127,9 +128,9 @@ describe('TableController (e2e)', () => {
                     .get(`/tables/${getSampleTable()._id}`)
                     .expect(HttpStatus.OK);
 
-                // // Test for class ResponseTable
-                // const responseTable = new ResponseTable(res.body);
-                // expect(res.body).toMatchObject(responseTable);
+                // Test for class Table
+                const table = plainToClass(Table, res.body);
+                expect(res.body).toMatchObject(table);
 
                 expect(res.body).toEqual({
                     ...getSampleTable(),
@@ -159,9 +160,9 @@ describe('TableController (e2e)', () => {
                     .send({ tableNumber: '13', capacity: 3 })
                     .expect(HttpStatus.OK);
 
-                // // Test for class ResponseTable
-                // const responseTable = new ResponseTable(res.body);
-                // expect(res.body).toMatchObject(responseTable);
+                // Test for class Table
+                const table = plainToClass(Table, res.body);
+                expect(res.body).toMatchObject(table);
 
                 expect(res.body.tableNumber).toEqual('13');
                 expect(res.body.capacity).toEqual(3);

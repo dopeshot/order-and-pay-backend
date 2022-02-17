@@ -1,6 +1,7 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToClass } from 'class-transformer';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { Dish, DishDocument } from '../src/dishes/entities/dish.entity';
@@ -61,7 +62,7 @@ describe('LabelsController (e2e)', () => {
                 .send(getSampleLabel())
                 .expect(HttpStatus.CREATED);
 
-            const label = new Label(res.body);
+            const label = plainToClass(Label, res.body);
             expect(res.body).toMatchObject(label);
 
             expect(res.body.title).toBe(getSampleLabel().title);
@@ -138,7 +139,7 @@ describe('LabelsController (e2e)', () => {
                 .expect(HttpStatus.OK);
 
             expect(res.body).toHaveLength(1);
-            const label = new Label(res.body[0]);
+            const label = plainToClass(Label, res.body[0]);
             expect(res.body[0]).toMatchObject(label);
         });
         it('should return an empty array if database is empty', async () => {
@@ -157,7 +158,7 @@ describe('LabelsController (e2e)', () => {
                 .get(`${path}/${getLabelSeeder()._id}`)
                 .expect(HttpStatus.OK);
 
-            const label = new Label(res.body);
+            const label = plainToClass(Label, res.body);
             expect(res.body).toMatchObject(label);
         });
 
@@ -176,7 +177,8 @@ describe('LabelsController (e2e)', () => {
                 .get(`${path}/${getLabelSeeder()._id}/refs`)
                 .expect(HttpStatus.OK);
 
-            const dish = new Dish(res.body[0]);
+            const dish = plainToClass(Dish, res.body[0]);
+
             expect(res.body[0]).toMatchObject(dish);
 
             expect(res.body).toHaveLength(1);
@@ -198,7 +200,7 @@ describe('LabelsController (e2e)', () => {
                 .send({ title: 'New Title', icon: 'New Icon' })
                 .expect(HttpStatus.OK);
 
-            const label = new Label(res.body);
+            const label = plainToClass(Label, res.body);
             expect(res.body).toMatchObject(label);
             expect(res.body.title).toBe('New Title');
             expect(res.body.icon).toBe('New Icon');

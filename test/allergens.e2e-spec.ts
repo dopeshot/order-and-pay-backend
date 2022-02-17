@@ -1,6 +1,7 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToClass } from 'class-transformer';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { AllergensModule } from '../src/allergens/allergens.module';
@@ -65,7 +66,8 @@ describe('AllergensController (e2e)', () => {
                 .send(getSampleAllergen())
                 .expect(HttpStatus.CREATED);
 
-            const allergen = new Allergen(res.body);
+            // TODO:
+            const allergen = plainToClass(Allergen, res.body);
             expect(res.body).toMatchObject(allergen);
 
             expect(res.body.title).toBe(getSampleAllergen().title);
@@ -142,7 +144,7 @@ describe('AllergensController (e2e)', () => {
                 .expect(HttpStatus.OK);
 
             expect(res.body).toHaveLength(1);
-            const allergen = new Allergen(res.body[0]);
+            const allergen = plainToClass(Allergen, res.body[0]);
             expect(res.body[0]).toMatchObject(allergen);
         });
         it('should return an empty array if database is empty', async () => {
@@ -161,7 +163,7 @@ describe('AllergensController (e2e)', () => {
                 .get(`${path}/${getAllergenSeeder()._id}`)
                 .expect(HttpStatus.OK);
 
-            const allergen = new Allergen(res.body);
+            const allergen = plainToClass(Allergen, res.body);
             expect(res.body).toMatchObject(allergen);
         });
 
@@ -180,7 +182,7 @@ describe('AllergensController (e2e)', () => {
                 .get(`${path}/${getAllergenSeeder()._id}/refs`)
                 .expect(HttpStatus.OK);
 
-            const dish = new Dish(res.body[0]);
+            const dish = plainToClass(Dish, res.body[0]);
             expect(res.body[0]).toMatchObject(dish);
 
             expect(res.body).toHaveLength(1);
@@ -202,7 +204,7 @@ describe('AllergensController (e2e)', () => {
                 .send({ title: 'New Title', icon: 'New Icon' })
                 .expect(HttpStatus.OK);
 
-            const allergen = new Allergen(res.body);
+            const allergen = plainToClass(Allergen, res.body);
             expect(res.body).toMatchObject(allergen);
             expect(res.body.title).toBe('New Title');
             expect(res.body.icon).toBe('New Icon');

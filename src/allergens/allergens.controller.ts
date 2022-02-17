@@ -13,6 +13,7 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 import { Dish } from '../dishes/entities/dish.entity';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { AllergensService } from './allergens.service';
@@ -39,7 +40,8 @@ export class AllergensController {
         description: 'The label title already exists'
     })
     async create(@Body() createAllergenDto: CreateAllergenDto) {
-        return new Allergen(
+        return plainToClass(
+            Allergen,
             await this.allergensService.create(createAllergenDto)
         );
     }
@@ -53,9 +55,7 @@ export class AllergensController {
         isArray: true
     })
     async findAll() {
-        return (await this.allergensService.findAll()).map(
-            (allergen) => new Allergen(allergen)
-        );
+        return plainToClass(Allergen, await this.allergensService.findAll());
     }
 
     @Get(':id')
@@ -70,7 +70,7 @@ export class AllergensController {
         description: 'The allergen could not be found'
     })
     async findOne(@Param() { id }: MongoIdDto) {
-        return new Allergen(await this.allergensService.findOne(id));
+        return plainToClass(Allergen, await this.allergensService.findOne(id));
     }
 
     @ApiOperation({
@@ -85,9 +85,7 @@ export class AllergensController {
     })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
-        return (await this.allergensService.findDishes(id)).map(
-            (dish) => new Dish(dish)
-        );
+        return plainToClass(Dish, await this.allergensService.findDishes(id));
     }
 
     @ApiOperation({ summary: 'Patch a allergen', tags: ['allergens'] })
@@ -109,7 +107,8 @@ export class AllergensController {
         @Param() { id }: MongoIdDto,
         @Body() updateAllergenDto: UpdateAllergenDto
     ) {
-        return new Allergen(
+        return plainToClass(
+            Allergen,
             await this.allergensService.update(id, updateAllergenDto)
         );
     }

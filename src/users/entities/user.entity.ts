@@ -26,10 +26,6 @@ export class User {
     // Same as with email field
     @Prop({ default: UserStatus.ACTIVE })
     status: UserStatus;
-
-    constructor(partial: Partial<UserDocument>) {
-        Object.assign(this, partial);
-    }
 }
 
 export type UserDocument = User & Document;
