@@ -15,7 +15,7 @@ export class SseService {
     }
 
     subscribe(event: string): Observable<unknown> {
-        // see here https://stackoverflow.com/questions/67202527/can-we-use-server-sent-events-in-nestjs-without-using-interval
+        // See here https://stackoverflow.com/questions/67202527/can-we-use-server-sent-events-in-nestjs-without-using-interval
         this.logger.debug(`New subscription to ${event}`);
         return fromEvent(this.emitter, event);
     }

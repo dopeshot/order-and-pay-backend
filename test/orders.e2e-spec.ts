@@ -151,7 +151,7 @@ describe('Ordercontroller (e2e)', () => {
         });
 
         // TODO: Should fail with invalid dishes and no dishes
-        // should also fail with invalid transactionId
+        // Should also fail with invalid transactionId
     });
 
     describe('/orders (GET)', () => {
@@ -213,7 +213,7 @@ describe('Ordercontroller (e2e)', () => {
 
     describe('/orders/:id (PATCH)', () => {
         it('should update a given order', async () => {
-            //New unseen table that cannot be in any order data
+            // New unseen table that cannot be in any order data
             await tableModel.insertMany({
                 _id: 'aaaaaaaaaaaaaaaaaaaaaa69',
                 tableNumber: 'C9',

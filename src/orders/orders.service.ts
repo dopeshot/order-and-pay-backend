@@ -100,7 +100,7 @@ export class OrdersService {
         this.logger.warn(
             `Payment validation has been called, however this is not implemented correctly yet`
         );
-        //TODO: Implement this
+        // TODO: This should communicate with payment api, leave as mock for now
         return true;
     }
 

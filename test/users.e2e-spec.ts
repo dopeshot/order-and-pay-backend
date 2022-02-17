@@ -76,7 +76,7 @@ describe('UserModule (e2e)', () => {
 
                 expect(res.body.length).toBe(1);
 
-                // test user response
+                // Test user response
                 const usr = plainToClass(User, res.body);
                 expect(res.body).toMatchObject(usr);
             });
