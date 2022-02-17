@@ -13,7 +13,7 @@ import { OrdersModule } from '../src/orders/orders.module';
 import { OrderEventType } from '../src/sse/enums/events.enum';
 import { SseModule } from '../src/sse/sse.module';
 import { SseService } from '../src/sse/sse.service';
-import { TableDocument } from '../src/tables/entities/tables.entity';
+import { TableDocument } from '../src/tables/entities/table.entity';
 import { TablesModule } from '../src/tables/tables.module';
 import {
     closeInMongodConnection,

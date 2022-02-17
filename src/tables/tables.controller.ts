@@ -13,12 +13,13 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { BulkDeleteTableDto } from './dto/bulkDelete-table.dto';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
+import { Table } from './entities/table.entity';
 import { TablesService } from './tables.service';
-import { ResponseTable } from './types/response-table';
 
 @ApiTags('tables')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -31,17 +32,16 @@ export class TablesController {
     @ApiResponse({
         status: HttpStatus.CREATED,
         description: 'The table has been created',
-        type: ResponseTable
+        type: Table
     })
     @ApiResponse({
         status: HttpStatus.CONFLICT,
         description: 'The table title already exists'
     })
     @Post()
-    async create(
-        @Body() createTableDto: CreateTableDto
-    ): Promise<ResponseTable> {
-        return new ResponseTable(
+    async create(@Body() createTableDto: CreateTableDto): Promise<Table> {
+        return plainToClass(
+            Table,
             await this.tableService.create(createTableDto)
         );
     }
@@ -50,22 +50,19 @@ export class TablesController {
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The tables available in the database',
-        type: ResponseTable,
+        type: Table,
         isArray: true
     })
     @Get()
-    async findAll(): Promise<ResponseTable[]> {
-        const result: ResponseTable[] = (await this.tableService.findAll()).map(
-            (table) => new ResponseTable(table)
-        );
-        return result;
+    async findAll(): Promise<Table[]> {
+        return plainToClass(Table, await this.tableService.findAll());
     }
 
     @ApiOperation({ summary: 'Get one table', tags: ['tables'] })
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The table has been found',
-        type: ResponseTable
+        type: Table
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
@@ -74,15 +71,15 @@ export class TablesController {
     @Get(':id')
     //@UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Get information of one table via id' })
-    async findOne(@Param() { id }: MongoIdDto): Promise<ResponseTable> {
-        return new ResponseTable(await this.tableService.findOne(id));
+    async findOne(@Param() { id }: MongoIdDto): Promise<Table> {
+        return plainToClass(Table, await this.tableService.findOne(id));
     }
 
     @ApiOperation({ summary: 'Patch a table', tags: ['tables'] })
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The table has been updated',
-        type: ResponseTable
+        type: Table
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
@@ -96,8 +93,9 @@ export class TablesController {
     async update(
         @Param() { id }: MongoIdDto,
         @Body() updateTableDto: UpdateTableDto
-    ): Promise<ResponseTable> {
-        return new ResponseTable(
+    ): Promise<Table> {
+        return plainToClass(
+            Table,
             await this.tableService.update(id, updateTableDto)
         );
     }
@@ -133,7 +131,7 @@ export class TablesController {
     }
 
     @Post('/migrate')
-    //@UseGuards(JwtAuthGuard)
+    //@UseGuards(JwtAuthGuard) TODO: Maybe even envGuard
     @ApiOperation({ summary: 'Create multiple tables' })
     migrate() {
         return this.tableService.migrate();

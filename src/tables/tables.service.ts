@@ -10,7 +10,7 @@ import { DeleteResult } from 'mongodb';
 import { Model } from 'mongoose';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
-import { TableDocument } from './entities/tables.entity';
+import { TableDocument } from './entities/table.entity';
 import { getMigrateTables } from './sampleTables/migrateTables';
 
 @Injectable()
@@ -23,14 +23,12 @@ export class TablesService {
     async create(createTableDto: CreateTableDto): Promise<TableDocument> {
         try {
             // This is currently of type any due to no other way to access the createdAt property
-            const table: TableDocument = await this.tableModel.create(
-                createTableDto
-            );
+            const table = await this.tableModel.create(createTableDto);
 
             this.logger.debug(
                 `The table (number = ${table.tableNumber}, id = ${table._id}) has been created successfully.`
             );
-            return table;
+            return table.toObject() as TableDocument;
         } catch (error) {
             if (error.code == '11000') {
                 this.logger.warn(
@@ -47,13 +45,13 @@ export class TablesService {
     }
 
     async findAll(): Promise<TableDocument[]> {
-        const tables: TableDocument[] = await this.tableModel.find();
+        const tables: TableDocument[] = await this.tableModel.find().lean();
 
         return tables;
     }
 
     async findOne(id: string): Promise<TableDocument> {
-        const table: TableDocument = await this.tableModel.findById(id);
+        const table: TableDocument = await this.tableModel.findById(id).lean();
 
         if (!table) {
             this.logger.debug(
@@ -71,13 +69,11 @@ export class TablesService {
     ): Promise<TableDocument> {
         let table: TableDocument;
         try {
-            table = await this.tableModel.findByIdAndUpdate(
-                id,
-                updateTableDto,
-                {
+            table = await this.tableModel
+                .findByIdAndUpdate(id, updateTableDto, {
                     new: true
-                }
-            );
+                })
+                .lean();
         } catch (error) {
             if (error.code == '11000') {
                 this.logger.debug(
@@ -102,9 +98,9 @@ export class TablesService {
     }
 
     async delete(id: string): Promise<void> {
-        const table: TableDocument = await this.tableModel.findByIdAndDelete(
-            id
-        );
+        const table: TableDocument = await this.tableModel
+            .findByIdAndDelete(id)
+            .lean();
 
         if (!table) {
             this.logger.warn(
