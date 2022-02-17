@@ -1,6 +1,7 @@
 import {
     Injectable,
     InternalServerErrorException,
+    Logger,
     UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -16,6 +17,7 @@ import { RegisterDto } from './dto/register.dto';
 export class AuthService {
     private CLIENT_ID: string;
     private CLIENT_SECRET: string;
+    private readonly logger = new Logger(AuthService.name);
 
     constructor(
         private readonly userService: UsersService,
@@ -35,9 +37,10 @@ export class AuthService {
         const user: User = await this.userService.create(credentials);
 
         /* istanbul ignore next */
-        if (!user)
+        if (!user) {
+            this.logger.error(`User could not be created`);
             throw new InternalServerErrorException('User could not be created');
-
+        }
         // Generate and return JWT
         return await this.createLoginPayload(user);
     }
@@ -61,18 +64,25 @@ export class AuthService {
 
         // Check if user exists
         if (!user) {
+            this.logger.warn(
+                `User tried to login in but user did not exist.  If this happens often, there might be a brute force attack`
+            );
             throw new UnauthorizedException(
                 `Login Failed due to invalid credentials`
             );
         }
         // Check if password is correct
         if (!(await bcrypt.compare(password, user.password))) {
+            this.logger.warn(
+                `User tried to login in password did not match. If this happens often, there might be a brute force attack`
+            );
             throw new UnauthorizedException(
                 `Login Failed due to invalid credentials`
             );
         }
 
         if (user.status === UserStatus.BANNED) {
+            this.logger.debug(`A banned user tried to log in`);
             throw new UnauthorizedException(
                 `This user is banned. Please contact the administrator`
             );
@@ -102,21 +112,32 @@ export class AuthService {
         try {
             user = await this.userService.findOneById(userId);
         } catch (error) {
+            this.logger.warn(
+                `User tried to login with JWT containing an invalid id. This might indicicate JWT manipulation`
+            );
             // This is necessary as a not found exception would overwrite the guard response
             return false;
         }
 
         /* istanbul ignore next */
-        if (!user) return false; // This should never happen but just in case
-
+        if (!user) {
+            this.logger.warn(
+                `An unusual error occured while trying to validate JWT. This might indicicate JWT manipulation or internal server problems`
+            );
+            return false; // This should never happen but just in case
+        }
         if (
             user.status !== UserStatus.ACTIVE &&
             user.status !== UserStatus.UNVERIFIED
         ) {
+            this.logger.debug(
+                `A user tried to login with a ${user.status} account`
+            );
             // TODO: Add status check once we decided on how to handle reported user
             return false;
         }
 
+        this.logger.debug(`A user logged in successfuly`);
         return user;
     }
 }
