@@ -15,10 +15,6 @@ export class Label {
     @Expose()
     @Prop()
     icon: string;
-
-    constructor(partial: Partial<LabelDocument>) {
-        Object.assign(this, partial);
-    }
 }
 
 export type LabelDocument = Label & Document;

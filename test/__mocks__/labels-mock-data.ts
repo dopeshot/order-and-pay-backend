@@ -25,5 +25,7 @@ export const getDishWithReference = () => ({
     title: 'title',
     price: 100,
     category: '1234567aaaaaaaaaaaaaaaaa',
-    labels: ['123aaaaaaaaaaaaaaaaaaaaa', getLabelSeeder()._id]
+    labels: ['123aaaaaaaaaaaaaaaaaaaaa', getLabelSeeder()._id],
+    description: 'something',
+    image: 'someImage'
 });

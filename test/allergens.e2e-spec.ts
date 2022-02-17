@@ -182,7 +182,7 @@ describe('AllergensController (e2e)', () => {
                 .get(`${path}/${getAllergenSeeder()._id}/refs`)
                 .expect(HttpStatus.OK);
 
-            const dish = new Dish(res.body[0]);
+            const dish = plainToClass(Dish, res.body[0]);
             expect(res.body[0]).toMatchObject(dish);
 
             expect(res.body).toHaveLength(1);
