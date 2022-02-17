@@ -1,27 +1,18 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
-import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './strategies/local/local.strategy';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt/jwt.strategy';
-import { GoogleStrategy } from './strategies/google/google.strategy';
-import { FacebookStrategy } from './strategies/facebook/facebook.strategy';
-import { DiscordStrategy } from './strategies/discord/discord.strategy';
+import { LocalStrategy } from './strategies/local/local.strategy';
 
 @Module({
     controllers: [AuthController],
-    providers: [
-        AuthService,
-        LocalStrategy,
-        JwtStrategy,
-        GoogleStrategy,
-        FacebookStrategy,
-        DiscordStrategy
-    ],
+    providers: [AuthService, LocalStrategy, JwtStrategy],
     imports: [
+        ConfigModule,
         UsersModule,
         PassportModule,
         JwtModule.registerAsync({
@@ -34,6 +25,7 @@ import { DiscordStrategy } from './strategies/discord/discord.strategy';
             }),
             inject: [ConfigService]
         })
-    ]
+    ],
+    exports: [JwtStrategy, JwtModule]
 })
 export class AuthModule {}

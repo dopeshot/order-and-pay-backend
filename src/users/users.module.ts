@@ -1,31 +1,20 @@
-import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { UserController } from './user.controller';
+import { forwardRef, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { PassportModule } from '@nestjs/passport';
+import { AuthModule } from '../auth/auth.module';
 import { User, UserSchema } from './entities/user.entity';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
-import { JWTVerifyStrategy } from './guards/mailVerify-jwt.strategy';
-import { MailModule } from '../mail/mail.module';
-
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            useFactory: (configService: ConfigService) => ({
-                secret: configService.get<string>('VERIFY_JWT_SECRET'),
-                signOptions: {
-                    expiresIn: configService.get<string>('VERIFY_JWT_EXPIRESIN')
-                }
-            }),
-            inject: [ConfigService]
-        }),
         ConfigModule,
-        MailModule
+        PassportModule,
+        forwardRef(() => AuthModule) // Circular dependency...its either this or multiple instances of the jwt module
     ],
-    controllers: [UserController],
-    providers: [UsersService, JWTVerifyStrategy],
+    controllers: [UsersController],
+    providers: [UsersService],
     exports: [UsersService]
 })
 export class UsersModule {}

@@ -1,6 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../../src/auth/auth.service';
-import { Role } from '../../src/users/enums/role.enum';
 import { UserStatus } from '../../src/users/enums/status.enum';
 // TODO: Is this the best way to do this?
 import { UsersService } from '../../src/users/users.service';
@@ -11,7 +10,7 @@ let jwtService: JwtService = new JwtService({
         expiresIn: '10h'
     }
 });
-const userService: UsersService = new UsersService(null, jwtService, null);
+const userService: UsersService = new UsersService(null);
 const authService: AuthService = new AuthService(null, jwtService);
 
 let user = {
@@ -19,9 +18,7 @@ let user = {
     username: 'mock',
     email: 'mock@mock.mock',
     password: '',
-    role: Role.USER,
-    status: UserStatus.ACTIVE,
-    provider: ''
+    status: UserStatus.ACTIVE
 };
 
 let admin = {
@@ -29,9 +26,7 @@ let admin = {
     username: 'admin',
     email: 'discordmod@admin.mock',
     password: '',
-    role: Role.ADMIN,
-    status: UserStatus.ACTIVE,
-    provider: ''
+    status: UserStatus.ACTIVE
 };
 
 export const getTestUser = async () => {
@@ -49,9 +44,4 @@ export const getTestAdmin = async () => {
 export const getJWT = async (x: any) => {
     let token = await authService.createLoginPayload(x as any);
     return token.access_token;
-};
-
-export const getUserVerify = async (user: any) => {
-    let token = await userService.generateVerifyCode(user as any);
-    return token;
 };

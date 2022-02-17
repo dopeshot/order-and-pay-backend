@@ -1,4 +1,7 @@
 ## Overview
+
+![codecov](https://codecov.io/gh/dopeshot/order-and-pay-backend/branch/main/graph/badge.svg?token=RI1XZPSHEV?)
+
 This is the backend for the order and pay app.
 ## Content
 The only file a dev needs is the .env file. This can be found on discord in the corresponding channel.
