@@ -100,10 +100,6 @@ export class Category {
     @Expose()
     @Prop({ ref: Menu.name })
     menu: string;
-
-    constructor(partial: Partial<CategoryDocument>) {
-        Object.assign(this, partial);
-    }
 }
 
 export type CategoryDocument = Category & Document;

@@ -29,10 +29,6 @@ export class Order {
     @Expose()
     @Prop({ default: OrderStatus.RECEIVED })
     Status: OrderStatus;
-
-    constructor(partial: Partial<OrderDocument>) {
-        Object.assign(this, partial);
-    }
 }
 
 export type OrderDocument = Order & Document;
