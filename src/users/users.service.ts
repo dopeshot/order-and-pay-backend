@@ -3,6 +3,7 @@ import {
     ForbiddenException,
     Injectable,
     InternalServerErrorException,
+    Logger,
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -16,6 +17,7 @@ import { UserStatus } from './enums/status.enum';
 
 @Injectable()
 export class UsersService {
+    private readonly logger = new Logger(UsersService.name);
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>
     ) {}
@@ -45,12 +47,26 @@ export class UsersService {
 
             const result = await user.save();
 
+            this.logger.debug(
+                `A user has been sucessfully created: ${result._id}`
+            );
             return result;
         } catch (error) {
-            if (error.code === 11000 && error.keyPattern.username)
+            if (error.code === 11000 && error.keyPattern.username) {
+                this.logger.warn(
+                    `Creating a user (username = ${credentials.username}) failed due to a conflict.`
+                );
                 throw new ConflictException('Username is already taken.');
-            else if (error.code === 11000 && error.keyPattern.email)
+            } else if (error.code === 11000 && error.keyPattern.email) {
+                this.logger.warn(
+                    `Creating a user (email = ${credentials.email}) failed due to a conflict.`
+                );
                 throw new ConflictException('Email is already taken.');
+            }
+
+            this.logger.error(
+                `An error occured while creating a new user. (${error})`
+            );
             /* istanbul ignore next */
             throw new InternalServerErrorException('User Create failed');
         }
@@ -72,7 +88,12 @@ export class UsersService {
     async findOneById(id: ObjectId): Promise<User> {
         const user = await this.userModel.findById(id).lean();
 
-        if (!user) throw new NotFoundException();
+        if (!user) {
+            this.logger.debug(
+                `A user (id = ${id}) was requested but could not be found.`
+            );
+            throw new NotFoundException();
+        }
 
         return user;
     }
@@ -85,8 +106,12 @@ export class UsersService {
     async findOneByEmail(email: string): Promise<User> {
         const user = await this.userModel.findOne({ email }).lean();
 
-        if (!user) throw new NotFoundException();
-
+        if (!user) {
+            this.logger.debug(
+                `A user (email = ${email}) was requested but could not be found.`
+            );
+            throw new NotFoundException();
+        }
         return user;
     }
 
@@ -101,8 +126,11 @@ export class UsersService {
         updateUserDto: UpdateUserDto,
         actingUser: JwtUserDto
     ): Promise<User> {
-        // User should only be able to update his own data (Admin can update all)
+        // User should only be able to update his own data
         if (id.toString() !== actingUser.userId.toString()) {
+            this.logger.warn(
+                `A user (id = ${actingUser.userId}) has attempted to alter a different users credentials.`
+            );
             throw new ForbiddenException();
         }
         let updatedUser: User;
@@ -119,29 +147,52 @@ export class UsersService {
                 )
                 .lean();
         } catch (error) {
-            if (error.code === 11000)
+            if (error.code === 11000) {
+                this.logger.warn(
+                    `Updating a user (username = ${updateUserDto.username}) failed due to a conflict.`
+                );
                 throw new ConflictException('Username is already taken.');
+            }
             // This should not occur under normal conditions
             else {
+                this.logger.error(
+                    `An error occured while creating a new user. (${error})`
+                );
                 /* istanbul ignore next */
                 throw new InternalServerErrorException('Update User failed');
             }
         }
         // Seperate exception to ensure that user gets a specific error
-        if (!updatedUser) throw new NotFoundException('User not found');
+        if (!updatedUser) {
+            this.logger.warn(
+                `Updating a user (id = ${id}) was requested but the user could not be found`
+            );
+            throw new NotFoundException('User not found');
+        }
+
+        this.logger.debug(`Updating a user (id = ${id}) was successful.`);
         return updatedUser;
     }
 
     async remove(id: ObjectId, actingUser: JwtUserDto): Promise<User> {
         // User should only be able to delete own account (Admin can delete all)
         if (id.toString() !== actingUser.userId.toString()) {
+            this.logger.warn(
+                `A user (id = ${actingUser.userId}) has attempted to delete a different users account.`
+            );
             throw new ForbiddenException();
         }
 
         const user = await this.userModel.findByIdAndDelete(id);
 
-        if (!user) throw new NotFoundException();
+        if (!user) {
+            this.logger.warn(
+                `Deleting a user (id = ${id}) was requested but the user could not be found`
+            );
+            throw new NotFoundException();
+        }
 
+        this.logger.debug(`User (id = ${id}) has been sucessfully deleted.`);
         return user;
     }
 }
