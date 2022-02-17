@@ -5,6 +5,7 @@ import {
     Delete,
     Get,
     HttpCode,
+    HttpStatus,
     Param,
     Patch,
     Request,
@@ -12,7 +13,7 @@ import {
     UseGuards,
     UseInterceptors
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -23,13 +24,19 @@ import { UsersService } from './users.service';
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({ strategy: 'excludeAll' })
+@UseGuards(JwtAuthGuard)
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
     @Get()
     @ApiOperation({ summary: 'Get all Users' })
-    @UseGuards(JwtAuthGuard)
-    async getAllSets(): Promise<User[]> {
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'All users have been returned',
+        type: User,
+        isArray: true
+    })
+    async getAllUsers(): Promise<User[]> {
         return (await this.usersService.findAll()).map(
             (user) => new User(user)
         );
@@ -37,14 +44,26 @@ export class UsersController {
 
     @Get('/profile')
     @ApiOperation({ summary: 'Get user profile' })
-    @UseGuards(JwtAuthGuard)
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Returned user profile',
+        type: User
+    })
     async getProfile(@Request() req): Promise<User> {
         return new User(await this.usersService.findOneById(req.user.userId));
     }
 
     @Patch('/:id')
     @ApiOperation({ summary: 'Update User' })
-    @UseGuards(JwtAuthGuard)
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'User has been updated',
+        type: User
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: 'No user with this id'
+    })
     async update(
         @Param('id') id: ObjectId,
         @Body() updateUserDto: UpdateUserDto,
@@ -60,8 +79,15 @@ export class UsersController {
 
     @Delete('/:id')
     @ApiOperation({ summary: 'Delete User' })
+    @ApiResponse({
+        status: HttpStatus.NO_CONTENT,
+        description: 'User has been deleted'
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: 'No user with this id'
+    })
     @HttpCode(204)
-    @UseGuards(JwtAuthGuard)
     async remove(@Param('id') id: ObjectId, @Request() req): Promise<void> {
         await this.usersService.remove(id, req.user);
     }
