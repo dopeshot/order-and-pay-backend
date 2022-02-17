@@ -1,6 +1,7 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToClass } from 'class-transformer';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { CategoriesModule } from '../src/categories/categories.module';
@@ -381,7 +382,7 @@ describe('CategoriesController (e2e)', () => {
                 .get(`${path}/${getCategorySeeder()._id}/refs`)
                 .expect(HttpStatus.OK);
 
-            const dish = new Dish(res.body[0]);
+            const dish = plainToClass(Dish, res.body[0]);
             expect(res.body[0]).toMatchObject(dish);
             expect(res.body).toHaveLength(1);
         });

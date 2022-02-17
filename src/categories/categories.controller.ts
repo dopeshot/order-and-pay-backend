@@ -14,6 +14,7 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 import { Dish } from '../dishes/entities/dish.entity';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
@@ -87,9 +88,7 @@ export class CategoriesController {
     })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
-        return (await this.categoriesService.findDishes(id)).map(
-            (dish) => new Dish(dish)
-        );
+        return plainToClass(Dish, await this.categoriesService.findDishes(id));
     }
 
     @ApiOperation({ summary: 'Patch a category', tags: ['categories'] })

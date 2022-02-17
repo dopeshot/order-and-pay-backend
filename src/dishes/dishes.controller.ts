@@ -14,6 +14,7 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { DishesService } from './dishes.service';
@@ -40,7 +41,10 @@ export class DishesController {
     })
     @Post()
     async create(@Body() createDishDto: CreateDishDto) {
-        return new Dish(await this.dishesService.create(createDishDto));
+        return plainToClass(
+            Dish,
+            await this.dishesService.create(createDishDto)
+        );
     }
 
     @ApiOperation({ summary: 'Get all dishes', tags: ['dishes'] })
@@ -52,8 +56,8 @@ export class DishesController {
     })
     @Get()
     async findAll() {
-        return (await this.dishesService.findAll()).map(
-            (dish) => new Dish(dish)
+        return (await this.dishesService.findAll()).map((dish) =>
+            plainToClass(Dish, dish)
         );
     }
 
@@ -69,7 +73,7 @@ export class DishesController {
     })
     @Get(':id')
     async findOne(@Param() { id }: MongoIdDto) {
-        return new Dish(await this.dishesService.findOne(id));
+        return plainToClass(Dish, await this.dishesService.findOne(id));
     }
 
     @ApiOperation({ summary: 'Patch a dish', tags: ['dishes'] })
@@ -91,7 +95,10 @@ export class DishesController {
         @Param() { id }: MongoIdDto,
         @Body() updateDishDto: UpdateDishDto
     ) {
-        return new Dish(await this.dishesService.update(id, updateDishDto));
+        return plainToClass(
+            Dish,
+            await this.dishesService.update(id, updateDishDto)
+        );
     }
 
     @ApiOperation({ summary: 'Delete a dish', tags: ['dishes'] })

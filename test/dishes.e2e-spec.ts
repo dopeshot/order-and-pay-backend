@@ -1,6 +1,7 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToClass } from 'class-transformer';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import {
@@ -84,7 +85,7 @@ describe('DishController (e2e)', () => {
                 .expect(HttpStatus.CREATED);
 
             expect(await dishModel.find()).toHaveLength(2);
-            const dish = new Dish(res.body);
+            const dish = plainToClass(Dish, res.body);
             expect(res.body).toMatchObject(dish);
 
             // Expect default status
@@ -98,7 +99,10 @@ describe('DishController (e2e)', () => {
                 .expect(HttpStatus.CREATED);
 
             expect(await dishModel.find()).toHaveLength(2);
-            const dish = new Dish(res.body);
+
+            const dish = plainToClass(Dish, res.body, {
+                exposeUnsetFields: false
+            });
             expect(res.body).toMatchObject(dish);
         });
 
@@ -109,7 +113,7 @@ describe('DishController (e2e)', () => {
                 .expect(HttpStatus.CREATED);
 
             expect(await dishModel.find()).toHaveLength(2);
-            const dish = new Dish(res.body);
+            const dish = plainToClass(Dish, res.body);
             expect(res.body).toMatchObject(dish);
         });
 
@@ -120,7 +124,7 @@ describe('DishController (e2e)', () => {
                 .expect(HttpStatus.CREATED);
 
             expect(await dishModel.find()).toHaveLength(2);
-            const dish = new Dish(res.body);
+            const dish = plainToClass(Dish, res.body);
             expect(res.body).toMatchObject(dish);
         });
 
@@ -131,7 +135,7 @@ describe('DishController (e2e)', () => {
                 .expect(HttpStatus.CREATED);
 
             expect(await dishModel.find()).toHaveLength(2);
-            const dish = new Dish(res.body);
+            const dish = plainToClass(Dish, res.body);
             expect(res.body).toMatchObject(dish);
         });
 
@@ -330,17 +334,14 @@ describe('DishController (e2e)', () => {
                 .get(`${path}/${getDishSeeder()._id}`)
                 .expect(HttpStatus.OK);
 
-            const dish = new Dish(res.body);
+            const dish = plainToClass(Dish, res.body);
             expect(res.body).toMatchObject(dish);
         });
 
         it('should return NOT_FOUND with wrong id', async () => {
-            const res = await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .get(`${path}/${getWrongId()}`)
                 .expect(HttpStatus.NOT_FOUND);
-
-            const dish = new Dish(res.body);
-            expect(res.body).toMatchObject(dish);
         });
     });
 
@@ -351,29 +352,29 @@ describe('DishController (e2e)', () => {
                 .send({ title: 'New Title' })
                 .expect(HttpStatus.OK);
 
-            const dish = new Dish(res.body);
+            const dish = plainToClass(Dish, res.body);
             expect(res.body).toMatchObject(dish);
             expect(res.body.title).toBe('New Title');
         });
 
         it('should return OK without data', async () => {
-            const dish = new Dish(
-                await dishModel.findById(getDishSeeder()._id).lean()
-            );
+            const dish = await dishModel.findById(getDishSeeder()._id).lean();
+
             const res = await request(app.getHttpServer())
                 .patch(`${path}/${getDishSeeder()._id}`)
                 .expect(HttpStatus.OK);
 
             // Expect unchanged Object
-            const resDish = new Dish(res.body);
+            const resDish = plainToClass(Dish, res.body);
+            const controllDish = plainToClass(Dish, dish);
             // Either delete __v updatedAt and createdAt or check the rest (chose 2nd)
-            expect(resDish.description).toBe(dish.description);
-            expect(resDish.image).toBe(dish.image);
-            expect(resDish.category).toBe(dish.category);
-            expect(resDish.title).toBe(dish.title);
-            expect(resDish.price).toBe(dish.price);
-            expect(resDish.allergens).toStrictEqual(dish.allergens);
-            expect(resDish.labels).toStrictEqual(dish.labels);
+            expect(resDish.description).toBe(controllDish.description);
+            expect(resDish.image).toBe(controllDish.image);
+            expect(resDish.category).toBe(controllDish.category);
+            expect(resDish.title).toBe(controllDish.title);
+            expect(resDish.price).toBe(controllDish.price);
+            expect(resDish.allergens).toStrictEqual(controllDish.allergens);
+            expect(resDish.labels).toStrictEqual(controllDish.labels);
         });
 
         it('should return OK with image as empty string', async () => {
