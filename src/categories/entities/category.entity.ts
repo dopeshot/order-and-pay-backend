@@ -16,7 +16,6 @@ import { Menu } from '../../menus/entities/menu.entity';
 import { Status } from '../../menus/enums/status.enum';
 import { ChoiceType } from '../enums/choice-type';
 
-Schema();
 export class Option {
     @Expose()
     @Prop()
@@ -35,7 +34,7 @@ export class Option {
     @IsNumber()
     price: number;
 }
-@Schema()
+
 export class Choice {
     @IsNumber()
     @IsNotEmpty()
