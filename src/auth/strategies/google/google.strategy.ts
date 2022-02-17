@@ -34,8 +34,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     ): Promise<any> {
         const userDataFromProvider: userDataFromProvider = {
             username: profile.displayName,
-            email: profile.emails[0].value,
-            provider: profile.provider
+            email: profile.emails[0].value
         };
 
         done(null, userDataFromProvider);

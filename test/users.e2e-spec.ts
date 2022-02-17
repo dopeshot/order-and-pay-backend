@@ -7,8 +7,7 @@ import { Connection, Model } from 'mongoose';
 import { join } from 'path';
 import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
-import { UserDocument } from '../src/users/entities/user.entity';
-import { UserResponse } from '../src/users/responses/user-response';
+import { User, UserDocument } from '../src/users/entities/user.entity';
 import { UsersModule } from '../src/users/users.module';
 import { ThirdPartyGuardMock } from './helpers/fakeProvider.strategy';
 import {
@@ -79,7 +78,7 @@ describe('UserModule (e2e)', () => {
                 expect(res.body.length).toBe(1);
 
                 // test user response
-                const usr = new UserResponse(res.body);
+                const usr = new User(res.body);
                 expect(res.body).toMatchObject(usr);
             });
         });
@@ -97,7 +96,7 @@ describe('UserModule (e2e)', () => {
                     .expect(HttpStatus.OK);
 
                 // test user response
-                const response = new UserResponse(res.body[0]);
+                const response = new User(res.body[0]);
                 expect(res.body).toMatchObject(response);
             });
         });
@@ -118,7 +117,7 @@ describe('UserModule (e2e)', () => {
                 let user = await userModel.findOne();
                 expect(user.username).toBe('test-user-updated');
                 // test user response
-                const response = new UserResponse(res.body[0]);
+                const response = new User(res.body[0]);
                 expect(res.body).toMatchObject(response);
             });
 

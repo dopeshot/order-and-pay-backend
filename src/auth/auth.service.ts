@@ -65,7 +65,7 @@ export class AuthService {
         }
 
         // Check if user exists and does not use third party auth
-        if (!user || user.provider) {
+        if (!user) {
             throw new UnauthorizedException(
                 `Login Failed due to invalid credentials`
             );
@@ -114,16 +114,9 @@ export class AuthService {
         }
 
         // Check if provider is the same
-        if (
-            alreadyCreatedUser &&
-            alreadyCreatedUser.provider !== userDataFromProvider.provider
-        )
+        if (alreadyCreatedUser)
             throw new ConflictException(
-                `This email is already registered with ${
-                    alreadyCreatedUser.provider
-                        ? alreadyCreatedUser.provider
-                        : 'Email and Password Auth'
-                }`
+                'This email is already registered with Email and Password Auth'
             );
 
         if (alreadyCreatedUser)
@@ -214,8 +207,7 @@ export class AuthService {
 
         return {
             username: userData.given_name,
-            email: userData.email,
-            provider: 'google'
+            email: userData.email
         };
     }
 

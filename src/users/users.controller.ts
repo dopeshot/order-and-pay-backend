@@ -16,7 +16,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserResponse } from './responses/user-response';
+import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
@@ -29,19 +29,17 @@ export class UsersController {
     @Get()
     @ApiOperation({ summary: 'Get all Users' })
     @UseGuards(JwtAuthGuard)
-    async getAllSets(): Promise<UserResponse[]> {
+    async getAllSets(): Promise<User[]> {
         return (await this.usersService.findAll()).map(
-            (set) => new UserResponse(set)
+            (user) => new User(user)
         );
     }
 
     @Get('/profile')
     @ApiOperation({ summary: 'Get user profile' })
     @UseGuards(JwtAuthGuard)
-    async getProfile(@Request() req): Promise<UserResponse> {
-        return new UserResponse(
-            await this.usersService.findOneById(req.user.userId)
-        );
+    async getProfile(@Request() req): Promise<User> {
+        return new User(await this.usersService.findOneById(req.user.userId));
     }
 
     @Patch('/:id')
@@ -51,13 +49,13 @@ export class UsersController {
         @Param('id') id: ObjectId,
         @Body() updateUserDto: UpdateUserDto,
         @Request() req
-    ): Promise<UserResponse> {
+    ): Promise<User> {
         const user = await this.usersService.updateUser(
             id,
             updateUserDto,
             req.user
         );
-        return new UserResponse(user);
+        return new User(user);
     }
 
     @Delete('/:id')
