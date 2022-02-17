@@ -1,4 +1,4 @@
-export const getTableSeeder = () => {
+export const getTablesSeeder = () => {
     return [
         {
             _id: 'aaaaaaaaaaaaaaaaaaaaaaa0',

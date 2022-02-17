@@ -39,7 +39,7 @@ import {
 import {
     getCategoryForMenu,
     getDishForMenu,
-    getTestMenuData,
+    getMenuSeeder,
     getValidMenus
 } from './__mocks__/menus-mock-data';
 import { getWrongId } from './__mocks__/shared-mock-data';
@@ -80,7 +80,7 @@ describe('MenuController (e2e)', () => {
 
     // Insert test data
     beforeEach(async () => {
-        await menuModel.insertMany(getTestMenuData());
+        await menuModel.insertMany(getMenuSeeder());
     });
 
     // Empty the collection from all possible impurities
@@ -114,18 +114,18 @@ describe('MenuController (e2e)', () => {
         describe('menus/:id (GET)', () => {
             it('should return the menu', async () => {
                 const res = await request(app.getHttpServer())
-                    .get('/menus/' + getTestMenuData()[0]._id)
+                    .get('/menus/' + getMenuSeeder()[0]._id)
                     .expect(HttpStatus.OK);
 
                 expect(res.body).toMatchObject(
-                    plainToClass(Menu, getTestMenuData()[0])
+                    plainToClass(Menu, getMenuSeeder()[0])
                 );
             });
 
             it('should fail with invalid Id', async () => {
                 await menuModel.deleteMany();
                 await request(app.getHttpServer())
-                    .get('/menus/' + getTestMenuData()[0]._id)
+                    .get('/menus/' + getMenuSeeder()[0]._id)
                     .expect(HttpStatus.NOT_FOUND);
             });
         });
@@ -134,7 +134,7 @@ describe('MenuController (e2e)', () => {
             it('return an array of categories', async () => {
                 await categoryModel.insertMany(getCategoryForMenu());
                 const res = await request(app.getHttpServer())
-                    .get(`/menus/${getTestMenuData()[0]._id}/refs`)
+                    .get(`/menus/${getMenuSeeder()[0]._id}/refs`)
                     .expect(HttpStatus.OK);
 
                 expect(res.body).toHaveLength(1);
@@ -157,7 +157,7 @@ describe('MenuController (e2e)', () => {
                 await categoryModel.insertMany(getCategoriesSeeder());
                 await labelModel.insertMany(getLabelsForDishesSeeder());
                 const res = await request(app.getHttpServer())
-                    .get('/menus/' + getTestMenuData()[0]._id + '/editor')
+                    .get('/menus/' + getMenuSeeder()[0]._id + '/editor')
                     .expect(HttpStatus.OK);
 
                 // Check contents of populated menu
@@ -221,7 +221,7 @@ describe('MenuController (e2e)', () => {
             // TODO: @Coffe this test does not check for anything empty, nor has it /editor at the end?
             it('should return empty with an empty menu', async () => {
                 const res = await request(app.getHttpServer())
-                    .get('/menus/' + getTestMenuData()[0]._id)
+                    .get('/menus/' + getMenuSeeder()[0]._id)
                     .expect(HttpStatus.OK);
             });
 
@@ -271,14 +271,14 @@ describe('MenuController (e2e)', () => {
                     .expect(HttpStatus.CREATED);
 
                 expect((await menuModel.find()).length).toBe(
-                    getTestMenuData().length + 1
+                    getMenuSeeder().length + 1
                 );
 
                 expect(res.body).toMatchObject(plainToClass(Menu, res.body));
             });
 
             it('should disable other menus if this is set to be active', async () => {
-                const previousActive = getTestMenuData().filter(
+                const previousActive = getMenuSeeder().filter(
                     (menu) => menu.isActive || menu.status === Status.ACTIVE
                 );
                 const res = await request(app.getHttpServer())
@@ -291,7 +291,7 @@ describe('MenuController (e2e)', () => {
                     .expect(HttpStatus.CREATED);
 
                 expect((await menuModel.find()).length).toBe(
-                    getTestMenuData().length + 1
+                    getMenuSeeder().length + 1
                 );
 
                 expect(res.body).toMatchObject(plainToClass(Menu, res.body));
@@ -314,7 +314,7 @@ describe('MenuController (e2e)', () => {
             });
 
             it('should fail with duplicate title', async () => {
-                const duplicate = getTestMenuData()[0];
+                const duplicate = getMenuSeeder()[0];
                 await request(app.getHttpServer())
                     .post('/menus')
                     .send({
@@ -329,7 +329,7 @@ describe('MenuController (e2e)', () => {
     describe('PATCH requests', () => {
         describe('menus/:id (PATCH)', () => {
             it('should update set', async () => {
-                const target = getTestMenuData()[0];
+                const target = getMenuSeeder()[0];
                 const res = await request(app.getHttpServer())
                     .patch('/menus/' + target._id)
                     .send({
@@ -347,8 +347,8 @@ describe('MenuController (e2e)', () => {
             });
 
             it('should disable other menus if this is set to be active', async () => {
-                const target = getTestMenuData()[0];
-                const previousActive = getTestMenuData()
+                const target = getMenuSeeder()[0];
+                const previousActive = getMenuSeeder()
                     .slice(1)
                     .filter(
                         (menu) => menu.isActive || menu.status === Status.ACTIVE
@@ -371,8 +371,8 @@ describe('MenuController (e2e)', () => {
             });
 
             it('should fail for duplicates', async () => {
-                const target = getTestMenuData()[0];
-                const another = getTestMenuData()[1];
+                const target = getMenuSeeder()[0];
+                const another = getMenuSeeder()[1];
                 const res = await request(app.getHttpServer())
                     .patch('/menus/' + target._id)
                     .send({
@@ -384,8 +384,8 @@ describe('MenuController (e2e)', () => {
             });
 
             it('should fail with invalid data', async () => {
-                const target = getTestMenuData()[0];
-                const another = getTestMenuData()[1];
+                const target = getMenuSeeder()[0];
+                const another = getMenuSeeder()[1];
                 const res = await request(app.getHttpServer())
                     .patch('/menus/' + target._id)
                     .send({
@@ -409,21 +409,21 @@ describe('MenuController (e2e)', () => {
                 await dishModel.insertMany(getDishForMenu());
 
                 await request(app.getHttpServer())
-                    .delete('/menus/' + getTestMenuData()[0]._id)
+                    .delete('/menus/' + getMenuSeeder()[0]._id)
                     .query({
                         type: DeleteType.HARD
                     })
                     .expect(HttpStatus.NO_CONTENT);
 
                 expect(
-                    await menuModel.findById(getTestMenuData()[0]._id)
+                    await menuModel.findById(getMenuSeeder()[0]._id)
                 ).toBeNull();
                 expect(await categoryModel.find()).toHaveLength(0);
                 expect(await dishModel.find()).toHaveLength(0);
             });
 
             it('should set menu deleted (SOFT delete)', async () => {
-                const target = getTestMenuData()[0];
+                const target = getMenuSeeder()[0];
                 await request(app.getHttpServer())
                     .delete('/menus/' + target._id)
                     .query({
@@ -439,7 +439,7 @@ describe('MenuController (e2e)', () => {
             });
 
             it('should set menu deleted (SOFT delete) without provided type', async () => {
-                const target = getTestMenuData()[0];
+                const target = getMenuSeeder()[0];
                 await request(app.getHttpServer())
                     .delete('/menus/' + target._id)
                     .expect(HttpStatus.NO_CONTENT);

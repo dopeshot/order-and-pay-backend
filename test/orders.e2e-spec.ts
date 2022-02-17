@@ -22,10 +22,10 @@ import {
 import { SSEHelper } from './helpers/sseWatcher.helper';
 import {
     getActiveOrders,
-    getTestOrderData,
+    getOrdersSeeder,
     getUniqueOrder
 } from './__mocks__/orders-mock-data';
-import { getTableSeeder } from './__mocks__/tables-mock-data';
+import { getTablesSeeder } from './__mocks__/tables-mock-data';
 
 describe('Ordercontroller (e2e)', () => {
     let app: INestApplication;
@@ -56,7 +56,7 @@ describe('Ordercontroller (e2e)', () => {
 
     // Insert test data
     beforeEach(async () => {
-        await tableModel.insertMany(getTableSeeder());
+        await tableModel.insertMany(getTablesSeeder());
     });
 
     // Empty the collection from all possible impurities
@@ -75,7 +75,7 @@ describe('Ordercontroller (e2e)', () => {
             const res = await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
-                    tableId: getTableSeeder()[0]._id,
+                    tableId: getTablesSeeder()[0]._id,
                     items: [
                         {
                             dish: 'aaaaaaaaaaaaaaaaaaaaaaa0',
@@ -119,7 +119,7 @@ describe('Ordercontroller (e2e)', () => {
             await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
-                    tableId: getTableSeeder()[0]._id,
+                    tableId: getTablesSeeder()[0]._id,
                     items: [],
                     payment: 'my transaction id'
                 })
@@ -145,7 +145,7 @@ describe('Ordercontroller (e2e)', () => {
             await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
-                    tableId: getTableSeeder()[0]._id
+                    tableId: getTablesSeeder()[0]._id
                 })
                 .expect(HttpStatus.BAD_REQUEST);
         });
@@ -156,12 +156,12 @@ describe('Ordercontroller (e2e)', () => {
 
     describe('/orders (GET)', () => {
         it('should return all orders', async () => {
-            await orderModel.insertMany(getTestOrderData());
+            await orderModel.insertMany(getOrdersSeeder());
             const res = await request(app.getHttpServer())
                 .get('/orders')
                 .expect(HttpStatus.OK);
 
-            expect(res.body.length).toBe(getTestOrderData().length);
+            expect(res.body.length).toBe(getOrdersSeeder().length);
         });
 
         it('should return empty array without orders', async () => {
@@ -175,7 +175,7 @@ describe('Ordercontroller (e2e)', () => {
 
     describe('/orders/current (GET)', () => {
         it('should return all active orders', async () => {
-            await orderModel.insertMany(getTestOrderData());
+            await orderModel.insertMany(getOrdersSeeder());
             const res = await request(app.getHttpServer())
                 .get('/orders/current')
                 .expect(HttpStatus.OK);
@@ -193,7 +193,7 @@ describe('Ordercontroller (e2e)', () => {
 
         it('should return empty array without any active orders', async () => {
             // Make all orders inactive
-            const orders = getTestOrderData().map((order) => {
+            const orders = getOrdersSeeder().map((order) => {
                 return {
                     ...order,
                     Status: OrderStatus.CANCELLED,
@@ -246,9 +246,9 @@ describe('Ordercontroller (e2e)', () => {
             const sse = sseService.subscribe('order');
             const helper = new SSEHelper(sse);
             // New unseen table that cannot be in any order data
-            await orderModel.insertMany(getTestOrderData());
+            await orderModel.insertMany(getOrdersSeeder());
             await request(app.getHttpServer())
-                .patch('/orders/' + getTestOrderData()[0]._id)
+                .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
                     Status: OrderStatus.CANCELLED
                 })
@@ -261,9 +261,9 @@ describe('Ordercontroller (e2e)', () => {
             const sse = sseService.subscribe('order');
             const helper = new SSEHelper(sse);
             // New unseen table that cannot be in any order data
-            await orderModel.insertMany(getTestOrderData());
+            await orderModel.insertMany(getOrdersSeeder());
             await request(app.getHttpServer())
-                .patch('/orders/' + getTestOrderData()[0]._id)
+                .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
                     note: 'new note'
                 })
@@ -276,7 +276,7 @@ describe('Ordercontroller (e2e)', () => {
             const sse = sseService.subscribe('order');
             // New unseen table that cannot be in any order data
             await request(app.getHttpServer())
-                .patch('/orders/' + getTestOrderData()[0]._id)
+                .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
                     Status: OrderStatus.RETURNED
                 })
@@ -286,7 +286,7 @@ describe('Ordercontroller (e2e)', () => {
         it('should fail for invalid Status', async () => {
             // New unseen table that cannot be in any order data
             await request(app.getHttpServer())
-                .patch('/orders/' + getTestOrderData()[0]._id)
+                .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
                     Status: 'no value'
                 })
@@ -295,9 +295,9 @@ describe('Ordercontroller (e2e)', () => {
 
         it('should fail for invalid payment status', async () => {
             // New unseen table that cannot be in any order data
-            await orderModel.insertMany(getTestOrderData());
+            await orderModel.insertMany(getOrdersSeeder());
             await request(app.getHttpServer())
-                .patch('/orders/' + getTestOrderData()[0]._id)
+                .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
                     PaymentStatus: {
                         status: 'no value'
@@ -308,9 +308,9 @@ describe('Ordercontroller (e2e)', () => {
 
         it('should fail for invalid transactionId', async () => {
             // New unseen table that cannot be in any order data
-            await orderModel.insertMany(getTestOrderData());
+            await orderModel.insertMany(getOrdersSeeder());
             await request(app.getHttpServer())
-                .patch('/orders/' + getTestOrderData()[0]._id)
+                .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
                     PaymentStatus: {
                         transactionId: 'short'
@@ -321,9 +321,9 @@ describe('Ordercontroller (e2e)', () => {
 
         it('should fail with no data', async () => {
             // New unseen table that cannot be in any order data
-            await orderModel.insertMany(getTestOrderData());
+            await orderModel.insertMany(getOrdersSeeder());
             await request(app.getHttpServer())
-                .patch('/orders/' + getTestOrderData()[0]._id)
+                .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({})
                 .expect(HttpStatus.OK);
         });

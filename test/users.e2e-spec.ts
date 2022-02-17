@@ -47,7 +47,7 @@ describe('UserModule (e2e)', () => {
         await app.init();
     });
 
-    // Insert test data
+    // Insert test data. Currently there is no Seeder data needed
     beforeEach(async () => {});
 
     // Empty the collection from all possible impurities

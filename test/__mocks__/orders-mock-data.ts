@@ -1,7 +1,19 @@
 import { ChoiceType } from '../../src/categories/enums/choice-type';
 import { OrderStatus } from '../../src/orders/enums/order-status.enum';
 
-const orderMockData = [
+export const getUniqueOrder = () => ({
+    _id: 'aaaaaaaaaaaaaaaaaaaaaa69',
+    tableId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+    items: [],
+    PaymentStatus: {
+        status: 'pending',
+        transactionId: 'xeN97BA1P6',
+        amount: 5
+    },
+    Status: OrderStatus.FINISHED
+});
+
+export const getOrdersSeeder = () => [
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaa0',
         tableId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
@@ -80,28 +92,8 @@ const orderMockData = [
     }
 ];
 
-const uniqueOrder = {
-    _id: 'aaaaaaaaaaaaaaaaaaaaaa69',
-    tableId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
-    items: [],
-    PaymentStatus: {
-        status: 'pending',
-        transactionId: 'xeN97BA1P6',
-        amount: 5
-    },
-    Status: OrderStatus.FINISHED
-};
-
-export const getUniqueOrder = () => {
-    return uniqueOrder;
-};
-
-export const getTestOrderData = () => {
-    return orderMockData;
-};
-
 export const getActiveOrders = () => {
-    return orderMockData.filter(
+    return getOrdersSeeder().filter(
         (order) =>
             order.Status === OrderStatus.RECEIVED ||
             order.Status === OrderStatus.IN_PROGRESS ||
