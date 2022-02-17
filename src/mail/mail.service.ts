@@ -7,7 +7,6 @@ import { render } from 'ejs';
 import { readFile as _readFile } from 'fs';
 import * as nodemailer from 'nodemailer';
 import { promisify } from 'util';
-import { LabelsService } from '../labels/labels.service';
 
 const readFile = promisify(_readFile);
 
@@ -16,7 +15,7 @@ export class MailService {
     mailTransport: nodemailer.Transporter<any>;
     maxRetries: number;
     errorDelay: number;
-    private readonly logger = new Logger(LabelsService.name);
+    private readonly logger = new Logger(MailService.name);
 
     constructor() {
         this.mailTransport = nodemailer.createTransport({

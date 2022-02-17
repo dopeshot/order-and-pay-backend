@@ -54,7 +54,7 @@ export class AllergensController {
     })
     async findAll() {
         return (await this.allergensService.findAll()).map(
-            (allergens) => new Allergen(allergens)
+            (allergen) => new Allergen(allergen)
         );
     }
 
@@ -83,13 +83,11 @@ export class AllergensController {
         type: Dish,
         isArray: true
     })
-    @ApiResponse({
-        status: HttpStatus.NOT_FOUND,
-        description: 'The allergen could not be found'
-    })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
-        return await this.allergensService.findDishes(id);
+        return (await this.allergensService.findDishes(id)).map(
+            (dish) => new Dish(dish)
+        );
     }
 
     @ApiOperation({ summary: 'Patch a allergen', tags: ['allergens'] })

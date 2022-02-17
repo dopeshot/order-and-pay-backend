@@ -8,12 +8,15 @@ import {
     Allergen,
     AllergenDocument
 } from '../src/allergens/entities/allergen.entity';
+import { DishesModule } from '../src/dishes/dishes.module';
+import { Dish, DishDocument } from '../src/dishes/entities/dish.entity';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
 import {
     getAllergenSeeder,
+    getDishWithReference,
     getExtraAllergenSeeder,
     getSampleAllergen
 } from './__mocks__/allergens-mock-data';
@@ -23,15 +26,17 @@ describe('AllergensController (e2e)', () => {
     let app: INestApplication;
     let connection: Connection;
     let allergenModel: Model<AllergenDocument>;
+    let dishModel: Model<DishDocument>;
     const path = '/allergens';
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [rootMongooseTestModule(), AllergensModule]
+            imports: [rootMongooseTestModule(), AllergensModule, DishesModule]
         }).compile();
 
         connection = await module.get(getConnectionToken());
         allergenModel = connection.model('Allergen');
+        dishModel = connection.model('Dish');
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();
@@ -45,6 +50,7 @@ describe('AllergensController (e2e)', () => {
     // Empty the collection from all possible impurities
     afterEach(async () => {
         await allergenModel.deleteMany();
+        await dishModel.deleteMany();
     });
 
     afterAll(async () => {
@@ -166,23 +172,27 @@ describe('AllergensController (e2e)', () => {
         });
     });
 
-    describe('admin/allergens/:id/refs (GET): TODO: FIX AFTER DISHES IMPLEMENTED', () => {
-        it('should return one element of type Allergen', async () => {
+    describe('admin/allergens/:id/refs (GET)', () => {
+        it('should return array of dishes', async () => {
+            await dishModel.insertMany(getDishWithReference());
+
             const res = await request(app.getHttpServer())
                 .get(`${path}/${getAllergenSeeder()._id}/refs`)
-                .expect(HttpStatus.NOT_IMPLEMENTED);
+                .expect(HttpStatus.OK);
 
-            // const allergen = new Allergen(res.body)
-            // expect(res.body).toMatchObject(allergen)
+            const dish = new Dish(res.body[0]);
+            expect(res.body[0]).toMatchObject(dish);
+
+            expect(res.body).toHaveLength(1);
         });
 
-        // it('should return empty array', async () => {
-        //     const res = await request(app.getHttpServer())
-        //     .get(`${path}/${wrongId()}`)
-        //     .expect(HttpStatus.OK)
+        it('should return empty array', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`${path}/${getWrongId()}/refs`)
+                .expect(HttpStatus.OK);
 
-        //     expect(res.body).toHaveLength(0)
-        // })
+            expect(res.body).toHaveLength(0);
+        });
     });
 
     describe('admin/allergens/:id (PATCH)', () => {
@@ -254,15 +264,21 @@ describe('AllergensController (e2e)', () => {
     });
 
     describe('admin/allergens/:id (DELETE)', () => {
-        it('should return NO_CONTENT and delete the allergen', async () => {
+        it('should return NO_CONTENT and delete the allergen and reference', async () => {
+            await dishModel.insertMany(getDishWithReference());
+
             await request(app.getHttpServer())
                 .delete(`${path}/${getAllergenSeeder()._id}`)
                 .expect(HttpStatus.NO_CONTENT);
 
             expect(await allergenModel.find()).toHaveLength(0);
+
+            expect(
+                (await dishModel.findById(getDishWithReference()._id)).allergens
+            ).toHaveLength(1);
         });
 
-        it('should return', async () => {
+        it('should return NOT_FOUND with wrong id', async () => {
             await request(app.getHttpServer())
                 .delete(`${path}/${getWrongId()}`)
                 .expect(HttpStatus.NOT_FOUND);

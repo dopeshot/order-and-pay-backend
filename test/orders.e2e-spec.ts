@@ -24,7 +24,7 @@ import {
     getTestOrderData,
     getUniqueOrder
 } from './__mocks__/orders-mock-data';
-import { getTestTableData } from './__mocks__/tables-mock-data';
+import { getTableSeeder } from './__mocks__/tables-mock-data';
 
 describe('Ordercontroller (e2e)', () => {
     let app: INestApplication;
@@ -55,7 +55,7 @@ describe('Ordercontroller (e2e)', () => {
 
     // Insert test data
     beforeEach(async () => {
-        await tableModel.insertMany(getTestTableData());
+        await tableModel.insertMany(getTableSeeder());
     });
 
     // Empty the collection from all possible impurities
@@ -74,7 +74,7 @@ describe('Ordercontroller (e2e)', () => {
             const res = await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
-                    tableId: getTestTableData()[0]._id,
+                    tableId: getTableSeeder()[0]._id,
                     items: [
                         {
                             dish: 'aaaaaaaaaaaaaaaaaaaaaaa0',
@@ -116,7 +116,7 @@ describe('Ordercontroller (e2e)', () => {
             await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
-                    tableId: getTestTableData()[0]._id,
+                    tableId: getTableSeeder()[0]._id,
                     items: [],
                     payment: 'my transaction id'
                 })
@@ -142,7 +142,7 @@ describe('Ordercontroller (e2e)', () => {
             await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
-                    tableId: getTestTableData()[0]._id
+                    tableId: getTableSeeder()[0]._id
                 })
                 .expect(HttpStatus.BAD_REQUEST);
         });

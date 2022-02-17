@@ -6,7 +6,7 @@ import {
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId, Schema } from 'mongoose';
+import { Model } from 'mongoose';
 import { CategoriesService } from '../categories/categories.service';
 import { CategoryPopulated } from '../categories/entities/category.entity';
 import { DishesService } from '../dishes/dishes.service';
@@ -25,7 +25,6 @@ export class MenusService {
         private readonly categoriesService: CategoriesService,
         private readonly dishesService: DishesService
     ) {}
-
 
     async findAll(): Promise<Menu[]> {
         return await this.menuModel.find({ status: Status.ACTIVE }).lean();
@@ -87,10 +86,7 @@ export class MenusService {
         return current;
     }
 
-    async updateMenu(
-        id: ObjectId,
-        updateMenuDto: UpdateMenuDto
-    ): Promise<Menu> {
+    async updateMenu(id: string, updateMenuDto: UpdateMenuDto): Promise<Menu> {
         let updatedMenu: Menu;
 
         try {
@@ -111,6 +107,7 @@ export class MenusService {
             this.logger.error(
                 `An error has occured while updating a menu (${error})`
             );
+            /* istanbul ignore next */
             throw new InternalServerErrorException('Menu update failed');
         }
 
@@ -133,7 +130,7 @@ export class MenusService {
         return updatedMenu;
     }
 
-    async updateActivation(excludeId: ObjectId) {
+    async updateActivation(excludeId: string) {
         this.logger.debug(`Updating activation for menus`);
         //Disable all but the given Menu
         await this.menuModel.updateMany(
@@ -147,16 +144,12 @@ export class MenusService {
         );
     }
 
-    async deleteMenu(
-        id: Schema.Types.ObjectId,
-        type: DeleteType
-    ): Promise<void> {
+    async deleteMenu(id: string, type: DeleteType): Promise<void> {
         // Default to soft delete
         if (!type) type = DeleteType.SOFT;
 
         // Hard delete
         if (type === DeleteType.HARD) {
-            // Coffee TODO: Maybe deleting the reference to this menu in dishes, categories, etc. should  be added as well
             const menu: MenuDocument = await this.menuModel.findByIdAndDelete(
                 id
             );
@@ -170,6 +163,7 @@ export class MenusService {
             this.logger.debug(
                 `The menu (id = ${id}) has been deleted successfully.`
             );
+            await this.categoriesService.recursiveRemoveByMenu(id);
             return;
         }
 
@@ -213,7 +207,7 @@ export class MenusService {
         return { ...menu, categories: populated || [] };
     }
 
-    async getCategoriesByMenu(id: string) {
+    async findCategories(id: string) {
         return await this.categoriesService.findByMenu(id);
     }
 }

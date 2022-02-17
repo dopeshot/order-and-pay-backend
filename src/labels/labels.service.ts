@@ -3,11 +3,11 @@ import {
     Injectable,
     InternalServerErrorException,
     Logger,
-    NotFoundException,
-    NotImplementedException
+    NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { DishesService } from '../dishes/dishes.service';
 import { DishDocument } from '../dishes/entities/dish.entity';
 import { CreateLabelDto } from './dto/create-label.dto';
 import { UpdateLabelDto } from './dto/update-label.dto';
@@ -17,7 +17,8 @@ import { LabelDocument } from './entities/label.entity';
 export class LabelsService {
     private readonly logger = new Logger(LabelsService.name);
     constructor(
-        @InjectModel('Label') private readonly labelModel: Model<LabelDocument>
+        @InjectModel('Label') private readonly labelModel: Model<LabelDocument>,
+        private readonly dishesService: DishesService
     ) {}
 
     async create(createLabelDto: CreateLabelDto): Promise<LabelDocument> {
@@ -59,10 +60,9 @@ export class LabelsService {
         return label;
     }
 
-    // TODO Rename to match convention
-    async findRefs(id: string): Promise<DishDocument[]> {
-        this.logger.warn(`An unimplemented method has been called`);
-        throw new NotImplementedException();
+    async findDishes(id: string): Promise<DishDocument[]> {
+        const dishes = await this.dishesService.findByLabel(id);
+        return dishes;
     }
 
     async update(
@@ -102,7 +102,10 @@ export class LabelsService {
 
     async remove(id: string): Promise<void> {
         // Only Hard delete, it is easier to create a new than retrieve the old
-        // MD: Delete references too
+
+        // Delete references first, if this fails after the allergen delete: the references will remain
+        await this.dishesService.recursiveRemoveLabel(id);
+
         const label: LabelDocument = await this.labelModel.findByIdAndDelete(
             id
         );

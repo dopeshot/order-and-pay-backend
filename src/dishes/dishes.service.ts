@@ -57,6 +57,24 @@ export class DishesService {
         return dish;
     }
 
+    async findByAllergen(id: string): Promise<DishDocument[]> {
+        const dishes: DishDocument[] = await this.dishModel
+            .find({ allergens: id })
+            .lean();
+        return dishes;
+    }
+
+    async findByLabel(id: string): Promise<DishDocument[]> {
+        const dishes: DishDocument[] = await this.dishModel
+            .find({ labels: id })
+            .lean();
+        return dishes;
+    }
+
+    async findByCategory(id: string): Promise<DishDocument[]> {
+        return await this.dishModel.find({ category: id }).lean();
+    }
+
     async findByCategoryAndPopulate(id: ObjectId): Promise<DishPopulated[]> {
         return await this.dishModel
             .find({ category: id })
@@ -134,6 +152,38 @@ export class DishesService {
             `The dish (id = ${id}) has been soft deleted successfully.`
         );
 
+        return;
+    }
+
+    async recursiveRemoveAllergen(id: string): Promise<void> {
+        const result = await this.dishModel.updateMany(
+            { allergens: id },
+            { $pull: { allergens: id } }
+        );
+
+        this.logger.log(
+            `Allergens have been pulled from ${result.modifiedCount} Dishes. Full information: (${result})`
+        );
+        return;
+    }
+
+    async recursiveRemoveLabel(id: string): Promise<void> {
+        const result = await this.dishModel.updateMany(
+            { labels: id },
+            { $pull: { labels: id } }
+        );
+
+        this.logger.log(
+            `Labels have been pulled from ${result.modifiedCount} Dishes. Full information: (${result})`
+        );
+        return;
+    }
+
+    async recursiveRemoveByCategory(id: string): Promise<void> {
+        const result = await this.dishModel.deleteMany({ category: id });
+        this.logger.log(
+            `${result.deletedCount} Dishes have been recursively been deleted after Category deletion. Full information: (${result})`
+        );
         return;
     }
 }

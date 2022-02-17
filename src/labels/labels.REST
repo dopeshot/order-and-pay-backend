@@ -26,3 +26,6 @@ Content-Type: application/json
     "title": "Muck",
     "icon": "dave"
 }
+
+### Delete Allergen and recursively remove from Dishes
+DELETE {{host}}/admin/allergens/{{{{labelId}}}}

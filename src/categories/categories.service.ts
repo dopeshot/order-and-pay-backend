@@ -1,5 +1,6 @@
 import {
     ConflictException,
+    HttpStatus,
     Injectable,
     InternalServerErrorException,
     Logger,
@@ -7,7 +8,8 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { DishDocument } from '../dishes/entities/dish.entity';
+import { DishesService } from '../dishes/dishes.service';
+import { Dish } from '../dishes/entities/dish.entity';
 import { Status } from '../menus/enums/status.enum';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -20,7 +22,7 @@ export class CategoriesService {
     constructor(
         @InjectModel('Category')
         private readonly categoryModel: Model<CategoryDocument>,
-        @InjectModel('Dish') private readonly dishModel: Model<DishDocument>
+        private readonly dishesService: DishesService
     ) {}
 
     async create(
@@ -66,8 +68,8 @@ export class CategoriesService {
         return category;
     }
 
-    async findByCategory(id: string): Promise<DishDocument[]> {
-        return await this.dishModel.find({ category: id }).lean();
+    async findDishes(id: string): Promise<Dish[]> {
+        return await this.dishesService.findByCategory(id);
     }
 
     async findByMenu(id: string): Promise<CategoryDocument[]> {
@@ -126,7 +128,7 @@ export class CategoriesService {
             }
 
             // Delete dishes
-            await this.dishModel.deleteMany({ category: id });
+            await this.dishesService.recursiveRemoveByCategory(id);
 
             this.logger.debug(
                 `The category (id = ${id}) has been deleted successfully.`
@@ -150,6 +152,31 @@ export class CategoriesService {
             `The category (id = ${id}) has been soft deleted successfully.`
         );
 
+        return;
+    }
+
+    async recursiveRemoveByMenu(id: string): Promise<void> {
+        const categories = await this.findByMenu(id);
+
+        // Try catch to ensure everything is deleted even if one in the middle is not found
+        categories.forEach(async (category) => {
+            try {
+                await this.remove(category._id, DeleteType.HARD);
+            } catch (error) {
+                /* istanbul ignore next */
+                // This should not be happening since the find and delete calls are back to back
+                if (error.status === HttpStatus.NOT_FOUND) {
+                    this.logger.warn(
+                        `A category remove (id = ${category._id}) was requested but could not be found.`
+                    );
+                } else {
+                    this.logger.error(
+                        `An error has occured while deleting a category (${error})`
+                    );
+                    throw new InternalServerErrorException();
+                }
+            }
+        });
         return;
     }
 }

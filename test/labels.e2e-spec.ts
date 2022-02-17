@@ -3,6 +3,7 @@ import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
+import { Dish, DishDocument } from '../src/dishes/entities/dish.entity';
 import { Label, LabelDocument } from '../src/labels/entities/label.entity';
 import { LabelsModule } from '../src/labels/labels.module';
 import {
@@ -10,6 +11,7 @@ import {
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
 import {
+    getDishWithReference,
     getExtraLabelSeeder,
     getLabelSeeder,
     getSampleLabel
@@ -20,6 +22,7 @@ describe('LabelsController (e2e)', () => {
     let app: INestApplication;
     let connection: Connection;
     let labelModel: Model<LabelDocument>;
+    let dishModel: Model<DishDocument>;
     const path = '/labels';
 
     beforeAll(async () => {
@@ -29,6 +32,7 @@ describe('LabelsController (e2e)', () => {
 
         connection = await module.get(getConnectionToken());
         labelModel = connection.model('Label');
+        dishModel = connection.model('Dish');
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();
@@ -42,6 +46,7 @@ describe('LabelsController (e2e)', () => {
     // Empty the collection from all possible impurities
     afterEach(async () => {
         await labelModel.deleteMany();
+        await dishModel.deleteMany();
     });
 
     afterAll(async () => {
@@ -163,23 +168,27 @@ describe('LabelsController (e2e)', () => {
         });
     });
 
-    describe('admin/labels/:id/refs (GET): TODO: FIX AFTER DISHES IMPLEMENTED', () => {
-        it('should return one element of type Label', async () => {
+    describe('admin/labels/:id/refs (GET)', () => {
+        it('should return array of dishes', async () => {
+            await dishModel.insertMany(getDishWithReference());
+
             const res = await request(app.getHttpServer())
                 .get(`${path}/${getLabelSeeder()._id}/refs`)
-                .expect(HttpStatus.NOT_IMPLEMENTED);
+                .expect(HttpStatus.OK);
 
-            // const label = new Label(res.body)
-            // expect(res.body).toMatchObject(label)
+            const dish = new Dish(res.body[0]);
+            expect(res.body[0]).toMatchObject(dish);
+
+            expect(res.body).toHaveLength(1);
         });
 
-        // it('should return empty array', async () => {
-        //     const res = await request(app.getHttpServer())
-        //     .get(`${path}/${wrongId()}`)
-        //     .expect(HttpStatus.OK)
+        it('should return empty array', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`${path}/${getWrongId()}/refs`)
+                .expect(HttpStatus.OK);
 
-        //     expect(res.body).toHaveLength(0)
-        // })
+            expect(res.body).toHaveLength(0);
+        });
     });
 
     describe('admin/labels/:id (PATCH)', () => {
@@ -251,11 +260,17 @@ describe('LabelsController (e2e)', () => {
 
     describe('admin/labels/:id (DELETE)', () => {
         it('should return NO_CONTENT and delete the label', async () => {
+            await dishModel.insertMany(getDishWithReference());
+
             await request(app.getHttpServer())
                 .delete(`${path}/${getLabelSeeder()._id}`)
                 .expect(HttpStatus.NO_CONTENT);
 
             expect(await labelModel.find()).toHaveLength(0);
+
+            expect(
+                (await dishModel.findById(getDishWithReference()._id)).labels
+            ).toHaveLength(1);
         });
 
         it('should return', async () => {

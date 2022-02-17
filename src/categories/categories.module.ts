@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { DishSchema } from '../dishes/entities/dish.entity';
+import { DishesModule } from '../dishes/dishes.module';
 import { CategoriesController } from './categories.controller';
 import { CategoriesService } from './categories.service';
 import { CategorySchema } from './entities/category.entity';
@@ -10,7 +10,7 @@ import { CategorySchema } from './entities/category.entity';
         MongooseModule.forFeature([
             { name: 'Category', schema: CategorySchema }
         ]),
-        MongooseModule.forFeature([{ name: 'Dish', schema: DishSchema }])
+        DishesModule
     ],
     providers: [CategoriesService],
     controllers: [CategoriesController],
