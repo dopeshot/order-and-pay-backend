@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToClass } from 'class-transformer';
 import { Connection, Model } from 'mongoose';
 import { join } from 'path';
 import * as request from 'supertest';
@@ -76,7 +77,7 @@ describe('UserModule (e2e)', () => {
                 expect(res.body.length).toBe(1);
 
                 // test user response
-                const usr = new User(res.body);
+                const usr = plainToClass(User, res.body);
                 expect(res.body).toMatchObject(usr);
             });
         });
@@ -93,8 +94,8 @@ describe('UserModule (e2e)', () => {
                     )
                     .expect(HttpStatus.OK);
 
-                // test user response
-                const response = new User(res.body[0]);
+                // Test user response
+                const response = plainToClass(User, res.body);
                 expect(res.body).toMatchObject(response);
             });
         });
@@ -114,8 +115,9 @@ describe('UserModule (e2e)', () => {
                     .expect(HttpStatus.OK);
                 let user = await userModel.findOne();
                 expect(user.username).toBe('test-user-updated');
-                // test user response
-                const response = new User(res.body[0]);
+
+                // Test user response
+                const response = plainToClass(User, res.body);
                 expect(res.body).toMatchObject(response);
             });
 

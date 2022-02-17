@@ -56,9 +56,7 @@ export class DishesController {
     })
     @Get()
     async findAll() {
-        return (await this.dishesService.findAll()).map((dish) =>
-            plainToClass(Dish, dish)
-        );
+        return plainToClass(Dish, await this.dishesService.findAll());
     }
 
     @ApiOperation({ summary: 'Get one dish', tags: ['dishes'] })
