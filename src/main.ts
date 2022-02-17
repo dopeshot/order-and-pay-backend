@@ -30,13 +30,16 @@ async function bootstrap() {
         .setTitle('Order and Pay')
         .setDescription('Solution for restaurants')
         .setVersion('0.1')
-        .addTag('auth', 'Authentication related content')
-        .addTag('user', 'User related content')
-        .addTag('mail', 'Mail related content')
-        .addTag('tables', 'Table related endpoints')
-        .addTag('admin', 'all admin endpoints')
+        .addTag('sse', 'all sse endpoints')
+        .addTag('auth', 'all auth endpoints')
+        .addTag('users', 'all user endpoints')
         .addTag('menus', 'all menu endpoints')
-        .addTag('labels', 'are additions to dishes like "vegan"')
+        .addTag('dishes', 'all dish endpoints')
+        .addTag('tables', 'all table endpoints')
+        .addTag('orders', 'all order endpoints')
+        .addTag('labels', 'all label endpoints')
+        .addTag('allergens', 'all allergen endpoints')
+        .addTag('categories', 'all category endpoints')
         .build();
 
     const document = SwaggerModule.createDocument(app, config);

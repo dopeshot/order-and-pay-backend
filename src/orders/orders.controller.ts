@@ -6,13 +6,14 @@ import {
     Param,
     Patch
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { UpdateOrderDto } from './dtos/update-order.dto';
 import { Order } from './entities/order.entity';
 import { OrdersService } from './orders.service';
 
+@ApiTags('orders')
 @Controller('orders')
 export class OrdersController {
     constructor(private readonly orderService: OrdersService) {}
@@ -30,7 +31,7 @@ export class OrdersController {
 
     @Get('current')
     @ApiOperation({
-        summary: 'Get all active orders (received payment and note closed)'
+        summary: 'Get all active orders (received payment and not closed)'
     })
     @ApiResponse({
         status: HttpStatus.OK,

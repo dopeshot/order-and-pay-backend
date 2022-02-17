@@ -76,7 +76,7 @@ export class MenusController {
 
     @Get(':id/editor')
     @ApiOperation({
-        summary: 'Get one Menu in populated form)',
+        summary: 'Get one Menu in populated form',
         tags: ['menus']
     })
     @ApiResponse({
@@ -116,7 +116,7 @@ export class MenusController {
     }
 
     @Patch(':id')
-    @ApiOperation({ summary: 'Update existing menu', tags: ['menus'] })
+    @ApiOperation({ summary: 'Patch a menu', tags: ['menus'] })
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The menu has been updated',

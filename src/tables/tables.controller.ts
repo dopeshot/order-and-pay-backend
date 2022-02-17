@@ -129,11 +129,4 @@ export class TablesController {
     bulkDelete(@Body() { ids }: BulkDeleteTableDto) {
         return this.tableService.bulkDelete(ids);
     }
-
-    @Post('/migrate')
-    //@UseGuards(JwtAuthGuard) TODO: Maybe even envGuard
-    @ApiOperation({ summary: 'Create multiple tables' })
-    migrate() {
-        return this.tableService.migrate();
-    }
 }
