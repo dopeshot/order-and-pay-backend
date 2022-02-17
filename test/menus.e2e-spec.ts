@@ -1,6 +1,7 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToClass } from 'class-transformer';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { AdminModule } from '../src/admin/admin.module';
@@ -104,7 +105,9 @@ describe('MenuController (e2e)', () => {
                     .expect(HttpStatus.OK);
 
                 expect(res.body.length).toBe(getValidMenus().length);
-                expect(res.body[0]).toMatchObject(new Menu(res.body[0]));
+                expect(res.body[0]).toMatchObject(
+                    plainToClass(Menu, res.body[0])
+                );
             });
         });
 
@@ -114,7 +117,9 @@ describe('MenuController (e2e)', () => {
                     .get('/menus/' + getTestMenuData()[0]._id)
                     .expect(HttpStatus.OK);
 
-                expect(res.body).toMatchObject(new Menu(getTestMenuData()[0]));
+                expect(res.body).toMatchObject(
+                    plainToClass(Menu, getTestMenuData()[0])
+                );
             });
 
             it('should fail with invalid Id', async () => {
@@ -206,7 +211,11 @@ describe('MenuController (e2e)', () => {
                     });
                 });
 
-                expect(res.body).toMatchObject(new MenuPopulated(res.body));
+                expect(res.body).toMatchObject(
+                    plainToClass(MenuPopulated, res.body, {
+                        exposeUnsetFields: false
+                    })
+                );
             });
 
             // TODO: @Coffe this test does not check for anything empty, nor has it /editor at the end?
@@ -234,7 +243,11 @@ describe('MenuController (e2e)', () => {
                     .get('/client/menu')
                     .expect(HttpStatus.OK);
 
-                expect(res.body).toMatchObject(new MenuPopulated(res.body));
+                expect(res.body).toMatchObject(
+                    plainToClass(MenuPopulated, res.body, {
+                        exposeUnsetFields: false
+                    })
+                );
             });
 
             it('should fail with invalid Id', async () => {
@@ -261,7 +274,7 @@ describe('MenuController (e2e)', () => {
                     getTestMenuData().length + 1
                 );
 
-                expect(res.body).toMatchObject(new Menu(res.body));
+                expect(res.body).toMatchObject(plainToClass(Menu, res.body));
             });
 
             it('should disable other menus if this is set to be active', async () => {
@@ -281,7 +294,7 @@ describe('MenuController (e2e)', () => {
                     getTestMenuData().length + 1
                 );
 
-                expect(res.body).toMatchObject(new Menu(res.body));
+                expect(res.body).toMatchObject(plainToClass(Menu, res.body));
                 expect(res.body.isActive).toBe(true);
 
                 // Check if all endpoints have been disabled
@@ -330,7 +343,7 @@ describe('MenuController (e2e)', () => {
                     'where did you come from, where did you go, where did you come from'
                 );
                 expect(res.body.title).toBe('Cotton eye joe');
-                expect(res.body).not.toMatchObject(new Menu(target));
+                expect(res.body).not.toMatchObject(plainToClass(Menu, target));
             });
 
             it('should disable other menus if this is set to be active', async () => {
@@ -347,7 +360,7 @@ describe('MenuController (e2e)', () => {
                     })
                     .expect(HttpStatus.OK);
 
-                expect(res.body).toMatchObject(new Menu(res.body));
+                expect(res.body).toMatchObject(plainToClass(Menu, res.body));
                 expect(res.body.isActive).toBe(true);
 
                 // Check if all endpoints have been disabled

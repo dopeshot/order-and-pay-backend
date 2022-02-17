@@ -38,7 +38,7 @@ export class MenusController {
         isArray: true
     })
     async findAll(): Promise<Menu[]> {
-        return (await this.menuService.findAll()).map((set) => new Menu(set));
+        return plainToClass(Menu, await this.menuService.findAll());
     }
 
     @Get(':id')
@@ -53,7 +53,7 @@ export class MenusController {
         description: 'No menu with this id found'
     })
     async findOne(@Param() { id }: MongoIdDto): Promise<Menu> {
-        return new Menu(await this.menuService.findOne(id));
+        return plainToClass(Menu, await this.menuService.findOne(id));
     }
 
     @ApiOperation({
@@ -90,7 +90,10 @@ export class MenusController {
         description: 'No menu with this id found'
     })
     async findEditorView(@Param() { id }: MongoIdDto) {
-        return new MenuPopulated(await this.menuService.findAndPopulate(id));
+        return plainToClass(
+            MenuPopulated,
+            await this.menuService.findAndPopulate(id)
+        );
     }
 
     @Post()
@@ -109,7 +112,7 @@ export class MenusController {
         description: 'There is a conflict with an existing menu'
     })
     async createNew(@Body() newMenu: CreateMenuDto): Promise<Menu> {
-        return new Menu(await this.menuService.createMenu(newMenu));
+        return plainToClass(Menu, await this.menuService.createMenu(newMenu));
     }
 
     @Patch(':id')
@@ -131,7 +134,10 @@ export class MenusController {
         @Body() updateMenuDto: UpdateMenuDto,
         @Param() { id }: MongoIdDto
     ): Promise<Menu> {
-        return new Menu(await this.menuService.updateMenu(id, updateMenuDto));
+        return plainToClass(
+            Menu,
+            await this.menuService.updateMenu(id, updateMenuDto)
+        );
     }
 
     @Delete(':id')

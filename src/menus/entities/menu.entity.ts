@@ -26,11 +26,6 @@ export class Menu {
     @Expose()
     @Prop({ default: false })
     isActive: boolean;
-
-    // TODO: Plaintoclass?!
-    constructor(partial: Partial<MenuDocument>) {
-        Object.assign(this, partial);
-    }
 }
 
 export type MenuDocument = Menu & Document;
@@ -38,10 +33,5 @@ export class MenuPopulated extends PartialType(Menu) {
     @Expose()
     @Type(() => CategoryPopulated)
     categories: CategoryPopulated[];
-
-    constructor(partial: Partial<MenuPopulated>) {
-        super();
-        Object.assign(this, partial);
-    }
 }
 export const MenuSchema = SchemaFactory.createForClass(Menu);

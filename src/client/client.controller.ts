@@ -9,6 +9,7 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 import { MenuPopulated } from '../menus/entities/menu.entity';
 import { MenusService } from '../menus/menus.service';
 import { CreateOrderDto } from '../orders/dtos/create-order.dto';
@@ -28,7 +29,8 @@ export class ClientController {
     @Get('menu')
     @ApiOperation({ summary: 'Get currently active menu' })
     async getMenu() {
-        return new MenuPopulated(
+        return plainToClass(
+            MenuPopulated,
             await this.menusService.findAndPopulate(
                 (
                     await this.menusService.findCurrent()
