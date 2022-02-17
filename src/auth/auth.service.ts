@@ -15,17 +15,14 @@ import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
-    private CLIENT_ID: string;
+    private CLIENT_id: ObjectId;
     private CLIENT_SECRET: string;
     private readonly logger = new Logger(AuthService.name);
 
     constructor(
         private readonly userService: UsersService,
         private readonly jwtService: JwtService
-    ) {
-        this.CLIENT_ID = process.env.GOOGLE_AUTH_CLIENT_ID;
-        this.CLIENT_SECRET = process.env.GOOGLE_AUTH_CLIENT_SECRET;
-    }
+    ) {}
 
     /**
      * Register User (Creates a new one)

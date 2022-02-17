@@ -63,13 +63,6 @@ describe('TableController (e2e)', () => {
                 expect(res.body.capacity).toEqual(getSampleTable().capacity);
             });
 
-            it('tables (POST), migrate', async () => {
-                await request(app.getHttpServer())
-                    .post('/tables/migrate')
-                    .expect(HttpStatus.CREATED);
-                expect((await tableModel.find()).length).toBe(30);
-            });
-
             // Negative test
             it('tables (POST), duplicate tableNumber', async () => {
                 await tableModel.create(getSampleTable());

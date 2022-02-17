@@ -7,7 +7,7 @@ import { CreateOrderDto } from './create-order.dto';
 
 export class PaymentDto extends PartialType(Payment) {}
 export class UpdateOrderDto extends PartialType(
-    OmitType(CreateOrderDto, ['tableId', 'payment', 'items'])
+    OmitType(CreateOrderDto, ['tableId', 'items'])
 ) {
     @IsOptional()
     @ValidateNested()

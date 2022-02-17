@@ -4,7 +4,7 @@ export class OrderSSEPayload {
     id: ObjectId;
     tableId: ObjectId;
     items: {
-        dishId: string;
+        dishId: ObjectId;
         count: number;
         note: string;
         choices: (PickedRadio | PickedCheckbox)[];

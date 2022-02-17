@@ -1,12 +1,12 @@
 @HOST = http://localhost:3001/admin
-
+@dishId = 123456123456123456123456
 
 ### POST one dish
 POST {{HOST}}/dishes
 Content-Type: application/json
 
 {
-    "title": "Italiano",
+    "title": "Isabellano",
     "description":
         "Pizza with mortadella and the finest prosciutto crudo from napoli",
     "price": 950,
@@ -21,7 +21,7 @@ Content-Type: application/json
 GET {{HOST}}/dishes
 
 ### GET dishes by ID
-GET {{HOST}}/dishes/:id
+GET {{HOST}}/dishes/{{dishId}}
 
 
 

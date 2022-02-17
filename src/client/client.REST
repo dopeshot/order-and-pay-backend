@@ -1,11 +1,10 @@
-@HOST=http://localhost:3001/admin/client
+@HOST=http://localhost:3001/client
 
 ### Create new order
 POST {{{HOST}}}/order
 Content-Type: application/json
 
 {
-    "tableId": "1A",
-    "items": [],
-    "payment": "myid"
+    "tableId": "620e94410c3d0cf4528ba172",
+    "items": []
 }

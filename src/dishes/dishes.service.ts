@@ -46,7 +46,7 @@ export class DishesService {
         return await this.dishModel.find().lean();
     }
 
-    async findOne(id: string): Promise<DishDocument> {
+    async findOne(id: ObjectId): Promise<DishDocument> {
         const dish: DishDocument = await this.dishModel.findById(id).lean();
         if (!dish) {
             this.logger.debug(
@@ -57,21 +57,21 @@ export class DishesService {
         return dish;
     }
 
-    async findByAllergen(id: string): Promise<DishDocument[]> {
+    async findByAllergen(id: ObjectId): Promise<DishDocument[]> {
         const dishes: DishDocument[] = await this.dishModel
             .find({ allergens: id })
             .lean();
         return dishes;
     }
 
-    async findByLabel(id: string): Promise<DishDocument[]> {
+    async findByLabel(id: ObjectId): Promise<DishDocument[]> {
         const dishes: DishDocument[] = await this.dishModel
             .find({ labels: id })
             .lean();
         return dishes;
     }
 
-    async findByCategory(id: string): Promise<DishDocument[]> {
+    async findByCategory(id: ObjectId): Promise<DishDocument[]> {
         return await this.dishModel.find({ category: id }).lean();
     }
 
@@ -84,7 +84,7 @@ export class DishesService {
     }
 
     async update(
-        id: string,
+        id: ObjectId,
         updateDishDto: UpdateDishDto
     ): Promise<DishDocument> {
         let dish: DishDocument;
@@ -117,7 +117,7 @@ export class DishesService {
         return dish;
     }
 
-    async remove(id: string, type: DeleteType): Promise<void> {
+    async remove(id: ObjectId, type: DeleteType): Promise<void> {
         // Hard delete
         if (type === DeleteType.HARD) {
             const dish = await this.dishModel.findByIdAndDelete(id);
@@ -155,7 +155,7 @@ export class DishesService {
         return;
     }
 
-    async recursiveRemoveAllergen(id: string): Promise<void> {
+    async recursiveRemoveAllergen(id: ObjectId): Promise<void> {
         const result = await this.dishModel.updateMany(
             { allergens: id },
             { $pull: { allergens: id } }
@@ -167,7 +167,7 @@ export class DishesService {
         return;
     }
 
-    async recursiveRemoveLabel(id: string): Promise<void> {
+    async recursiveRemoveLabel(id: ObjectId): Promise<void> {
         const result = await this.dishModel.updateMany(
             { labels: id },
             { $pull: { labels: id } }
@@ -179,8 +179,10 @@ export class DishesService {
         return;
     }
 
-    async recursiveRemoveByCategory(id: string): Promise<void> {
-        const result = await this.dishModel.deleteMany({ category: id });
+    async recursiveRemoveByCategory(id: ObjectId): Promise<void> {
+        const result = await this.dishModel.deleteMany({
+            category: id.toString()
+        });
         this.logger.log(
             `${result.deletedCount} Dishes have been recursively been deleted after Category deletion. Full information: (${result})`
         );

@@ -97,8 +97,7 @@ describe('Ordercontroller (e2e)', () => {
                                 valueId: [2]
                             }
                         }
-                    ],
-                    payment: 'my transaction id'
+                    ]
                 })
                 .expect(HttpStatus.CREATED);
 
@@ -120,8 +119,7 @@ describe('Ordercontroller (e2e)', () => {
                 .post('/client/order')
                 .send({
                     tableId: getTablesSeeder()[0]._id,
-                    items: [],
-                    payment: 'my transaction id'
+                    items: []
                 })
                 .expect(HttpStatus.CREATED);
 
@@ -236,9 +234,7 @@ describe('Ordercontroller (e2e)', () => {
 
             expect(res.body.Status).toBe(OrderStatus.IN_PROGRESS);
             expect(res.body.PaymentStatus).toMatchObject({
-                status: PaymentStatus.RECEIVED,
-                transactionId: 'aaaaaaaaaa',
-                amount: 2
+                status: PaymentStatus.RECEIVED
             });
         });
 

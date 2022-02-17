@@ -7,7 +7,7 @@ import {
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { DishesService } from '../dishes/dishes.service';
 import { Dish } from '../dishes/entities/dish.entity';
 import { Status } from '../menus/enums/status.enum';
@@ -55,7 +55,7 @@ export class CategoriesService {
         return await this.categoryModel.find().lean();
     }
 
-    async findOne(id: string): Promise<CategoryDocument> {
+    async findOne(id: ObjectId): Promise<CategoryDocument> {
         const category: CategoryDocument = await this.categoryModel
             .findById(id)
             .lean();
@@ -68,16 +68,16 @@ export class CategoriesService {
         return category;
     }
 
-    async findDishes(id: string): Promise<Dish[]> {
+    async findDishes(id: ObjectId): Promise<Dish[]> {
         return await this.dishesService.findByCategory(id);
     }
 
-    async findByMenu(id: string): Promise<CategoryDocument[]> {
+    async findByMenu(id: ObjectId): Promise<CategoryDocument[]> {
         return this.categoryModel.find({ menu: id }).lean();
     }
 
     async update(
-        id: string,
+        id: ObjectId,
         updateCategoryDto: UpdateCategoryDto
     ): Promise<CategoryDocument> {
         let category: CategoryDocument;
@@ -114,7 +114,7 @@ export class CategoriesService {
         return category;
     }
 
-    async remove(id: string, type: DeleteType): Promise<void> {
+    async remove(id: ObjectId, type: DeleteType): Promise<void> {
         // Hard delete
         // MD: Delete references too
         if (type === DeleteType.HARD) {
@@ -155,7 +155,7 @@ export class CategoriesService {
         return;
     }
 
-    async recursiveRemoveByMenu(id: string): Promise<void> {
+    async recursiveRemoveByMenu(id: ObjectId): Promise<void> {
         const categories = await this.findByMenu(id);
 
         // Try catch to ensure everything is deleted even if one in the middle is not found

@@ -1,13 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose, Transform } from 'class-transformer';
-import { Document } from 'mongoose';
+import { Document, ObjectId } from 'mongoose';
 import { Timestamps } from '../../shared/global-validation/types/timestamps';
 
 @Schema({ timestamps: true, _id: true })
 export class Table {
     @Expose()
     @Transform((params) => params.obj._id.toString())
-    _id: string;
+    _id: ObjectId;
 
     @Expose()
     @Prop({ required: true, unique: true })
@@ -18,7 +18,7 @@ export class Table {
     capacity: number;
 
     @Expose()
-    // @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
+    // @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true }) TODO: implement this, if wanted
     @Prop({ required: true })
     author: string;
 

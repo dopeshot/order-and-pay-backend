@@ -6,7 +6,7 @@ import {
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { DishesService } from '../dishes/dishes.service';
 import { DishDocument } from '../dishes/entities/dish.entity';
 import { CreateLabelDto } from './dto/create-label.dto';
@@ -49,7 +49,7 @@ export class LabelsService {
         return await this.labelModel.find().lean();
     }
 
-    async findOne(id: string): Promise<LabelDocument> {
+    async findOne(id: ObjectId): Promise<LabelDocument> {
         const label: LabelDocument = await this.labelModel.findById(id).lean();
         if (!label) {
             this.logger.debug(
@@ -60,13 +60,13 @@ export class LabelsService {
         return label;
     }
 
-    async findDishes(id: string): Promise<DishDocument[]> {
+    async findDishes(id: ObjectId): Promise<DishDocument[]> {
         const dishes = await this.dishesService.findByLabel(id);
         return dishes;
     }
 
     async update(
-        id: string,
+        id: ObjectId,
         updateLabelDto: UpdateLabelDto
     ): Promise<LabelDocument> {
         let label: LabelDocument;
@@ -100,7 +100,7 @@ export class LabelsService {
         return label;
     }
 
-    async remove(id: string): Promise<void> {
+    async remove(id: ObjectId): Promise<void> {
         // Only Hard delete, it is easier to create a new than retrieve the old
 
         // Delete references first, if this fails after the allergen delete: the references will remain

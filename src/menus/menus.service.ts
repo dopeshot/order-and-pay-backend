@@ -6,7 +6,7 @@ import {
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { CategoriesService } from '../categories/categories.service';
 import { CategoryPopulated } from '../categories/entities/category.entity';
 import { DishesService } from '../dishes/dishes.service';
@@ -63,7 +63,7 @@ export class MenusService {
         }
     }
 
-    async findOne(id: string): Promise<MenuDocument> {
+    async findOne(id: ObjectId): Promise<MenuDocument> {
         const menu: MenuDocument = await this.menuModel.findById(id).lean();
 
         if (!menu) {
@@ -86,7 +86,10 @@ export class MenusService {
         return current;
     }
 
-    async updateMenu(id: string, updateMenuDto: UpdateMenuDto): Promise<Menu> {
+    async updateMenu(
+        id: ObjectId,
+        updateMenuDto: UpdateMenuDto
+    ): Promise<Menu> {
         let updatedMenu: Menu;
 
         try {
@@ -130,7 +133,7 @@ export class MenusService {
         return updatedMenu;
     }
 
-    async updateActivation(excludeId: string) {
+    async updateActivation(excludeId: ObjectId) {
         this.logger.debug(`Updating activation for menus`);
         //Disable all but the given Menu
         await this.menuModel.updateMany(
@@ -144,7 +147,7 @@ export class MenusService {
         );
     }
 
-    async deleteMenu(id: string, type: DeleteType): Promise<void> {
+    async deleteMenu(id: ObjectId, type: DeleteType): Promise<void> {
         // Default to soft delete
         if (!type) type = DeleteType.SOFT;
 
@@ -187,7 +190,7 @@ export class MenusService {
         return;
     }
 
-    async findAndPopulate(id: string): Promise<MenuPopulated> {
+    async findAndPopulate(id: ObjectId): Promise<MenuPopulated> {
         const menu: MenuDocument = await this.menuModel.findById(id).lean();
 
         if (!menu) throw new NotFoundException();
@@ -207,7 +210,7 @@ export class MenusService {
         return { ...menu, categories: populated || [] };
     }
 
-    async findCategories(id: string) {
+    async findCategories(id: ObjectId) {
         return await this.categoriesService.findByMenu(id);
     }
 }

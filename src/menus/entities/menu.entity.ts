@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose, Transform, Type } from 'class-transformer';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { CategoryPopulated } from '../../categories/entities/category.entity';
 import { Status } from '../enums/status.enum';
 
@@ -8,7 +8,7 @@ import { Status } from '../enums/status.enum';
 export class Menu {
     @Expose()
     @Transform((params) => params.obj._id.toString())
-    _id: string;
+    _id: Types.ObjectId;
 
     @Expose()
     @Prop({ required: true, unique: true })

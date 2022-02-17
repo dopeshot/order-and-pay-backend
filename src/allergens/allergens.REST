@@ -5,7 +5,7 @@ POST {{host}}/admin/allergens
 Content-Type: application/json
 
 {
-    "title": "Steve",
+    "title": "Isabelle",
     "icon": "dave"
 }
 

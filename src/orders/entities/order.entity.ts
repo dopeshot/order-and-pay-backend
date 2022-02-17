@@ -7,28 +7,17 @@ import {
     IsNumber,
     IsOptional,
     IsString,
-    Length,
     MaxLength,
     ValidateNested
 } from 'class-validator';
 import { Document, ObjectId, SchemaTypes } from 'mongoose';
+import { Dish } from '../../dishes/entities/dish.entity';
+import { Table } from '../../tables/entities/table.entity';
 import { ChoiceType } from '../enums/choice-type.enum';
 import { OrderStatus } from '../enums/order-status.enum';
 import { PaymentStatus } from '../enums/payment-status.enum';
 
 export class Payment {
-    @Expose()
-    @Prop()
-    @IsNumber()
-    @IsNotEmpty()
-    amount: number;
-
-    @Expose()
-    @Prop()
-    @IsString()
-    @Length(10)
-    transactionId: string;
-
     @Expose()
     @Prop()
     @IsEnum(PaymentStatus)
@@ -56,7 +45,7 @@ export class PickedChoices {
 export class Item {
     @Expose()
     @Prop({ type: SchemaTypes.ObjectId, ref: 'Dish', required: true })
-    dish: ObjectId;
+    dish: Dish;
 
     @Expose()
     @Prop()
@@ -87,7 +76,7 @@ export class Order {
     @Expose()
     @Transform((params) => params.obj.tableId.toString())
     @Prop({ type: SchemaTypes.ObjectId, ref: 'Table', required: true })
-    tableId: ObjectId;
+    tableId: Table;
 
     @Expose()
     @Prop({ required: true })

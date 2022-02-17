@@ -1,8 +1,9 @@
 import { OmitType } from '@nestjs/mapped-types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose, Transform, Type } from 'class-transformer';
-import { Document, ObjectId } from 'mongoose';
+import { Document, ObjectId, Types } from 'mongoose';
 import { Allergen } from '../../allergens/entities/allergen.entity';
+import { Category } from '../../categories/entities/category.entity';
 import { Label } from '../../labels/entities/label.entity';
 import { Status } from '../../shared/enums/status.enum';
 
@@ -37,16 +38,21 @@ export class Dish {
     isAvailable: boolean;
 
     @Expose()
-    @Prop({ ref: 'Category', required: true })
-    category: string;
+    @Prop({ type: Types.ObjectId, ref: 'Category', required: true })
+    @Transform((params) => params.obj.category.toString())
+    category: Category;
 
     @Expose()
-    @Prop({ required: true, ref: 'Allergen' })
-    allergens: string[];
+    @Prop({ type: [{ type: Types.ObjectId, ref: 'Allergen' }] })
+    @Transform((params) =>
+        params.obj.allergens.map((allergen) => allergen.toString())
+    )
+    allergens: Allergen[];
 
     @Expose()
-    @Prop({ required: true, ref: 'Label' })
-    labels: string[];
+    @Prop({ type: [{ type: Types.ObjectId, ref: 'Label' }] })
+    @Transform((params) => params.obj.labels.map((label) => label.toString()))
+    labels: Label[];
 }
 
 export type DishDocument = Dish & Document;

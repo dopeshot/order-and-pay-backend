@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsMongoId, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsMongoId, ValidateNested } from 'class-validator';
 import { ObjectId } from 'mongoose';
 import { Item } from '../entities/order.entity';
 
@@ -11,7 +11,4 @@ export class CreateOrderDto {
     @ValidateNested({ each: true })
     @Type(() => Item)
     items: Item[];
-
-    @IsString()
-    payment: string;
 }

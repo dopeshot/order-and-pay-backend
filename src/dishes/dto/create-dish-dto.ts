@@ -33,7 +33,7 @@ export class CreateDishDto {
     @IsBoolean()
     isAvailable = true;
 
-    @IsMongoId()
+    @IsMongoId({ each: true })
     @IsNotEmpty()
     category: string;
 
