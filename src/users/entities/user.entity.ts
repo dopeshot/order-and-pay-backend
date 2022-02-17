@@ -9,6 +9,7 @@ export class User {
     @Prop({ required: true, unique: true })
     username: string;
 
+    // While currently unused, saving this allows for later extension without having to alter existing users
     @Prop({ required: true, unique: true })
     email: string;
 
@@ -18,6 +19,7 @@ export class User {
     @Prop({ required: () => (this.provider ? true : false) })
     password: string;
 
+    // Same as with email field
     @Prop({ default: UserStatus.ACTIVE })
     status: UserStatus;
 
