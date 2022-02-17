@@ -14,10 +14,9 @@ import { SseService } from '../sse/sse.service';
 import { TablesService } from '../tables/tables.service';
 import { CreateOrderDto } from './dtos/create-order.dto';
 import { UpdateOrderDto } from './dtos/update-order.dto';
-import { OrderDocument } from './entities/order.entity';
+import { OrderDocument, Payment } from './entities/order.entity';
 import { OrderStatus } from './enums/order-status.enum';
 import { PaymentStatus } from './enums/payment-status.enum';
-import { Payment } from './types/payment.type';
 
 @Injectable()
 export class OrdersService {

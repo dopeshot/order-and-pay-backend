@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsMongoId, IsString, ValidateNested } from 'class-validator';
 import { ObjectId } from 'mongoose';
-import { Item } from '../types/item.type';
+import { Item } from '../entities/order.entity';
 
 export class CreateOrderDto {
     @IsMongoId()
