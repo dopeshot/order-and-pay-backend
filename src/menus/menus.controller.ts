@@ -61,7 +61,7 @@ export class MenusController {
     })
     @ApiResponse({
         status: HttpStatus.OK,
-        description: 'The dishes referencing the label',
+        description: 'The categories referencing the menu',
         type: Category,
         isArray: true
     })
