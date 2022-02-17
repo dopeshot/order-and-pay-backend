@@ -64,7 +64,7 @@ describe('UserModule (e2e)', () => {
     describe('User basics', () => {
         describe('/users (GET)', () => {
             it('/users (GET) should return array', async () => {
-                let user = await getTestAdmin();
+                const user = await getTestAdmin();
                 await userModel.insertMany([user]);
                 const res = await request(app.getHttpServer())
                     .get('/users')
@@ -84,7 +84,7 @@ describe('UserModule (e2e)', () => {
 
         describe('/users/profile (GET)', () => {
             it('/users/profile (GET) ', async () => {
-                let user = await getTestUser();
+                const user = await getTestUser();
                 await userModel.create(user);
                 const res = await request(app.getHttpServer())
                     .get('/users/profile')
@@ -113,7 +113,7 @@ describe('UserModule (e2e)', () => {
                         username: 'test-user-updated'
                     })
                     .expect(HttpStatus.OK);
-                let user = await userModel.findOne();
+                const user = await userModel.findOne();
                 expect(user.username).toBe('test-user-updated');
 
                 // Test user response
@@ -151,7 +151,7 @@ describe('UserModule (e2e)', () => {
 
         describe('/users/:id (DELETE)', () => {
             it('/users/:id (DELETE) should delete user', async () => {
-                let user = await getTestUser();
+                const user = await getTestUser();
                 await userModel.create(user);
                 const res = await request(app.getHttpServer())
                     .delete('/users/61bb7c9983fdff2f24bf77a8')

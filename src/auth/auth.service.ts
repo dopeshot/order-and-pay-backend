@@ -55,7 +55,7 @@ export class AuthService {
         email: string,
         password: string
     ): Promise<User> {
-        let user: User = null;
+        let user: User;
         try {
             user = await this.userService.findOneByEmail(email);
         } catch (error) {

@@ -157,7 +157,7 @@ describe('Ordercontroller (e2e)', () => {
     describe('/orders (GET)', () => {
         it('should return all orders', async () => {
             await orderModel.insertMany(getTestOrderData());
-            let res = await request(app.getHttpServer())
+            const res = await request(app.getHttpServer())
                 .get('/orders')
                 .expect(HttpStatus.OK);
 
@@ -165,7 +165,7 @@ describe('Ordercontroller (e2e)', () => {
         });
 
         it('should return empty array without orders', async () => {
-            let res = await request(app.getHttpServer())
+            const res = await request(app.getHttpServer())
                 .get('/orders')
                 .expect(HttpStatus.OK);
 
@@ -176,7 +176,7 @@ describe('Ordercontroller (e2e)', () => {
     describe('/orders/current (GET)', () => {
         it('should return all active orders', async () => {
             await orderModel.insertMany(getTestOrderData());
-            let res = await request(app.getHttpServer())
+            const res = await request(app.getHttpServer())
                 .get('/orders/current')
                 .expect(HttpStatus.OK);
 
@@ -184,7 +184,7 @@ describe('Ordercontroller (e2e)', () => {
         });
 
         it('should return empty array without orders', async () => {
-            let res = await request(app.getHttpServer())
+            const res = await request(app.getHttpServer())
                 .get('/orders/current')
                 .expect(HttpStatus.OK);
 
@@ -204,7 +204,7 @@ describe('Ordercontroller (e2e)', () => {
                 };
             });
             await orderModel.insertMany(orders);
-            let res = await request(app.getHttpServer())
+            const res = await request(app.getHttpServer())
                 .get('/orders/current')
                 .expect(HttpStatus.OK);
             expect(res.body.length).toBe(0);
@@ -222,7 +222,7 @@ describe('Ordercontroller (e2e)', () => {
             });
             const order = getUniqueOrder();
             await orderModel.insertMany(order);
-            let res = await request(app.getHttpServer())
+            const res = await request(app.getHttpServer())
                 .patch('/orders/' + order._id.toString())
                 .send({
                     PaymentStatus: {

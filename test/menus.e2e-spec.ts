@@ -161,10 +161,10 @@ describe('MenuController (e2e)', () => {
                     .expect(HttpStatus.OK);
 
                 // Check contents of populated menu
-                let expectedCategories = getCategoriesSeeder();
-                let dishes = getDishesSeeder();
-                let allergens = getAllergensForDishesSeeder();
-                let labels = getLabelsForDishesSeeder();
+                const expectedCategories = getCategoriesSeeder();
+                const dishes = getDishesSeeder();
+                const allergens = getAllergensForDishesSeeder();
+                const labels = getLabelsForDishesSeeder();
 
                 // Check if categories are populated correctly
                 expect(res.body.categories.length).toBe(
