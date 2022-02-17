@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { PartialType } from '@nestjs/swagger';
 import { Expose, Transform, Type } from 'class-transformer';
 import {
     IsEnum,
@@ -102,7 +101,7 @@ export class Category {
 }
 
 export type CategoryDocument = Category & Document;
-export class CategoryPopulated extends PartialType(Category) {
+export class CategoryPopulated extends Category {
     @Expose()
     @Type(() => DishPopulated)
     dishes: DishPopulated[];

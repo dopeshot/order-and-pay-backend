@@ -1,4 +1,3 @@
-import { PartialType } from '@nestjs/mapped-types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose, Transform, Type } from 'class-transformer';
 import { Document } from 'mongoose';
@@ -29,7 +28,7 @@ export class Menu {
 }
 
 export type MenuDocument = Menu & Document;
-export class MenuPopulated extends PartialType(Menu) {
+export class MenuPopulated extends Menu {
     @Expose()
     @Type(() => CategoryPopulated)
     categories: CategoryPopulated[];
