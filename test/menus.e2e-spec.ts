@@ -173,7 +173,7 @@ describe('MenuController (e2e)', () => {
 
                 res.body.categories.forEach((category) => {
                     expect(
-                        // TODO: @Coffe c is not a naming convention we use!
+                        // TODO: @Coffe c is not a naming convention we use! (This does not have to be in this forEach)
                         res.body.categories.find(
                             (c) => c._id === expectedCategories[0]._id
                         )

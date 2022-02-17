@@ -1,7 +1,7 @@
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../../src/auth/auth.service';
 import { UserStatus } from '../../src/users/enums/status.enum';
-// TODO: Is this the best way to do this?
+// There may be a better way of doing this, but for now this will work
 import { UsersService } from '../../src/users/users.service';
 
 const jwtService: JwtService = new JwtService({
