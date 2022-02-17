@@ -42,7 +42,8 @@ export class CategoriesController {
     })
     @Post()
     async create(@Body() createCategoryDto: CreateCategoryDto) {
-        return new Category(
+        return plainToClass(
+            Category,
             await this.categoriesService.create(createCategoryDto)
         );
     }
@@ -56,9 +57,7 @@ export class CategoriesController {
     })
     @Get()
     async findAll() {
-        return (await this.categoriesService.findAll()).map(
-            (category) => new Category(category)
-        );
+        return plainToClass(Category, await this.categoriesService.findAll());
     }
 
     @ApiOperation({ summary: 'Get one category', tags: ['categories'] })
@@ -73,7 +72,7 @@ export class CategoriesController {
     })
     @Get(':id')
     async findOne(@Param() { id }: MongoIdDto) {
-        return new Category(await this.categoriesService.findOne(id));
+        return plainToClass(Category, await this.categoriesService.findOne(id));
     }
 
     @ApiOperation({
@@ -110,7 +109,8 @@ export class CategoriesController {
         @Param() { id }: MongoIdDto,
         @Body() updateCategoryDto: UpdateCategoryDto
     ) {
-        return new Category(
+        return plainToClass(
+            Category,
             await this.categoriesService.update(id, updateCategoryDto)
         );
     }

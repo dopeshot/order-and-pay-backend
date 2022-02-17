@@ -14,6 +14,7 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 import { Category } from '../categories/entities/category.entity';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
@@ -67,8 +68,9 @@ export class MenusController {
     })
     @Get(':id/refs')
     async findRefs(@Param() { id }: MongoIdDto) {
-        return (await this.menuService.findCategories(id)).map(
-            (category) => new Category(category)
+        return plainToClass(
+            Category,
+            await this.menuService.findCategories(id)
         );
     }
 

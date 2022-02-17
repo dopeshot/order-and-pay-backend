@@ -69,7 +69,9 @@ describe('CategoriesController (e2e)', () => {
                 .expect(HttpStatus.CREATED);
 
             expect(await categoryModel.find()).toHaveLength(2);
-            const category = new Category(res.body);
+            const category = plainToClass(Category, res.body, {
+                exposeUnsetFields: false
+            });
             expect(res.body).toMatchObject(category);
 
             // Expect default status
@@ -83,7 +85,9 @@ describe('CategoriesController (e2e)', () => {
                 .expect(HttpStatus.CREATED);
 
             expect(await categoryModel.find()).toHaveLength(2);
-            const category = new Category(res.body);
+            const category = plainToClass(Category, res.body, {
+                exposeUnsetFields: false
+            });
             expect(res.body).toMatchObject(category);
         });
 
@@ -94,7 +98,9 @@ describe('CategoriesController (e2e)', () => {
                 .expect(HttpStatus.CREATED);
 
             expect(await categoryModel.find()).toHaveLength(2);
-            const category = new Category(res.body);
+            const category = plainToClass(Category, res.body, {
+                exposeUnsetFields: false
+            });
             expect(res.body).toMatchObject(category);
         });
 
@@ -362,17 +368,16 @@ describe('CategoriesController (e2e)', () => {
                 .get(`${path}/${getCategorySeeder()._id}`)
                 .expect(HttpStatus.OK);
 
-            const category = new Category(res.body);
+            const category = plainToClass(Category, res.body, {
+                exposeUnsetFields: false
+            });
             expect(res.body).toMatchObject(category);
         });
 
         it('should return NOT_FOUND with wrong id', async () => {
-            const res = await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .get(`${path}/${getWrongId()}`)
                 .expect(HttpStatus.NOT_FOUND);
-
-            const category = new Category(res.body);
-            expect(res.body).toMatchObject(category);
         });
     });
 
@@ -403,50 +408,56 @@ describe('CategoriesController (e2e)', () => {
                 .send({ title: 'New Title' })
                 .expect(HttpStatus.OK);
 
-            const category = new Category(res.body);
+            const category = plainToClass(Category, res.body, {
+                exposeUnsetFields: false
+            });
             expect(res.body).toMatchObject(category);
             expect(res.body.title).toBe('New Title');
         });
 
         it('should return OK without data', async () => {
-            const category = new Category(
-                await categoryModel.findById(getCategorySeeder()._id).lean()
-            );
+            const category = await categoryModel
+                .findById(getCategorySeeder()._id)
+                .lean();
+
             const res = await request(app.getHttpServer())
                 .patch(`${path}/${getCategorySeeder()._id}`)
                 .expect(HttpStatus.OK);
 
             // Expect unchanged Object
-            const resCategory = new Category(res.body);
-            expect(resCategory.choices).toMatchObject(category.choices);
+            const resCategory = plainToClass(Category, res.body);
+            const controllCategory = plainToClass(Category, category);
+            expect(resCategory.choices).toMatchObject(controllCategory.choices);
 
             // Either delete __v updatedAt and createdAt or check the rest (2nd option is better)
-            expect(resCategory.description).toBe(category.description);
-            expect(resCategory.icon).toBe(category.icon);
-            expect(resCategory.image).toBe(category.image);
-            expect(resCategory.menu).toBe(category.menu);
-            expect(resCategory.title).toBe(category.title);
+            expect(resCategory.description).toBe(controllCategory.description);
+            expect(resCategory.icon).toBe(controllCategory.icon);
+            expect(resCategory.image).toBe(controllCategory.image);
+            expect(resCategory.menu).toBe(controllCategory.menu);
+            expect(resCategory.title).toBe(controllCategory.title);
         });
 
         it('should return OK with wrong param', async () => {
-            const category = new Category(
-                await categoryModel.findById(getCategorySeeder()._id).lean()
-            );
+            const category = await categoryModel
+                .findById(getCategorySeeder()._id)
+                .lean();
+
             const res = await request(app.getHttpServer())
                 .patch(`${path}/${getCategorySeeder()._id}`)
                 .send({ wrongparam: 'something' })
                 .expect(HttpStatus.OK);
 
             // Expect unchanged Object
-            const resCategory = new Category(res.body);
-            expect(resCategory.choices).toMatchObject(category.choices);
+            const resCategory = plainToClass(Category, res.body);
+            const controllCategory = plainToClass(Category, category);
+            expect(resCategory.choices).toMatchObject(controllCategory.choices);
 
             // Either delete __v updatedAt and createdAt or check the rest (chose 2nd)
-            expect(resCategory.description).toBe(category.description);
-            expect(resCategory.icon).toBe(category.icon);
-            expect(resCategory.image).toBe(category.image);
-            expect(resCategory.menu).toBe(category.menu);
-            expect(resCategory.title).toBe(category.title);
+            expect(resCategory.description).toBe(controllCategory.description);
+            expect(resCategory.icon).toBe(controllCategory.icon);
+            expect(resCategory.image).toBe(controllCategory.image);
+            expect(resCategory.menu).toBe(controllCategory.menu);
+            expect(resCategory.title).toBe(controllCategory.title);
         });
 
         it('should return NOT_FOUND with wrong id', async () => {
