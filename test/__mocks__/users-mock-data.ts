@@ -1,6 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../../src/auth/auth.service';
-import { Role } from '../../src/users/enums/role.enum';
 import { UserStatus } from '../../src/users/enums/status.enum';
 // TODO: Is this the best way to do this?
 import { UsersService } from '../../src/users/users.service';
@@ -19,7 +18,6 @@ let user = {
     username: 'mock',
     email: 'mock@mock.mock',
     password: '',
-    role: Role.USER,
     status: UserStatus.ACTIVE,
     provider: ''
 };
@@ -29,7 +27,6 @@ let admin = {
     username: 'admin',
     email: 'discordmod@admin.mock',
     password: '',
-    role: Role.ADMIN,
     status: UserStatus.ACTIVE,
     provider: ''
 };

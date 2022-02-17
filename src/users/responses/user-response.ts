@@ -10,9 +10,6 @@ export class UserResponse {
     username: string;
 
     @Expose()
-    role: string;
-
-    @Expose()
     status: string;
 
     @Expose()
