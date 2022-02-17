@@ -17,6 +17,7 @@ export class SSEHelper {
 
     private callback(data) {
         this.messages.push(data);
+
         this.calls++;
     }
 }

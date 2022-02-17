@@ -26,7 +26,7 @@ export class CreateDishDto {
 
     @IsOptional()
     @IsString()
-    @Length(2, 100)
+    @Length(0, 100) // also allow to have an empty string to "delete" a previous image
     image: string;
 
     @IsOptional()

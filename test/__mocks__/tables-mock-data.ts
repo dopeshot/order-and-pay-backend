@@ -1,9 +1,4 @@
-export const getTestSetupData = () => {
-    //TODO: remove calls for this method
-    return getTestTableData();
-};
-
-export const getTestTableData = () => {
+export const getTableSeeder = () => {
     return [
         {
             _id: 'aaaaaaaaaaaaaaaaaaaaaaa0',
@@ -68,7 +63,7 @@ export const getTestTableData = () => {
     ];
 };
 
-export const getMockTable = () => {
+export const getSampleTable = () => {
     return {
         _id: 'bbbbbbbbbbbbbbbbbbbbbbb1',
         tableNumber: 'B1',

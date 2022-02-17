@@ -135,6 +135,13 @@ describe('DishController (e2e)', () => {
             expect(res.body).toMatchObject(dish);
         });
 
+        it('should create a dish with image as empty string', async () => {
+            await request(app.getHttpServer())
+                .post(`${path}`)
+                .send({ ...getSampleDish(), image: '' })
+                .expect(HttpStatus.CREATED);
+        });
+
         it('should return CONFLICT with duplicate title', async () => {
             await request(app.getHttpServer())
                 .post(`${path}`)
@@ -231,6 +238,16 @@ describe('DishController (e2e)', () => {
                     .send({
                         ...getSampleDish(),
                         category: 'AAAAAAAAAAAANMKPLBV789XZ'
+                    })
+                    .expect(HttpStatus.BAD_REQUEST);
+            });
+
+            it('should return BAD_REQUEST with image too long', async () => {
+                await request(app.getHttpServer())
+                    .post(`${path}`)
+                    .send({
+                        ...getSampleDish(),
+                        image: getStringOfLength(101)
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -357,6 +374,14 @@ describe('DishController (e2e)', () => {
             expect(resDish.price).toBe(dish.price);
             expect(resDish.allergens).toStrictEqual(dish.allergens);
             expect(resDish.labels).toStrictEqual(dish.labels);
+        });
+
+        it('should return OK with image as empty string', async () => {
+            const res = await request(app.getHttpServer())
+                .post(`${path}`)
+                .send({ ...getSampleDish(), image: '' })
+                .expect(HttpStatus.CREATED);
+            expect(res.body.image).toBe('');
         });
 
         it('should return NOT_FOUND with wrong id', async () => {

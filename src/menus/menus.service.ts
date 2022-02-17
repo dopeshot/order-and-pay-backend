@@ -2,19 +2,29 @@ import {
     ConflictException,
     Injectable,
     InternalServerErrorException,
+    Logger,
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId, Schema } from 'mongoose';
+import { Model } from 'mongoose';
+import { CategoriesService } from '../categories/categories.service';
+import { CategoryPopulated } from '../categories/entities/category.entity';
+import { DishesService } from '../dishes/dishes.service';
+import { DishPopulated } from '../dishes/entities/dish.entity';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
-import { Menu, MenuDocument } from './entities/menu.entity';
+import { Menu, MenuDocument, MenuPopulated } from './entities/menu.entity';
 import { Status } from './enums/status.enum';
 
 @Injectable()
 export class MenusService {
-    constructor(@InjectModel('Menu') private menuModel: Model<MenuDocument>) {}
+    private readonly logger = new Logger(MenusService.name);
+    constructor(
+        @InjectModel('Menu') private menuModel: Model<MenuDocument>,
+        private readonly categoriesService: CategoriesService,
+        private readonly dishesService: DishesService
+    ) {}
 
     async findAll(): Promise<Menu[]> {
         return await this.menuModel.find({ status: Status.ACTIVE }).lean();
@@ -30,14 +40,24 @@ export class MenusService {
                 await this.updateActivation(menu._id);
             }
 
+            this.logger.debug(
+                `The menu (id = ${menu._id}) has been created successfully.`
+            );
             // There is no other way remove unwanted fields without toObject()
             return menu.toObject() as MenuDocument;
         } catch (error) {
-            if (error.code === 11000 && error.keyPattern.title)
+            if (error.code === 11000 && error.keyPattern.title) {
+                this.logger.warn(
+                    `Creating a menu (title = ${createMenuDto}) failed due to a conflict.`
+                );
                 throw new ConflictException(
                     'A menu with this name already exists'
                 );
+            }
 
+            this.logger.error(
+                `An error has occured while creating a new menu (${error})`
+            );
             /* istanbul ignore next */ // Unable to test Internal server error here
             throw new InternalServerErrorException();
         }
@@ -47,16 +67,26 @@ export class MenusService {
         const menu: MenuDocument = await this.menuModel.findById(id).lean();
 
         if (!menu) {
+            this.logger.debug(
+                `A menu (id = ${id}) was requested but could not be found.`
+            );
             throw new NotFoundException();
         }
 
         return menu;
     }
 
-    async updateMenu(
-        id: ObjectId,
-        updateMenuDto: UpdateMenuDto
-    ): Promise<Menu> {
+    async findCurrent(): Promise<MenuDocument> {
+        const current = await this.menuModel.findOne({ isActive: true });
+
+        if (!current) {
+            throw new NotFoundException('No current menu found');
+        }
+
+        return current;
+    }
+
+    async updateMenu(id: string, updateMenuDto: UpdateMenuDto): Promise<Menu> {
         let updatedMenu: Menu;
 
         try {
@@ -66,23 +96,42 @@ export class MenusService {
                 })
                 .lean();
         } catch (error) {
-            if (error.code === 11000 && error.keyPattern.title)
+            if (error.code === 11000 && error.keyPattern.title) {
+                this.logger.warn(
+                    `Updating a menu (title = ${updateMenuDto}) failed due to a conflict.`
+                );
                 throw new ConflictException(
                     'A menu with this name already exists'
                 );
-            else throw new InternalServerErrorException('Menu update failed');
+            }
+            this.logger.error(
+                `An error has occured while updating a menu (${error})`
+            );
+            /* istanbul ignore next */
+            throw new InternalServerErrorException('Menu update failed');
         }
 
-        if (!updatedMenu) throw new NotFoundException('Menu not found');
-
+        if (!updatedMenu) {
+            this.logger.warn(
+                `Updating menu (id = ${id}) failed as it could not be found.`
+            );
+            throw new NotFoundException('Menu not found');
+        }
         if (updatedMenu.isActive) {
+            this.logger.log(
+                `Update of menu ${updatedMenu.title} has altered activation status`
+            );
             await this.updateActivation(id);
         }
 
+        this.logger.debug(
+            `The menu (id = ${id}) has been created successfully.`
+        );
         return updatedMenu;
     }
 
-    async updateActivation(excludeId: ObjectId) {
+    async updateActivation(excludeId: string) {
+        this.logger.debug(`Updating activation for menus`);
         //Disable all but the given Menu
         await this.menuModel.updateMany(
             {
@@ -95,22 +144,26 @@ export class MenusService {
         );
     }
 
-    async deleteMenu(
-        id: Schema.Types.ObjectId,
-        type: DeleteType
-    ): Promise<void> {
+    async deleteMenu(id: string, type: DeleteType): Promise<void> {
         // Default to soft delete
         if (!type) type = DeleteType.SOFT;
 
         // Hard delete
         if (type === DeleteType.HARD) {
-            // Coffee TODO: Maybe deleting the reference to this menu in dishes, categories, etc. should  be added as well
             const menu: MenuDocument = await this.menuModel.findByIdAndDelete(
                 id
             );
 
-            if (!menu) throw new NotFoundException();
-
+            if (!menu) {
+                this.logger.warn(
+                    `Deleting menu (id = ${id}) failed as it could not be found.`
+                );
+                throw new NotFoundException();
+            }
+            this.logger.debug(
+                `The menu (id = ${id}) has been deleted successfully.`
+            );
+            await this.categoriesService.recursiveRemoveByMenu(id);
             return;
         }
 
@@ -120,8 +173,41 @@ export class MenusService {
             isActive: false
         });
 
-        if (!menu) throw new NotFoundException();
+        if (!menu) {
+            this.logger.warn(
+                `Deleting menu (id = ${id}) failed as it could not be found.`
+            );
+            throw new NotFoundException();
+        }
+
+        this.logger.debug(
+            `The menu (id = ${id}) has been soft deleted successfully.`
+        );
 
         return;
+    }
+
+    async findAndPopulate(id: string): Promise<MenuPopulated> {
+        const menu: MenuDocument = await this.menuModel.findById(id).lean();
+
+        if (!menu) throw new NotFoundException();
+
+        const categories = await this.categoriesService.findByMenu(id);
+
+        const populated: CategoryPopulated[] = await Promise.all(
+            categories.map(async (category) => {
+                const dishes: DishPopulated[] =
+                    await this.dishesService.findByCategoryAndPopulate(
+                        category._id
+                    );
+                return { ...category, dishes };
+            })
+        );
+
+        return { ...menu, categories: populated || [] };
+    }
+
+    async findCategories(id: string) {
+        return await this.categoriesService.findByMenu(id);
     }
 }

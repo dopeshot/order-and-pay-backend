@@ -58,12 +58,10 @@ export class DishPopulated extends OmitType(Dish, ['allergens', 'labels']) {
     @Expose()
     @Type(() => Allergen)
     allergens: Allergen;
+
     @Expose()
     @Type(() => Label)
     labels: Label;
-    constructor(partial: Partial<DishPopulated>) {
-        super();
-        Object.assign(this, partial);
-    }
 }
+
 export const DishSchema = SchemaFactory.createForClass(Dish);

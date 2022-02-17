@@ -10,7 +10,7 @@ import {
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
 import { getWrongId } from './__mocks__/shared-mock-data';
-import { getMockTable, getTestSetupData } from './__mocks__/tables-mock-data';
+import { getSampleTable, getTableSeeder } from './__mocks__/tables-mock-data';
 
 describe('TableController (e2e)', () => {
     let app: INestApplication;
@@ -31,7 +31,7 @@ describe('TableController (e2e)', () => {
 
     // Insert test data
     beforeEach(async () => {
-        await tableModel.insertMany(getTestSetupData());
+        await tableModel.insertMany(getTableSeeder());
     });
 
     // Empty the collection from all possible impurities
@@ -49,7 +49,7 @@ describe('TableController (e2e)', () => {
             it('tables (POST), create table', async () => {
                 const res = await request(app.getHttpServer())
                     .post('/tables')
-                    .send(getMockTable())
+                    .send(getSampleTable())
                     .expect(HttpStatus.CREATED);
 
                 // // Test for class ResponseTable
@@ -57,9 +57,9 @@ describe('TableController (e2e)', () => {
                 // expect(res.body).toMatchObject(responseTable);
 
                 expect(res.body.tableNumber).toEqual(
-                    getMockTable().tableNumber
+                    getSampleTable().tableNumber
                 );
-                expect(res.body.capacity).toEqual(getMockTable().capacity);
+                expect(res.body.capacity).toEqual(getSampleTable().capacity);
             });
 
             it('tables (POST), migrate', async () => {
@@ -71,26 +71,26 @@ describe('TableController (e2e)', () => {
 
             // Negative test
             it('tables (POST), duplicate tableNumber', async () => {
-                await tableModel.create(getMockTable());
+                await tableModel.create(getSampleTable());
                 await request(app.getHttpServer())
                     .post('/tables')
-                    .send(getMockTable())
+                    .send(getSampleTable())
                     .expect(HttpStatus.CONFLICT);
             });
             // Negative test
             it('tables (POST), empty tableNumber', async () => {
-                await tableModel.create(getMockTable());
+                await tableModel.create(getSampleTable());
                 await request(app.getHttpServer())
                     .post('/tables')
-                    .send({ ...getMockTable(), tableNumber: '' })
+                    .send({ ...getSampleTable(), tableNumber: '' })
                     .expect(HttpStatus.BAD_REQUEST);
             });
             // Negative test
             it('tables (POST), too long tableNumber', async () => {
-                await tableModel.create(getMockTable());
+                await tableModel.create(getSampleTable());
                 await request(app.getHttpServer())
                     .post('/tables')
-                    .send({ ...getMockTable(), tableNumber: '123456789' })
+                    .send({ ...getSampleTable(), tableNumber: '123456789' })
                     .expect(HttpStatus.BAD_REQUEST);
             });
 
@@ -98,7 +98,7 @@ describe('TableController (e2e)', () => {
             it('tables (POST), extra properties are ignored', async () => {
                 const res = await request(app.getHttpServer())
                     .post('/tables')
-                    .send({ ...getMockTable(), chicken: 'CHICKEN' })
+                    .send({ ...getSampleTable(), chicken: 'CHICKEN' })
                     .expect(HttpStatus.CREATED);
                 expect(res.body.chicken).toBeUndefined;
             });
@@ -107,7 +107,7 @@ describe('TableController (e2e)', () => {
             it('tables (POST), tableNumber is number', async () => {
                 await request(app.getHttpServer())
                     .post('/tables')
-                    .send({ ...getMockTable(), tableNumber: 12 })
+                    .send({ ...getSampleTable(), tableNumber: 12 })
                     .expect(HttpStatus.BAD_REQUEST);
             });
         });
@@ -122,9 +122,9 @@ describe('TableController (e2e)', () => {
             });
 
             it('tables/:id (GET), correct data received', async () => {
-                await tableModel.create(getMockTable());
+                await tableModel.create(getSampleTable());
                 const res = await request(app.getHttpServer())
-                    .get(`/tables/${getMockTable()._id}`)
+                    .get(`/tables/${getSampleTable()._id}`)
                     .expect(HttpStatus.OK);
 
                 // // Test for class ResponseTable
@@ -132,7 +132,7 @@ describe('TableController (e2e)', () => {
                 // expect(res.body).toMatchObject(responseTable);
 
                 expect(res.body).toEqual({
-                    ...getMockTable(),
+                    ...getSampleTable(),
                     updatedAt: res.body.updatedAt
                 });
             });
@@ -155,7 +155,7 @@ describe('TableController (e2e)', () => {
         describe('PATCH', () => {
             it('tables/:id (PATCH), correct patch', async () => {
                 const res = await request(app.getHttpServer())
-                    .patch(`/tables/${getTestSetupData()[0]._id}`)
+                    .patch(`/tables/${getTableSeeder()[0]._id}`)
                     .send({ tableNumber: '13', capacity: 3 })
                     .expect(HttpStatus.OK);
 
@@ -170,10 +170,10 @@ describe('TableController (e2e)', () => {
             // Negative test
             it('tables (PATCH), patch duplicate tableNumber', async () => {
                 await request(app.getHttpServer())
-                    .patch(`/tables/${getTestSetupData()[0]._id}`)
+                    .patch(`/tables/${getTableSeeder()[0]._id}`)
                     .send({
-                        tableNumber: getTestSetupData()[1].tableNumber,
-                        capacity: getTestSetupData()[0].capacity
+                        tableNumber: getTableSeeder()[1].tableNumber,
+                        capacity: getTableSeeder()[0].capacity
                     })
                     .expect(HttpStatus.CONFLICT);
             });
@@ -189,7 +189,7 @@ describe('TableController (e2e)', () => {
             // Negative test
             it('tables/:id (PATCH): capacity: null', async () => {
                 await request(app.getHttpServer())
-                    .patch(`/tables/${getMockTable()._id}`)
+                    .patch(`/tables/${getSampleTable()._id}`)
                     .send({ tableNumber: '13', capacity: null })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -197,7 +197,7 @@ describe('TableController (e2e)', () => {
             // Negative test
             it('tables/:id (PATCH): capacity: negative', async () => {
                 await request(app.getHttpServer())
-                    .patch(`/tables/${getMockTable()._id}`)
+                    .patch(`/tables/${getSampleTable()._id}`)
                     .send({ tableNumber: '13', capacity: -1 })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -205,7 +205,7 @@ describe('TableController (e2e)', () => {
             // Negative test
             it('tables/:id (PATCH), tablenumber: number', async () => {
                 await request(app.getHttpServer())
-                    .patch(`/tables/${getMockTable()._id}`)
+                    .patch(`/tables/${getSampleTable()._id}`)
                     .send({ tableNumber: 13, capacity: 1 })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -213,7 +213,7 @@ describe('TableController (e2e)', () => {
             // Negative test
             it('tables/:id (PATCH), capacity: missing', async () => {
                 await request(app.getHttpServer())
-                    .patch(`/tables/${getMockTable()._id}`)
+                    .patch(`/tables/${getSampleTable()._id}`)
                     .send({ tableNumber: 13 })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -221,7 +221,7 @@ describe('TableController (e2e)', () => {
             // Negative test
             it('tables/:id (PATCH), wrong property', async () => {
                 await request(app.getHttpServer())
-                    .patch(`/tables/${getMockTable()._id}`)
+                    .patch(`/tables/${getSampleTable()._id}`)
                     .send({ tableNumber: 13, capacity: 2, chicken: 13 })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -230,7 +230,7 @@ describe('TableController (e2e)', () => {
         describe('DELETE', () => {
             it('tables/:id (DELETE), delete table', async () => {
                 await request(app.getHttpServer())
-                    .delete(`/tables/${getTestSetupData()[0]._id}`)
+                    .delete(`/tables/${getTableSeeder()[0]._id}`)
                     .expect(HttpStatus.NO_CONTENT);
             });
 
@@ -238,7 +238,7 @@ describe('TableController (e2e)', () => {
                 await request(app.getHttpServer())
                     .delete('/tables/bulk/delete')
                     .send({
-                        ids: getTestSetupData()
+                        ids: getTableSeeder()
                             .splice(1, 3)
                             .map((tables) => tables._id)
                     })
