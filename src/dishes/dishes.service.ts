@@ -181,7 +181,7 @@ export class DishesService {
 
     async recursiveRemoveByCategory(id: ObjectId): Promise<void> {
         const result = await this.dishModel.deleteMany({
-            category: id.toString()
+            category: id
         });
         this.logger.log(
             `${result.deletedCount} Dishes have been recursively been deleted after Category deletion. Full information: (${result})`

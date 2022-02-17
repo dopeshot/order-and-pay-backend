@@ -1,7 +1,7 @@
 import { OmitType } from '@nestjs/mapped-types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose, Transform, Type } from 'class-transformer';
-import { Document, ObjectId, Types } from 'mongoose';
+import { Document, ObjectId, SchemaTypes, Types } from 'mongoose';
 import { Allergen } from '../../allergens/entities/allergen.entity';
 import { Category } from '../../categories/entities/category.entity';
 import { Label } from '../../labels/entities/label.entity';
@@ -38,7 +38,7 @@ export class Dish {
     isAvailable: boolean;
 
     @Expose()
-    @Prop({ type: Types.ObjectId, ref: 'Category', required: true })
+    @Prop({ type: SchemaTypes.ObjectId, ref: 'Category', required: true })
     @Transform((params) => params.obj.category.toString())
     category: Category;
 
