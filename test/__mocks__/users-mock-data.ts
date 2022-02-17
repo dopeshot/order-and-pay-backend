@@ -11,7 +11,7 @@ let jwtService: JwtService = new JwtService({
         expiresIn: '10h'
     }
 });
-const userService: UsersService = new UsersService(null, jwtService, null);
+const userService: UsersService = new UsersService(null);
 const authService: AuthService = new AuthService(null, jwtService);
 
 let user = {
@@ -49,9 +49,4 @@ export const getTestAdmin = async () => {
 export const getJWT = async (x: any) => {
     let token = await authService.createLoginPayload(x as any);
     return token.access_token;
-};
-
-export const getUserVerify = async (user: any) => {
-    let token = await userService.generateVerifyCode(user as any);
-    return token;
 };

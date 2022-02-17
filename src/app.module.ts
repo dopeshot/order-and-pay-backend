@@ -8,12 +8,11 @@ import { CategoriesModule } from './categories/categories.module';
 import { ClientModule } from './client/client.module';
 import { DishesModule } from './dishes/dishes.module';
 import { LabelsModule } from './labels/labels.module';
-import { SseModule } from './sse/sse.module';
-import { MailModule } from './mail/mail.module';
 import { MenusModule } from './menus/menus.module';
+import { OrdersModule } from './orders/orders.module';
+import { SseModule } from './sse/sse.module';
 import { TablesModule } from './tables/tables.module';
 import { UsersModule } from './users/users.module';
-import { OrdersModule } from './orders/orders.module';
 
 @Module({
     imports: [
@@ -32,9 +31,8 @@ import { OrdersModule } from './orders/orders.module';
         }),
         AdminModule,
         ClientModule,
-        AuthModule,
-        MailModule,
         UsersModule,
+        AuthModule,
         MenusModule,
         CategoriesModule,
         DishesModule,
@@ -42,7 +40,8 @@ import { OrdersModule } from './orders/orders.module';
         SseModule,
         LabelsModule,
         AllergensModule,
-        OrdersModule
+        OrdersModule,
+        SseModule
     ]
 })
 export class AppModule {}

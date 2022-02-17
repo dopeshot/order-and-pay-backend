@@ -1,78 +1,77 @@
 import {
-    Post,
-    Controller,
     Body,
-    ValidationPipe,
+    Controller,
+    HttpStatus,
+    Post,
     Request,
-    UseGuards,
-    Get,
-    HttpCode
+    UseGuards
 } from '@nestjs/common';
-import { RegisterDto } from './dto/register.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ENVGuard } from '../shared/guards/environment.guard';
+import { userDataFromProvider } from '../users/interfaces/userDataFromProvider.interface';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './strategies/local/local-auth.guard';
-import { User } from '../users/entities/user.entity';
-import { GoogleAuthGuard } from './strategies/google/google-auth.guard';
-import { FacebookAuthGuard } from './strategies/facebook/facebook-auth.guard';
-import { DiscordAuthGuard } from './strategies/discord/discord-auth.guard';
-import { ApiTags } from '@nestjs/swagger';
+import { GoogleToken } from './dto/google-token.dto';
 import { AccessTokenDto } from './dto/jwt.dto';
+import { RegisterDto } from './dto/register.dto';
+import { LocalAuthGuard } from './strategies/local/local-auth.guard';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
-    @Post('/register')
+    @Post('register')
+    @ApiOperation({ summary: 'Register new user' })
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: 'The user has been created succesfully',
+        type: AccessTokenDto
+    })
     async registerUser(
-        @Body(ValidationPipe) credentials: RegisterDto
-    ): Promise<User> {
+        @Body() credentials: RegisterDto
+    ): Promise<AccessTokenDto> {
         return await this.authService.registerUser(credentials);
     }
 
-    @Post('/login')
+    @Post('login')
+    @ApiOperation({ summary: 'User login with mail and password' })
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: 'The user has loggin in correctly',
+        type: AccessTokenDto
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: 'The client has provided invalid credentials',
+        type: AccessTokenDto
+    })
     @UseGuards(LocalAuthGuard)
     async login(@Request() req): Promise<AccessTokenDto> {
         return await this.authService.createLoginPayload(req.user);
     }
 
-    @Get('/google')
-    @UseGuards(GoogleAuthGuard)
-    async googleLogin(@Request() req): Promise<void> {
-        // initiates the Google OAuth2 login flow (see guard)
+    @Post('/google')
+    @ApiOperation({ summary: 'Handle user data provided by google' })
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: 'The user has logged in/has been created correctly',
+        type: AccessTokenDto
+    })
+    async googleLogin(@Body() token: GoogleToken): Promise<AccessTokenDto> {
+        const user: userDataFromProvider =
+            await this.authService.getGoogleUserdata(token);
+        return await this.authService.handleProviderLogin(user);
     }
 
-    @Get('/google/redirect')
-    @UseGuards(GoogleAuthGuard)
-    googleLoginRedirect(@Request() req): Promise<AccessTokenDto> {
-        return this.authService.handleProviderLogin(req.user);
-    }
-
-    @Get('/facebook')
-    @UseGuards(FacebookAuthGuard)
-    @HttpCode(200)
-    async facebookLogin(@Request() req): Promise<void> {
-        // initiates the Facebook OAuth2 login flow (see guard)
-    }
-
-    @Get('/facebook/redirect')
-    @UseGuards(FacebookAuthGuard)
-    @HttpCode(200)
-    async facebookLoginRedirect(@Request() req): Promise<AccessTokenDto> {
-        return this.authService.handleProviderLogin(req.user);
-    }
-
-    @Get('/discord')
-    @UseGuards(DiscordAuthGuard)
-    @HttpCode(200)
-    async discordLogin(@Request() req): Promise<void> {
-        // initiates the Discord OAuth2 login flow
-    }
-
-    @Get('/discord/redirect')
-    @UseGuards(DiscordAuthGuard)
-    @HttpCode(200)
-    async discordLoginRedirect(@Request() req): Promise<AccessTokenDto> {
-        return this.authService.handleProviderLogin(req.user);
+    @Post('/testGoogle')
+    @UseGuards(ENVGuard)
+    @ApiOperation({
+        summary:
+            'Skip oauth fetch from google and therefore enable testing methods'
+    })
+    async testgoogleLogin(
+        @Body() user: userDataFromProvider
+    ): Promise<AccessTokenDto> {
+        return await this.authService.handleProviderLogin(user);
     }
 }

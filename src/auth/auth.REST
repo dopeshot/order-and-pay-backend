@@ -1,30 +1,28 @@
-@HOST = http://localhost:3001
-
-
+@adress = http://localhost:3001/admin/auth
 ### Register User
-POST {{HOST}}/auth/register
+POST {{adress}}/register
 Content-Type: application/json
 
 {
-    "username": "unreal",
-    "email": "tvsssst@gmail.de",
-    "password": "12345678"
+    "username": "Normal User",
+    "email": "normaluser@gmail.de",
+    "password": "adsdfhjngegra"
 }
 
 ### Login User
-POST {{HOST}}/auth/login
+POST {{adress}}/login
 Content-Type: application/json
 
 {
-    "email": "tvsssst@gmail.de",
-    "password": "12345678"
+    "email": "normaluser@gmail.de",
+    "password": "adsdfhjngegra"
 }
 
-### Google Auth
-GET {{HOST}}/auth/google
+### Facebook Auth
+GET {{adress}}/google
 
 ### Facebook Auth
-GET {{HOST}}/auth/facebook
+GET {{adress}}/facebook
 
 ### Discord Auth
-GET {{HOST}}/auth/discord
+GET {{adress}}/discord

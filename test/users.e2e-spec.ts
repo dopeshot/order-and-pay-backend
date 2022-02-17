@@ -7,24 +7,18 @@ import { Connection, Model } from 'mongoose';
 import { join } from 'path';
 import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
-import { MailModule } from '../src/mail/mail.module';
 import { UserDocument } from '../src/users/entities/user.entity';
-import { UserStatus } from '../src/users/enums/status.enum';
+import { UserResponse } from '../src/users/responses/user-response';
 import { UsersModule } from '../src/users/users.module';
 import { ThirdPartyGuardMock } from './helpers/fakeProvider.strategy';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
-import {
-    getJWT,
-    getTestAdmin,
-    getTestUser,
-    getUserVerify
-} from './__mocks__/users-mock-data';
+import { getJWT, getTestAdmin, getTestUser } from './__mocks__/users-mock-data';
 const { mock } = require('nodemailer');
 
-describe('UserController (e2e)', () => {
+describe('UserModule (e2e)', () => {
     let app: NestExpressApplication;
     let connection: Connection;
     let userModel: Model<UserDocument>;
@@ -35,7 +29,6 @@ describe('UserController (e2e)', () => {
                 rootMongooseTestModule(),
                 UsersModule,
                 AuthModule,
-                MailModule,
                 ConfigModule.forRoot({
                     envFilePath: ['.env', '.development.env']
                 })
@@ -46,7 +39,7 @@ describe('UserController (e2e)', () => {
         connection = await module.get(getConnectionToken());
         userModel = connection.model('User');
 
-        // before coming at me for using a fully fletched Nest application see here:
+        // Using a full nest application is necessary
         // https://github.com/jmcdo29/testing-nestjs/commit/0544f34ce02c1a42179aae7f36cb11fb3b62fb22
         // https://github.com/jmcdo29/testing-nestjs/issues/74
         app = module.createNestApplication<NestExpressApplication>();
@@ -85,14 +78,9 @@ describe('UserController (e2e)', () => {
 
                 expect(res.body.length).toBe(1);
 
-                expect(res.body[0]).toEqual(
-                    expect.objectContaining({
-                        _id: expect.stringMatching(user._id.toString()),
-                        username: expect.stringMatching(user.username),
-                        role: expect.stringMatching(user.role)
-                    })
-                );
-                expect(res.body).not.toHaveProperty('password');
+                // test user response
+                const usr = new UserResponse(res.body);
+                expect(res.body).toMatchObject(usr);
             });
         });
 
@@ -108,37 +96,9 @@ describe('UserController (e2e)', () => {
                     )
                     .expect(HttpStatus.OK);
 
-                expect(res.body).toEqual(
-                    expect.objectContaining({
-                        _id: expect.stringMatching(user._id.toString()),
-                        username: expect.stringMatching(user.username),
-                        role: expect.stringMatching(user.role)
-                    })
-                );
-                expect(res.body).not.toHaveProperty('password');
-            });
-        });
-
-        describe('/users/get-verify (GET)', () => {
-            it('/users/get-verify (GET) ', async () => {
-                await userModel.create(await getTestUser());
-                request(app.getHttpServer())
-                    .get('/users/resend-account-verification')
-                    .set(
-                        'Authorization',
-                        `Bearer ${await getJWT(await getTestUser())}`
-                    )
-                    .expect(HttpStatus.OK);
-            });
-
-            it('/users/get-verify (GET) should fail with invalid token', async () => {
-                await request(app.getHttpServer())
-                    .get('/users/resend-account-verification')
-                    .set(
-                        'Authorization',
-                        `Bearer ${await getJWT(await getTestUser())}`
-                    )
-                    .expect(HttpStatus.UNAUTHORIZED);
+                // test user response
+                const response = new UserResponse(res.body[0]);
+                expect(res.body).toMatchObject(response);
             });
         });
 
@@ -157,14 +117,9 @@ describe('UserController (e2e)', () => {
                     .expect(HttpStatus.OK);
                 let user = await userModel.findOne();
                 expect(user.username).toBe('test-user-updated');
-                expect(res.body).toEqual(
-                    expect.objectContaining({
-                        _id: expect.stringMatching(user._id.toString()),
-                        username: expect.stringMatching('test-user-updated'),
-                        role: expect.stringMatching(user.role)
-                    })
-                );
-                expect(res.body).not.toHaveProperty('password');
+                // test user response
+                const response = new UserResponse(res.body[0]);
+                expect(res.body).toMatchObject(response);
             });
 
             it('/users/:id (PATCH) should fail with duplicate', async () => {
@@ -221,82 +176,6 @@ describe('UserController (e2e)', () => {
                     .expect(HttpStatus.FORBIDDEN);
             });
         });
-
-        describe('/users/verify (GET)', () => {
-            it('/users/verify (GET) should validate', async () => {
-                let user = await getTestUser();
-                user = { ...user, status: UserStatus.UNVERIFIED };
-                await userModel.create(user);
-                await request(app.getHttpServer())
-                    .get(
-                        `/users/verify-account/?code=${await getUserVerify(
-                            user
-                        )}`
-                    )
-                    .expect(HttpStatus.OK);
-
-                expect((await userModel.findOne()).status).toBe(
-                    UserStatus.ACTIVE
-                );
-            });
-
-            it('/users/verify (GET) should fail with user that is not unverified', async () => {
-                let user = await getTestUser();
-                user = { ...user, status: UserStatus.BANNED };
-                await userModel.create(user);
-                await request(app.getHttpServer())
-                    .get(
-                        `/users/verify-account/?code=${await getUserVerify(
-                            user
-                        )}`
-                    )
-                    .expect(HttpStatus.UNAUTHORIZED);
-            });
-
-            it('/users/verify (GET) should fail with invalid user', async () => {
-                let user = await getTestUser();
-                user = { ...user, status: UserStatus.BANNED };
-                await userModel.create(user);
-                await request(app.getHttpServer())
-                    .get(
-                        `/users/verify-account/?code=${await getUserVerify(
-                            await getTestAdmin()
-                        )}`
-                    )
-                    .expect(HttpStatus.UNAUTHORIZED);
-            });
-        });
-    });
-
-    describe('Roles', () => {
-        describe('Admin Role', () => {
-            it('/users (GET) Protected Route: No Admin Role', async () => {
-                await userModel.create(await getTestUser());
-                await request(app.getHttpServer())
-                    .get('/users')
-                    .set(
-                        'Authorization',
-                        `Bearer ${await getJWT(await getTestUser())}`
-                    )
-                    .expect(HttpStatus.FORBIDDEN);
-            });
-
-            it('/users (GET) using Admin', async () => {
-                await userModel.insertMany([
-                    await getTestUser(),
-                    await getTestAdmin()
-                ]);
-                const res = request(app.getHttpServer())
-                    .get('/users')
-                    .set(
-                        'Authorization',
-                        `Bearer ${await getJWT(await getTestAdmin())}`
-                    )
-                    .expect(HttpStatus.OK);
-
-                expect((await res).body.length).toBe(2);
-            });
-        });
     });
 
     describe('Guard', () => {
@@ -327,21 +206,6 @@ describe('UserController (e2e)', () => {
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
-                    )
-                    .expect(HttpStatus.UNAUTHORIZED);
-            });
-        });
-
-        describe('VerifyJWTGuard', () => {
-            it('/users/verify (GET) should fail with invalid token', async () => {
-                let user = await getTestUser();
-                user = { ...user, status: UserStatus.UNVERIFIED };
-                await userModel.create(user);
-                await request(app.getHttpServer())
-                    .get(
-                        `/users/verify-account/?code=${await getUserVerify(
-                            await getTestAdmin()
-                        )}`
                     )
                     .expect(HttpStatus.UNAUTHORIZED);
             });
