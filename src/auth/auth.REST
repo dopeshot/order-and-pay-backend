@@ -17,12 +17,3 @@ Content-Type: application/json
     "email": "normaluser@gmail.de",
     "password": "adsdfhjngegra"
 }
-
-### Facebook Auth
-GET {{adress}}/google
-
-### Facebook Auth
-GET {{adress}}/facebook
-
-### Discord Auth
-GET {{adress}}/discord

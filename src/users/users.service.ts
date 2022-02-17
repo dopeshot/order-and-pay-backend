@@ -13,7 +13,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
 import { UserStatus } from './enums/status.enum';
-import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
 
 @Injectable()
 export class UsersService {
@@ -54,28 +53,6 @@ export class UsersService {
                 throw new ConflictException('Email is already taken.');
             /* istanbul ignore next */
             throw new InternalServerErrorException('User Create failed');
-        }
-    }
-
-    /**
-     * Create new User for auth without password
-     * @param credentials user data
-     * @returns user
-     */
-    async createUserFromProvider(
-        userDataFromProvider: userDataFromProvider
-    ): Promise<User | null> {
-        try {
-            const user: UserDocument = new this.userModel({
-                ...userDataFromProvider
-            });
-            const result = await user.save();
-
-            return result;
-        } catch (error) {
-            if (error.code === 11000 && error.keyPattern.username) return null;
-            /* istanbul ignore next */ // Not testing server errors
-            throw new InternalServerErrorException('User could not be created');
         }
     }
 
@@ -145,8 +122,10 @@ export class UsersService {
             if (error.code === 11000)
                 throw new ConflictException('Username is already taken.');
             // This should not occur under normal conditions
-            /* istanbul ignore next */ else
+            else {
+                /* istanbul ignore next */
                 throw new InternalServerErrorException('Update User failed');
+            }
         }
         // Seperate exception to ensure that user gets a specific error
         if (!updatedUser) throw new NotFoundException('User not found');

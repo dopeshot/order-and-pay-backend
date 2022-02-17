@@ -9,7 +9,6 @@ import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
 import { User, UserDocument } from '../src/users/entities/user.entity';
 import { UsersModule } from '../src/users/users.module';
-import { ThirdPartyGuardMock } from './helpers/fakeProvider.strategy';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
@@ -31,8 +30,7 @@ describe('UserModule (e2e)', () => {
                 ConfigModule.forRoot({
                     envFilePath: ['.env', '.development.env']
                 })
-            ],
-            providers: [ThirdPartyGuardMock]
+            ]
         }).compile();
 
         connection = await module.get(getConnectionToken());

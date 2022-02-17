@@ -18,7 +18,6 @@ export class User {
     @Prop({ required: true, unique: true })
     email: string;
 
-    // Need to be ignored (throws undefined error) because we want to look if provider is undefined or not, if it is undefined, required is set to true
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     @Prop({ required: true })

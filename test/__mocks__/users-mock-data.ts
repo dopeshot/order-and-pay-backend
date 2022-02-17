@@ -18,8 +18,7 @@ let user = {
     username: 'mock',
     email: 'mock@mock.mock',
     password: '',
-    status: UserStatus.ACTIVE,
-    provider: ''
+    status: UserStatus.ACTIVE
 };
 
 let admin = {
@@ -27,8 +26,7 @@ let admin = {
     username: 'admin',
     email: 'discordmod@admin.mock',
     password: '',
-    status: UserStatus.ACTIVE,
-    provider: ''
+    status: UserStatus.ACTIVE
 };
 
 export const getTestUser = async () => {
