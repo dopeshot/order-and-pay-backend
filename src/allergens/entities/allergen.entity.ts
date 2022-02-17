@@ -15,10 +15,6 @@ export class Allergen {
     @Expose()
     @Prop()
     icon: string;
-
-    constructor(partial: Partial<AllergenDocument>) {
-        Object.assign(this, partial);
-    }
 }
 
 export type AllergenDocument = Allergen & Document;
