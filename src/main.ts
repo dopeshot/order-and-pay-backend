@@ -25,7 +25,8 @@ async function bootstrap() {
     app.setGlobalPrefix('admin', {
         exclude: [
             'client',
-            { path: 'client/order', method: RequestMethod.POST }
+            { path: 'client/order', method: RequestMethod.POST },
+            { path: 'client/menu', method: RequestMethod.POST }
         ]
     });
 
