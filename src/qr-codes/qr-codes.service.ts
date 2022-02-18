@@ -3,6 +3,7 @@ import { Schema } from 'mongoose';
 import * as QRCode from 'qrcode';
 import { TableDocument } from '../tables/entities/table.entity';
 import { TablesService } from '../tables/tables.service';
+
 @Injectable()
 export class QrCodesService {
     private readonly logger = new Logger(QrCodesService.name);
