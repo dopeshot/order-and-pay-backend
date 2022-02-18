@@ -1,9 +1,6 @@
-import { OmitType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
     IsArray,
-    IsMongoId,
-    IsNotEmpty,
     IsNumber,
     IsString,
     MaxLength,
@@ -13,12 +10,6 @@ import {
 } from 'class-validator';
 import { Item } from '../entities/order.entity';
 
-class OrderItemDto extends PartialType(OmitType(Item, ['dishId'])) {
-    @IsMongoId({ each: true })
-    @IsNotEmpty()
-    dishId: string;
-}
-
 export class CreateOrderDto {
     @IsString()
     @MinLength(1)
@@ -27,8 +18,8 @@ export class CreateOrderDto {
 
     @IsArray()
     @ValidateNested({ each: true })
-    @Type(() => OrderItemDto)
-    items: OrderItemDto[];
+    @Type(() => Item)
+    items: Item[];
 
     @IsNumber()
     @Min(0)

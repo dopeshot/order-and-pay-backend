@@ -90,8 +90,8 @@ export class OrdersService {
                 dish = await (
                     await this.dishesService.findOne(orderItem.dishId as any)
                 ).populate('category');
-            } catch (e) {
-                if (e instanceof NotFoundException) {
+            } catch (error) {
+                if (error instanceof NotFoundException) {
                     this.logger.warn(
                         `Order for invalid dish. This might indicate someone fiddling with the order`
                     );
@@ -100,7 +100,7 @@ export class OrdersService {
                 // This should never happen under normal circumstances
                 /* istanbul ignore next */
                 this.logger.error(
-                    `Creating order failed while looking for dishes. (${e})`
+                    `Creating order failed while looking for dishes. (${error})`
                 );
                 /* istanbul ignore next */
                 throw new InternalServerErrorException();

@@ -28,6 +28,15 @@ export class ClientController {
 
     @Get('menu')
     @ApiOperation({ summary: 'Get currently active menu' })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Currently active menu populated',
+        type: MenuPopulated
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: 'No current menu found'
+    })
     async getMenu() {
         return plainToClass(
             MenuPopulated,

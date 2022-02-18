@@ -3,6 +3,7 @@ import { Expose, Transform, Type } from 'class-transformer';
 import {
     IsArray,
     IsEnum,
+    IsMongoId,
     IsNotEmpty,
     IsNumber,
     IsOptional,
@@ -38,6 +39,8 @@ export class PickedChoices {
 
 export class Item {
     @Expose()
+    @IsMongoId()
+    @IsNotEmpty()
     @Prop({ type: SchemaTypes.ObjectId, ref: 'Dish', required: true })
     dishId: Dish;
 
