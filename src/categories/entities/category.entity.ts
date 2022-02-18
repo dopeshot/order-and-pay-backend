@@ -25,8 +25,8 @@ export class Option {
     @Expose()
     @Prop()
     @IsString()
-    @Length(2, 30)
-    name: string;
+    @Length(2, 32)
+    name: string; //MC: Why is this name? and not title?
 
     @Expose()
     @Prop()
@@ -43,7 +43,7 @@ export class Choice {
 
     @Expose()
     @IsString()
-    @Length(2, 30)
+    @Length(2, 32)
     @Prop({ required: true })
     title: string;
 
@@ -75,7 +75,7 @@ export class Category {
     title: string;
 
     @Expose()
-    @Prop({ required: true })
+    @Prop()
     description: string;
 
     @Expose()

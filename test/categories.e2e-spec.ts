@@ -140,24 +140,7 @@ describe('CategoriesController (e2e)', () => {
                     .post(`${path}`)
                     .send({
                         ...getSampleCategory(),
-                        title: getStringOfLength(31)
-                    })
-                    .expect(HttpStatus.BAD_REQUEST);
-            });
-
-            it('should return BAD_REQUEST with description missing ', async () => {
-                await request(app.getHttpServer())
-                    .post(`${path}`)
-                    .send({ ...getSampleCategory(), description: undefined })
-                    .expect(HttpStatus.BAD_REQUEST);
-            });
-
-            it('should return BAD_REQUEST with description too short ', async () => {
-                await request(app.getHttpServer())
-                    .post(`${path}`)
-                    .send({
-                        ...getSampleCategory(),
-                        description: getStringOfLength(1)
+                        title: getStringOfLength(33)
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -167,17 +150,7 @@ describe('CategoriesController (e2e)', () => {
                     .post(`${path}`)
                     .send({
                         ...getSampleCategory(),
-                        description: getStringOfLength(201)
-                    })
-                    .expect(HttpStatus.BAD_REQUEST);
-            });
-
-            it('should return BAD_REQUEST with icon too short ', async () => {
-                await request(app.getHttpServer())
-                    .post(`${path}`)
-                    .send({
-                        ...getSampleCategory(),
-                        icon: getStringOfLength(1)
+                        description: getStringOfLength(241)
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -192,22 +165,12 @@ describe('CategoriesController (e2e)', () => {
                     .expect(HttpStatus.BAD_REQUEST);
             });
 
-            it('should return BAD_REQUEST with image too short ', async () => {
-                await request(app.getHttpServer())
-                    .post(`${path}`)
-                    .send({
-                        ...getSampleCategory(),
-                        image: getStringOfLength(1)
-                    })
-                    .expect(HttpStatus.BAD_REQUEST);
-            });
-
             it('should return BAD_REQUEST with image too long ', async () => {
                 await request(app.getHttpServer())
                     .post(`${path}`)
                     .send({
                         ...getSampleCategory(),
-                        image: getStringOfLength(101)
+                        image: getStringOfLength(241)
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
