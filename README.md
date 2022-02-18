@@ -1,6 +1,6 @@
 ## Overview
 
-![codecov](https://codecov.io/gh/dopeshot/order-and-pay-backend/branch/main/graph/badge.svg?token=RI1XZPSHEV?)
+[![codecov](https://codecov.io/gh/dopeshot/order-and-pay-backend/branch/main/graph/badge.svg?token=RI1XZPSHEV)](https://codecov.io/gh/dopeshot/order-and-pay-backend)
 
 This is the backend for the order and pay app.
 ## Content
