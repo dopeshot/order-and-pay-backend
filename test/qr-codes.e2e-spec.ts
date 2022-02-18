@@ -12,13 +12,14 @@ import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
+import { getWrongId } from './__mocks__/shared-mock-data';
 import { getTablesSeeder } from './__mocks__/tables-mock-data';
 
 describe('QrCodeController (e2e)', () => {
     let connection: Connection;
     let app: NestExpressApplication;
     let tableModel: Model<TableDocument>;
-
+    const path = '/qr-codes';
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
             imports: [rootMongooseTestModule(), TablesModule, QrCodesModule]
@@ -50,23 +51,22 @@ describe('QrCodeController (e2e)', () => {
 
     describe('GET /qr-codes/:id', () => {
         it('should return a qr code', async () => {
-            const table = await tableModel.findOne({});
             await request(app.getHttpServer())
-                .get(`/qr-codes/${table._id}`)
+                .get(`${path}/${getTablesSeeder()[0]._id}`)
                 .expect(HttpStatus.OK);
         });
 
         it('should return a 404 if the table does not exist', async () => {
             await tableModel.deleteMany();
             await request(app.getHttpServer())
-                .get('/qr-codes/' + getTablesSeeder()[0]._id)
+                .get(`${path}/${getWrongId()}`)
                 .expect(HttpStatus.NOT_FOUND);
         });
 
         it('should fail for invalid tableId', async () => {
             await tableModel.deleteMany();
             await request(app.getHttpServer())
-                .get('/qr-codes/' + 'not-a-valid-id')
+                .get(`${path}/not-a-valid-id`)
                 .expect(HttpStatus.BAD_REQUEST);
         });
     });
