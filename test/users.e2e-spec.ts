@@ -126,6 +126,39 @@ describe('UserModule (e2e)', () => {
                 expect(res.body).toMatchObject(response);
             });
 
+            it('/users/:id (PATCH) should hash patched password', async () => {
+                await userModel.create(await getTestUser());
+                await request(app.getHttpServer())
+                    .patch('/users/61bb7c9983fdff2f24bf77a8')
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestUser())}`
+                    )
+                    .send({
+                        password: 'new password'
+                    })
+                    .expect(HttpStatus.OK);
+                const user = await userModel.findOne();
+
+                // Hash should not be equal
+                expect(user.password).not.toBe('new password');
+            });
+
+            it('/users/:id (PATCH) should fail with invalid user id', async () => {
+                await userModel.create(await getTestUser());
+                const res = await request(app.getHttpServer())
+                    .patch('/users/aaaaaaaaaaaaaaaaaaaaaadb')
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestUser())}`
+                    )
+                    .send({
+                        password: 'new password'
+                    })
+                    .expect(HttpStatus.NOT_FOUND);
+                const user = await userModel.findOne();
+            });
+
             it('/users/:id (PATCH) should fail with duplicate', async () => {
                 await userModel.create(await getTestUser());
                 await userModel.create(await getTestAdmin());
@@ -154,6 +187,18 @@ describe('UserModule (e2e)', () => {
                     )
                     .expect(HttpStatus.NO_CONTENT);
                 expect((await userModel.find()).length).toBe(0);
+            });
+
+            it('/users/:id (DELETE) should fail with invalid id', async () => {
+                const user = await getTestUser();
+                await userModel.create(user);
+                const res = await request(app.getHttpServer())
+                    .delete('/users/aaaaaaaaaaaaaaaaaaaaaadb')
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestUser())}`
+                    )
+                    .expect(HttpStatus.NOT_FOUND);
             });
         });
     });
