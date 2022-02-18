@@ -4,7 +4,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { plainToClass } from 'class-transformer';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
+import { CategoriesModule } from '../src/categories/categories.module';
+import { CategoryDocument } from '../src/categories/entities/category.entity';
 import { ClientModule } from '../src/client/client.module';
+import { DishesModule } from '../src/dishes/dishes.module';
+import { DishDocument } from '../src/dishes/entities/dish.entity';
 import { Order, OrderDocument } from '../src/orders/entities/order.entity';
 import { ChoiceType } from '../src/orders/enums/choice-type.enum';
 import { OrderStatus } from '../src/orders/enums/order-status.enum';
@@ -22,6 +26,8 @@ import {
 import { SSEHelper } from './helpers/sseWatcher.helper';
 import {
     getActiveOrders,
+    getCategoryForOrdersSeeder,
+    getDishesForOrdersSeeder,
     getOrdersSeeder,
     getUniqueOrder
 } from './__mocks__/orders-mock-data';
@@ -32,6 +38,8 @@ describe('Ordercontroller (e2e)', () => {
     let connection: Connection;
     let orderModel: Model<OrderDocument>;
     let tableModel: Model<TableDocument>;
+    let dishModel: Model<DishDocument>;
+    let categoryModel: Model<CategoryDocument>;
     let sseService: SseService;
 
     beforeAll(async () => {
@@ -41,13 +49,17 @@ describe('Ordercontroller (e2e)', () => {
                 OrdersModule,
                 SseModule,
                 ClientModule,
-                TablesModule
+                TablesModule,
+                CategoriesModule,
+                DishesModule
             ]
         }).compile();
 
         connection = await module.get(getConnectionToken());
         orderModel = connection.model('Order');
         tableModel = connection.model('Table');
+        dishModel = connection.model('Dish');
+        categoryModel = connection.model('Category');
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         sseService = module.get<SseService>(SseService);
@@ -72,30 +84,37 @@ describe('Ordercontroller (e2e)', () => {
 
     describe('/client/order (POST)', () => {
         it('should create a new order in db (with valid input)', async () => {
+            await dishModel.insertMany(getDishesForOrdersSeeder());
+            await categoryModel.create(getCategoryForOrdersSeeder());
             const res = await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
-                    tableId: getTablesSeeder()[0]._id,
+                    price: 0,
+                    tableNumber: getTablesSeeder()[0].tableNumber,
                     items: [
                         {
                             dish: 'aaaaaaaaaaaaaaaaaaaaaaa0',
                             count: 2,
                             note: 'my note',
-                            pickedChoices: {
-                                id: 1,
-                                type: ChoiceType.CHECKBOX,
-                                valueId: [1, 2, 3]
-                            }
+                            pickedChoices: [
+                                {
+                                    id: 1,
+                                    type: ChoiceType.CHECKBOX,
+                                    valueId: [1, 2]
+                                }
+                            ]
                         },
                         {
                             dish: 'aaaaaaaaaaaaaaaaaaaaaaa1',
                             count: 1,
                             note: 'your note',
-                            pickedChoices: {
-                                id: 2,
-                                type: ChoiceType.RADIO,
-                                valueId: [2]
-                            }
+                            pickedChoices: [
+                                {
+                                    id: 0,
+                                    type: ChoiceType.RADIO,
+                                    valueId: [2]
+                                }
+                            ]
                         }
                     ]
                 })
@@ -104,7 +123,7 @@ describe('Ordercontroller (e2e)', () => {
             expect((await orderModel.find()).length).toBe(1);
 
             // Check if paid order passes
-            expect(res.body.PaymentStatus.status).toBe(PaymentStatus.RECEIVED);
+            expect(res.body.PaymentStatus).toBe(PaymentStatus.RECEIVED);
 
             // Test response type
             expect(res.body).toMatchObject(
@@ -118,7 +137,8 @@ describe('Ordercontroller (e2e)', () => {
             await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
-                    tableId: getTablesSeeder()[0]._id,
+                    price: 0,
+                    tableNumber: getTablesSeeder()[0].tableNumber,
                     items: []
                 })
                 .expect(HttpStatus.CREATED);
@@ -178,6 +198,9 @@ describe('Ordercontroller (e2e)', () => {
                 .get('/orders/current')
                 .expect(HttpStatus.OK);
 
+            console.log(res.body);
+            console.log(getActiveOrders());
+
             expect(res.body.length).toBe(getActiveOrders().length);
         });
 
@@ -191,16 +214,11 @@ describe('Ordercontroller (e2e)', () => {
 
         it('should return empty array without any active orders', async () => {
             // Make all orders inactive
-            const orders = getOrdersSeeder().map((order) => {
-                return {
-                    ...order,
-                    Status: OrderStatus.CANCELLED,
-                    PaymentStatus: {
-                        ...order.PaymentStatus,
-                        status: PaymentStatus.CANCELED
-                    }
-                };
-            });
+            const orders = getOrdersSeeder().map((order) => ({
+                ...order,
+                Status: OrderStatus.CANCELLED,
+                PaymentStatus: PaymentStatus.CANCELED
+            }));
             await orderModel.insertMany(orders);
             const res = await request(app.getHttpServer())
                 .get('/orders/current')
@@ -211,31 +229,18 @@ describe('Ordercontroller (e2e)', () => {
 
     describe('/orders/:id (PATCH)', () => {
         it('should update a given order', async () => {
-            // New unseen table that cannot be in any order data
-            await tableModel.insertMany({
-                _id: 'aaaaaaaaaaaaaaaaaaaaaa69',
-                tableNumber: 'C9',
-                capacity: 1,
-                author: 'Me0'
-            });
             const order = getUniqueOrder();
             await orderModel.insertMany(order);
             const res = await request(app.getHttpServer())
                 .patch('/orders/' + order._id.toString())
                 .send({
-                    PaymentStatus: {
-                        status: PaymentStatus.RECEIVED,
-                        transactionId: 'aaaaaaaaaa',
-                        amount: 2
-                    },
+                    PaymentStatus: PaymentStatus.RECEIVED,
                     Status: OrderStatus.IN_PROGRESS
                 })
                 .expect(HttpStatus.OK);
 
             expect(res.body.Status).toBe(OrderStatus.IN_PROGRESS);
-            expect(res.body.PaymentStatus).toMatchObject({
-                status: PaymentStatus.RECEIVED
-            });
+            expect(res.body.PaymentStatus).toBe(PaymentStatus.RECEIVED);
         });
 
         it('should send an sse event (close)', async () => {
@@ -295,22 +300,7 @@ describe('Ordercontroller (e2e)', () => {
             await request(app.getHttpServer())
                 .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
-                    PaymentStatus: {
-                        status: 'no value'
-                    }
-                })
-                .expect(HttpStatus.BAD_REQUEST);
-        });
-
-        it('should fail for invalid transactionId', async () => {
-            // New unseen table that cannot be in any order data
-            await orderModel.insertMany(getOrdersSeeder());
-            await request(app.getHttpServer())
-                .patch('/orders/' + getOrdersSeeder()[0]._id)
-                .send({
-                    PaymentStatus: {
-                        transactionId: 'short'
-                    }
+                    PaymentStatus: 'no value'
                 })
                 .expect(HttpStatus.BAD_REQUEST);
         });

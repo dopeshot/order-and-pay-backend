@@ -52,6 +52,7 @@ export class ClientController {
         type: Order
     })
     async createOrder(@Body() order: CreateOrderDto) {
+        console.log(order);
         return plainToClass(Order, await this.orderService.create(order));
     }
 }

@@ -5,16 +5,21 @@ import {
     Injectable,
     InternalServerErrorException,
     Logger,
-    NotFoundException
+    NotAcceptableException,
+    NotFoundException,
+    UnprocessableEntityException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
+import { CategoriesService } from '../categories/categories.service';
+import { DishesService } from '../dishes/dishes.service';
 import { OrderEventType } from '../sse/enums/events.enum';
 import { SseService } from '../sse/sse.service';
 import { TablesService } from '../tables/tables.service';
 import { CreateOrderDto } from './dtos/create-order.dto';
 import { UpdateOrderDto } from './dtos/update-order.dto';
-import { OrderDocument, Payment } from './entities/order.entity';
+import { OrderDocument } from './entities/order.entity';
+import { ChoiceType } from './enums/choice-type.enum';
 import { OrderStatus } from './enums/order-status.enum';
 import { PaymentStatus } from './enums/payment-status.enum';
 
@@ -24,6 +29,8 @@ export class OrdersService {
     constructor(
         private readonly sseService: SseService,
         @InjectModel('Order') private readonly orderModel: Model<OrderDocument>,
+        private readonly categoryService: CategoriesService,
+        private readonly dishesService: DishesService,
         private readonly tablesService: TablesService
     ) {}
 
@@ -34,16 +41,15 @@ export class OrdersService {
     async findActive(): Promise<OrderDocument[]> {
         return await this.orderModel
             .find({
-                Status: { $nin: [OrderStatus.CANCELLED, OrderStatus.FINISHED] },
-                'PaymentStatus.status': PaymentStatus.RECEIVED
+                Status: {
+                    $nin: [OrderStatus.FINISHED, OrderStatus.CANCELLED]
+                }
             })
             .lean();
     }
 
     async create(order: CreateOrderDto): Promise<OrderDocument> {
-        // Validate the payment status
-        // TODO: Implement this
-
+        // Validate the payment status (This is a mock in the prototype)
         if (!this.validatePayment()) {
             this.logger.warn(`Invalid Payment for order`);
             throw new HttpException(
@@ -52,23 +58,102 @@ export class OrdersService {
             );
         }
 
-        if (!this.tablesService.findOne(order.tableId)) {
+        // Validate the table number and find Id for said table
+        const table = await this.tablesService.findOneByNumber(
+            order.tableNumber
+        );
+
+        if (!table) {
             this.logger.warn(
                 `Order for invalid table. This might indicate someone fiddling with the URL`
             );
             throw new BadRequestException();
         }
 
-        // TODO: Validate that all items are actual dishes in db
+        // Validate dishes and check if received price is correct
+        let calculatedPrice = 0;
+        console.log(order.items);
+        order.items.forEach(async (item) => {
+            // go through each dish and check if it exists
+            this.dishesService.findOne(item.dish as any).then(async (dish) => {
+                // If the dish is not an actual dish, throw an error
+                if (!dish) {
+                    this.logger.warn(
+                        `Order for invalid dish. This might indicate someone fiddling with the order`
+                    );
+                    throw new UnprocessableEntityException();
+                }
+                // Find category for that dish
+                const category = await this.categoryService.findOne(
+                    dish.category._id
+                );
+                let choicesPrice = 0;
 
-        const paymentStatus: Payment = {
-            status: PaymentStatus.RECEIVED
-        };
+                //Calculate price by going through each dish
+                console.log(item.pickedChoices);
+
+                item.pickedChoices.forEach((choice) => {
+                    // Find the choice in the category object
+                    const categoryChoice = category.choices.find(
+                        (c) => c.id === choice.id
+                    );
+
+                    // If the choice is not found, throw an error
+                    if (!categoryChoice) {
+                        this.logger.warn(
+                            `Invalid Id for choice provided (id = ${choice.id})`
+                        );
+                        throw new UnprocessableEntityException();
+                    }
+
+                    // add the choices to the price
+                    if (choice.type === ChoiceType.RADIO) {
+                        const foundChoice = categoryChoice.options.find(
+                            (o) => o.id === choice.valueId[0]
+                        );
+                        if (!foundChoice) {
+                            this.logger.warn(
+                                `Invalid Id for option provided (id = ${choice.valueId})`
+                            );
+                            throw new UnprocessableEntityException();
+                        }
+                        choicesPrice += foundChoice.price;
+                    } else {
+                        choice.valueId.forEach((valueId) => {
+                            const foundChoice = categoryChoice.options.find(
+                                (o) => o.id === valueId
+                            );
+                            if (!foundChoice) {
+                                this.logger.warn(
+                                    `Invalid Id for option provided (id = ${choice.valueId})`
+                                );
+                                throw new UnprocessableEntityException();
+                            }
+                            choicesPrice += foundChoice.price;
+                        });
+                    }
+                    console.log('choicesPrice', choicesPrice);
+
+                    calculatedPrice += (dish.price + choicesPrice) * item.count;
+                });
+            });
+        });
+
+        this.logger.debug('calculatedPrice', calculatedPrice);
+        // Price mismatch throws an error
+        if (order.price !== calculatedPrice) {
+            this.logger.warn(
+                `Order price mismatch. This might indicate someone fiddling with the order`
+            );
+            throw new NotAcceptableException('Order price does not match');
+        }
+
         let receivedOrder: OrderDocument;
         try {
             const newOrder = await this.orderModel.create({
                 ...order,
-                PaymentStatus: paymentStatus
+                tableId: table._id,
+                PaymentStatus: PaymentStatus.RECEIVED
             });
 
             receivedOrder = newOrder.toObject() as OrderDocument;

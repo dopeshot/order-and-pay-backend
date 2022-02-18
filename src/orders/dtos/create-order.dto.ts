@@ -1,14 +1,37 @@
+import { OmitType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsMongoId, ValidateNested } from 'class-validator';
+import {
+    IsArray,
+    IsMongoId,
+    IsNotEmpty,
+    IsNumber,
+    IsString,
+    MaxLength,
+    Min,
+    MinLength,
+    ValidateNested
+} from 'class-validator';
 import { ObjectId } from 'mongoose';
 import { Item } from '../entities/order.entity';
 
+class OrderItemDto extends PartialType(OmitType(Item, ['dish'])) {
+    @IsMongoId({ each: true })
+    @IsNotEmpty()
+    dish: string;
+}
+
 export class CreateOrderDto {
-    @IsMongoId()
-    tableId: ObjectId;
+    @IsString()
+    @MinLength(1)
+    @MaxLength(8)
+    tableNumber: ObjectId;
 
     @IsArray()
     @ValidateNested({ each: true })
-    @Type(() => Item)
-    items: Item[];
+    @Type(() => OrderItemDto)
+    items: OrderItemDto[];
+
+    @IsNumber()
+    @Min(0)
+    price: number;
 }
