@@ -140,18 +140,6 @@ describe('UserModule (e2e)', () => {
                     })
                     .expect(HttpStatus.CONFLICT);
             });
-
-            it('/users/:id (PATCH) should fail when patching other user', async () => {
-                await userModel.create(await getTestUser());
-                await userModel.create(await getTestAdmin());
-                await request(app.getHttpServer())
-                    .patch('/users/61bb7c9883fdff2f24bf779d')
-                    .set(
-                        'Authorization',
-                        `Bearer ${await getJWT(await getTestUser())}`
-                    )
-                    .expect(HttpStatus.FORBIDDEN);
-            });
         });
 
         describe('/users/:id (DELETE)', () => {
@@ -166,18 +154,6 @@ describe('UserModule (e2e)', () => {
                     )
                     .expect(HttpStatus.NO_CONTENT);
                 expect((await userModel.find()).length).toBe(0);
-            });
-
-            it('/users/:id (DELETE) should fail when deleting other user', async () => {
-                await userModel.create(await getTestUser());
-                await userModel.create(await getTestAdmin());
-                await request(app.getHttpServer())
-                    .delete('/users/61bb7c9883fdff2f24bf779d')
-                    .set(
-                        'Authorization',
-                        `Bearer ${await getJWT(await getTestUser())}`
-                    )
-                    .expect(HttpStatus.FORBIDDEN);
             });
         });
     });

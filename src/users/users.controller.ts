@@ -65,14 +65,9 @@ export class UsersController {
     })
     async update(
         @Param('id') id: ObjectId,
-        @Body() updateUserDto: UpdateUserDto,
-        @Request() req
+        @Body() updateUserDto: UpdateUserDto
     ): Promise<User> {
-        const user = await this.usersService.updateUser(
-            id,
-            updateUserDto,
-            req.user
-        );
+        const user = await this.usersService.updateUser(id, updateUserDto);
         return plainToClass(User, user);
     }
 
@@ -87,7 +82,7 @@ export class UsersController {
         description: 'No user with this id'
     })
     @HttpCode(204)
-    async remove(@Param('id') id: ObjectId, @Request() req): Promise<void> {
-        await this.usersService.remove(id, req.user);
+    async remove(@Param('id') id: ObjectId): Promise<void> {
+        await this.usersService.remove(id);
     }
 }

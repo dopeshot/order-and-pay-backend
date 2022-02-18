@@ -12,7 +12,7 @@ export const getCategoriesSeeder = () => [
             {
                 id: 0,
                 title: 'size',
-                default: 1,
+                isDefault: 1,
                 type: 'radio',
                 options: [
                     {
@@ -67,7 +67,7 @@ export const getCategoriesSeeder = () => [
             {
                 id: 0,
                 title: 'size',
-                default: 1,
+                isDefault: 1,
                 type: 'radio',
                 options: [
                     {
@@ -96,7 +96,7 @@ export const getSampleCategory = () => ({
         {
             id: 0,
             title: 'size',
-            default: 1,
+            isDefault: 1,
             type: 'radio',
             options: [
                 {

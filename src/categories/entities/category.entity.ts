@@ -50,7 +50,7 @@ export class Choice {
     @Expose()
     @IsOptional()
     @Prop()
-    default?: number;
+    isDefault?: number;
 
     @Expose()
     @IsEnum(ChoiceType)

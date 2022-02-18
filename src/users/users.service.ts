@@ -1,6 +1,5 @@
 import {
     ConflictException,
-    ForbiddenException,
     Injectable,
     InternalServerErrorException,
     Logger,
@@ -9,7 +8,6 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcyrpt from 'bcrypt';
 import { Model, ObjectId } from 'mongoose';
-import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
@@ -124,15 +122,12 @@ export class UsersService {
      */
     async updateUser(
         id: ObjectId,
-        updateUserDto: UpdateUserDto,
-        actingUser: JwtUserDto
+        updateUserDto: UpdateUserDto
     ): Promise<User> {
-        // User should only be able to update his own data
-        if (id.toString() !== actingUser.userId.toString()) {
-            this.logger.warn(
-                `A user (id = ${actingUser.userId}) has attempted to alter a different users credentials.`
+        if (updateUserDto.password) {
+            updateUserDto.password = await this.hashPassword(
+                updateUserDto.password
             );
-            throw new ForbiddenException();
         }
         let updatedUser: User;
         try {
@@ -159,7 +154,6 @@ export class UsersService {
             }
         }
         // Seperate exception to ensure that user gets a specific error but should never happen
-        /* istanbul ignore next */
         if (!updatedUser) {
             this.logger.warn(
                 `Updating a user (id = ${id}) was requested but the user could not be found`
@@ -171,22 +165,12 @@ export class UsersService {
         return updatedUser;
     }
 
-    async remove(id: ObjectId, actingUser: JwtUserDto): Promise<User> {
-        // User should only be able to delete own account (Admin can delete all)
-        if (id.toString() !== actingUser.userId.toString()) {
-            this.logger.warn(
-                `A user (id = ${actingUser.userId}) has attempted to delete a different users account.`
-            );
-            throw new ForbiddenException();
-        }
-
+    async remove(id: ObjectId): Promise<User> {
         const user = await this.userModel.findByIdAndDelete(id);
 
-        // Failsave that should never occur
-        /* istanbul ignore next */
         if (!user) {
             this.logger.warn(
-                `Deleting a user (id = ${id}) was requested but the user could not be found`
+                `Deletion a user (id = ${id}) was requested but the user could not be found`
             );
             throw new NotFoundException();
         }
