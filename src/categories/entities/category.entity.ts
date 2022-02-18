@@ -64,7 +64,7 @@ export class Choice {
     options: Option[];
 }
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, _id: true })
 export class Category {
     @Expose()
     @Transform((params) => params.obj._id.toString())

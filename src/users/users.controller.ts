@@ -13,8 +13,8 @@ import {
     UseGuards,
     UseInterceptors
 } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 import { ObjectId } from 'mongoose';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -56,7 +56,7 @@ export class UsersController {
     }
 
     @Patch('/:id')
-    @ApiOperation({ summary: 'Update User' })
+    @ApiOperation({ summary: 'Patch a user' })
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'User has been updated',
@@ -80,7 +80,7 @@ export class UsersController {
     }
 
     @Delete('/:id')
-    @ApiOperation({ summary: 'Delete User' })
+    @ApiOperation({ summary: 'Delete a user' })
     @ApiResponse({
         status: HttpStatus.NO_CONTENT,
         description: 'User has been deleted'

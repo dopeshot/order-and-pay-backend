@@ -8,16 +8,15 @@ import {
     NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { OrderEventType } from '../sse/enums/events.enum';
 import { SseService } from '../sse/sse.service';
 import { TablesService } from '../tables/tables.service';
 import { CreateOrderDto } from './dtos/create-order.dto';
 import { UpdateOrderDto } from './dtos/update-order.dto';
-import { OrderDocument } from './entities/order.entity';
+import { OrderDocument, Payment } from './entities/order.entity';
 import { OrderStatus } from './enums/order-status.enum';
 import { PaymentStatus } from './enums/payment-status.enum';
-import { Payment } from './types/payment.type';
 
 @Injectable()
 export class OrdersService {
@@ -44,9 +43,8 @@ export class OrdersService {
     async create(order: CreateOrderDto): Promise<OrderDocument> {
         // Validate the payment status
         // TODO: Implement this
-        const paymentId = order.payment;
-        const amount = 10; // This should be calculated
-        if (!this.validatePayment(paymentId, amount)) {
+
+        if (!this.validatePayment()) {
             this.logger.warn(`Invalid Payment for order`);
             throw new HttpException(
                 'Invalid Payment',
@@ -54,7 +52,7 @@ export class OrdersService {
             );
         }
 
-        if (!this.tablesService.findOne(order.tableId.toString())) {
+        if (!this.tablesService.findOne(order.tableId)) {
             this.logger.warn(
                 `Order for invalid table. This might indicate someone fiddling with the URL`
             );
@@ -64,9 +62,7 @@ export class OrdersService {
         // TODO: Validate that all items are actual dishes in db
 
         const paymentStatus: Payment = {
-            status: PaymentStatus.RECEIVED,
-            transactionId: paymentId,
-            amount: amount
+            status: PaymentStatus.RECEIVED
         };
         let receivedOrder: OrderDocument;
         try {
@@ -96,16 +92,16 @@ export class OrdersService {
         return receivedOrder;
     }
 
-    validatePayment(paymentId: string, amount: number) {
+    validatePayment() {
         this.logger.warn(
             `Payment validation has been called, however this is not implemented correctly yet`
         );
-        //TODO: Implement this
+        // TODO: This should communicate with payment api, leave as mock for now
         return true;
     }
 
     async update(
-        id: string,
+        id: ObjectId,
         updateData: UpdateOrderDto
     ): Promise<OrderDocument> {
         let order: OrderDocument;

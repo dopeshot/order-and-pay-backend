@@ -15,17 +15,14 @@ import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
-    private CLIENT_ID: string;
+    private CLIENT_id: ObjectId;
     private CLIENT_SECRET: string;
     private readonly logger = new Logger(AuthService.name);
 
     constructor(
         private readonly userService: UsersService,
         private readonly jwtService: JwtService
-    ) {
-        this.CLIENT_ID = process.env.GOOGLE_AUTH_CLIENT_ID;
-        this.CLIENT_SECRET = process.env.GOOGLE_AUTH_CLIENT_SECRET;
-    }
+    ) {}
 
     /**
      * Register User (Creates a new one)
@@ -55,7 +52,7 @@ export class AuthService {
         email: string,
         password: string
     ): Promise<User> {
-        let user: User = null;
+        let user: User;
         try {
             user = await this.userService.findOneByEmail(email);
         } catch (error) {
@@ -124,7 +121,8 @@ export class AuthService {
             this.logger.warn(
                 `An unusual error occured while trying to validate JWT. This might indicicate JWT manipulation or internal server problems`
             );
-            return false; // This should never happen but just in case
+            // This should never happen but just in case
+            return false;
         }
         if (
             user.status !== UserStatus.ACTIVE &&
@@ -133,7 +131,6 @@ export class AuthService {
             this.logger.debug(
                 `A user tried to login with a ${user.status} account`
             );
-            // TODO: Add status check once we decided on how to handle reported user
             return false;
         }
 

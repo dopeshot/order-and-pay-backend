@@ -1,6 +1,6 @@
 import { Status } from '../../src/menus/enums/status.enum';
 
-export const getTestMenuData = () => [
+export const getMenuSeeder = () => [
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaa0',
         isActive: true,
@@ -67,7 +67,7 @@ export const getTestMenuData = () => [
 ];
 
 export const getValidMenus = () => {
-    return getTestMenuData().filter((menu) => menu.status === Status.ACTIVE);
+    return getMenuSeeder().filter((menu) => menu.status === Status.ACTIVE);
 };
 
 export const getCategoryForMenu = () => ({
@@ -76,7 +76,7 @@ export const getCategoryForMenu = () => ({
     description: 'Bread with stuff in between',
     icon: 'burger',
     image: 'burger',
-    menu: getTestMenuData()[0]._id
+    menu: getMenuSeeder()[0]._id
 });
 
 export const getDishForMenu = () => ({

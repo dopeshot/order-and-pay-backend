@@ -129,7 +129,6 @@ describe('AuthMdoule (e2e)', () => {
             });
 
             it('/auth/login (POST) Banned User', async () => {
-                // add provide to test user
                 let user = await getTestUser();
                 user = { ...user, status: UserStatus.BANNED };
                 await userModel.create(user);

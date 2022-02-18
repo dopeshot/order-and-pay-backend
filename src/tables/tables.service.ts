@@ -7,11 +7,10 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DeleteResult } from 'mongodb';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
 import { TableDocument } from './entities/table.entity';
-import { getMigrateTables } from './sampleTables/migrateTables';
 
 @Injectable()
 export class TablesService {
@@ -50,7 +49,7 @@ export class TablesService {
         return tables;
     }
 
-    async findOne(id: string): Promise<TableDocument> {
+    async findOne(id: ObjectId): Promise<TableDocument> {
         const table: TableDocument = await this.tableModel.findById(id).lean();
 
         if (!table) {
@@ -64,7 +63,7 @@ export class TablesService {
     }
 
     async update(
-        id: string,
+        id: ObjectId,
         updateTableDto: UpdateTableDto
     ): Promise<TableDocument> {
         let table: TableDocument;
@@ -97,7 +96,7 @@ export class TablesService {
         return table;
     }
 
-    async delete(id: string): Promise<void> {
+    async delete(id: ObjectId): Promise<void> {
         const table: TableDocument = await this.tableModel
             .findByIdAndDelete(id)
             .lean();
@@ -130,10 +129,5 @@ export class TablesService {
         this.logger.warn(
             `The tables (ids = ${ids}) have been deleted successfully.`
         );
-    }
-
-    async migrate(): Promise<void> {
-        this.logger.debug('Migrating tables...');
-        await this.tableModel.insertMany(getMigrateTables());
     }
 }

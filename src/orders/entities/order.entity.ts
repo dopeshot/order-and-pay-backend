@@ -1,9 +1,71 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose, Transform, Type } from 'class-transformer';
+import {
+    IsArray,
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    MaxLength,
+    ValidateNested
+} from 'class-validator';
 import { Document, ObjectId, SchemaTypes } from 'mongoose';
+import { Dish } from '../../dishes/entities/dish.entity';
+import { Table } from '../../tables/entities/table.entity';
+import { ChoiceType } from '../enums/choice-type.enum';
 import { OrderStatus } from '../enums/order-status.enum';
-import { Item } from '../types/item.type';
-import { Payment } from '../types/payment.type';
+import { PaymentStatus } from '../enums/payment-status.enum';
+
+export class Payment {
+    @Expose()
+    @Prop()
+    @IsEnum(PaymentStatus)
+    status: PaymentStatus;
+}
+export class PickedChoices {
+    @Expose()
+    @Prop()
+    @IsNumber()
+    @IsNotEmpty()
+    id: number;
+
+    @Expose()
+    @IsEnum(ChoiceType)
+    @Prop()
+    type: ChoiceType;
+
+    @Expose()
+    @Prop()
+    @IsArray()
+    @IsNumber({}, { each: true })
+    valueId: number[];
+}
+
+export class Item {
+    @Expose()
+    @Prop({ type: SchemaTypes.ObjectId, ref: 'Dish', required: true })
+    dish: Dish;
+
+    @Expose()
+    @Prop()
+    @IsNumber()
+    @IsNotEmpty()
+    count: number;
+
+    @Expose()
+    @Prop()
+    @ValidateNested()
+    @Type(() => PickedChoices)
+    pickedChoices: PickedChoices[];
+
+    @Expose()
+    @Prop()
+    @IsString()
+    @MaxLength(140)
+    @IsOptional()
+    note: string;
+}
 
 @Schema({ timestamps: true })
 export class Order {
@@ -14,7 +76,7 @@ export class Order {
     @Expose()
     @Transform((params) => params.obj.tableId.toString())
     @Prop({ type: SchemaTypes.ObjectId, ref: 'Table', required: true })
-    tableId: ObjectId;
+    tableId: Table;
 
     @Expose()
     @Prop({ required: true })

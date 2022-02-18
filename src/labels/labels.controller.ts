@@ -114,7 +114,7 @@ export class LabelsController {
     }
 
     @ApiOperation({
-        summary: 'Patch dishes that reference the label',
+        summary: 'Deletes a label and patches dishes that reference the label',
         tags: ['labels']
     })
     @ApiResponse({

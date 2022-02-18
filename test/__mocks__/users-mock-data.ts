@@ -1,10 +1,10 @@
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../../src/auth/auth.service';
 import { UserStatus } from '../../src/users/enums/status.enum';
-// TODO: Is this the best way to do this?
+// There may be a better way of doing this, but for now this will work
 import { UsersService } from '../../src/users/users.service';
 
-let jwtService: JwtService = new JwtService({
+const jwtService: JwtService = new JwtService({
     secret: 'secretkey',
     signOptions: {
         expiresIn: '10h'
@@ -13,7 +13,7 @@ let jwtService: JwtService = new JwtService({
 const userService: UsersService = new UsersService(null);
 const authService: AuthService = new AuthService(null, jwtService);
 
-let user = {
+const user = {
     _id: '61bb7c9983fdff2f24bf77a8',
     username: 'mock',
     email: 'mock@mock.mock',
@@ -21,7 +21,7 @@ let user = {
     status: UserStatus.ACTIVE
 };
 
-let admin = {
+const admin = {
     _id: '61bb7c9883fdff2f24bf779d',
     username: 'admin',
     email: 'discordmod@admin.mock',
@@ -42,6 +42,6 @@ export const getTestAdmin = async () => {
 };
 
 export const getJWT = async (x: any) => {
-    let token = await authService.createLoginPayload(x as any);
+    const token = await authService.createLoginPayload(x as any);
     return token.access_token;
 };

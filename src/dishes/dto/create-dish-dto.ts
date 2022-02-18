@@ -26,14 +26,14 @@ export class CreateDishDto {
 
     @IsOptional()
     @IsString()
-    @Length(0, 100) // also allow to have an empty string to "delete" a previous image
+    @Length(0, 100) // Also allow to have an empty string to "overwrite" a previous image to be "empty"
     image: string;
 
     @IsOptional()
     @IsBoolean()
     isAvailable = true;
 
-    @IsMongoId()
+    @IsMongoId({ each: true })
     @IsNotEmpty()
     category: string;
 

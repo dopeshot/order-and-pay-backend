@@ -11,7 +11,7 @@ import {
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
 import { getWrongId } from './__mocks__/shared-mock-data';
-import { getSampleTable, getTableSeeder } from './__mocks__/tables-mock-data';
+import { getSampleTable, getTablesSeeder } from './__mocks__/tables-mock-data';
 
 describe('TableController (e2e)', () => {
     let app: INestApplication;
@@ -32,7 +32,7 @@ describe('TableController (e2e)', () => {
 
     // Insert test data
     beforeEach(async () => {
-        await tableModel.insertMany(getTableSeeder());
+        await tableModel.insertMany(getTablesSeeder());
     });
 
     // Empty the collection from all possible impurities
@@ -61,13 +61,6 @@ describe('TableController (e2e)', () => {
                     getSampleTable().tableNumber
                 );
                 expect(res.body.capacity).toEqual(getSampleTable().capacity);
-            });
-
-            it('tables (POST), migrate', async () => {
-                await request(app.getHttpServer())
-                    .post('/tables/migrate')
-                    .expect(HttpStatus.CREATED);
-                expect((await tableModel.find()).length).toBe(30);
             });
 
             // Negative test
@@ -156,7 +149,7 @@ describe('TableController (e2e)', () => {
         describe('PATCH', () => {
             it('tables/:id (PATCH), correct patch', async () => {
                 const res = await request(app.getHttpServer())
-                    .patch(`/tables/${getTableSeeder()[0]._id}`)
+                    .patch(`/tables/${getTablesSeeder()[0]._id}`)
                     .send({ tableNumber: '13', capacity: 3 })
                     .expect(HttpStatus.OK);
 
@@ -171,10 +164,10 @@ describe('TableController (e2e)', () => {
             // Negative test
             it('tables (PATCH), patch duplicate tableNumber', async () => {
                 await request(app.getHttpServer())
-                    .patch(`/tables/${getTableSeeder()[0]._id}`)
+                    .patch(`/tables/${getTablesSeeder()[0]._id}`)
                     .send({
-                        tableNumber: getTableSeeder()[1].tableNumber,
-                        capacity: getTableSeeder()[0].capacity
+                        tableNumber: getTablesSeeder()[1].tableNumber,
+                        capacity: getTablesSeeder()[0].capacity
                     })
                     .expect(HttpStatus.CONFLICT);
             });
@@ -231,7 +224,7 @@ describe('TableController (e2e)', () => {
         describe('DELETE', () => {
             it('tables/:id (DELETE), delete table', async () => {
                 await request(app.getHttpServer())
-                    .delete(`/tables/${getTableSeeder()[0]._id}`)
+                    .delete(`/tables/${getTablesSeeder()[0]._id}`)
                     .expect(HttpStatus.NO_CONTENT);
             });
 
@@ -239,7 +232,7 @@ describe('TableController (e2e)', () => {
                 await request(app.getHttpServer())
                     .delete('/tables/bulk/delete')
                     .send({
-                        ids: getTableSeeder()
+                        ids: getTablesSeeder()
                             .splice(1, 3)
                             .map((tables) => tables._id)
                     })

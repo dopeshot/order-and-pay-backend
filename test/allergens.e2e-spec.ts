@@ -66,7 +66,6 @@ describe('AllergensController (e2e)', () => {
                 .send(getSampleAllergen())
                 .expect(HttpStatus.CREATED);
 
-            // TODO:
             const allergen = plainToClass(Allergen, res.body);
             expect(res.body).toMatchObject(allergen);
 

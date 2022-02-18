@@ -15,7 +15,7 @@ export class SseController {
     }
 
     @Get('test')
-    @ApiOperation({ summary: 'testing endpoint for dev only' })
+    @ApiOperation({ summary: 'Testing endpoint for dev only' })
     @UseGuards(ENVGuard)
     sendSse() {
         return this.sseService.emit('order', {

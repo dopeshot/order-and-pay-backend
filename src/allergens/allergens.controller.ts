@@ -88,7 +88,7 @@ export class AllergensController {
         return plainToClass(Dish, await this.allergensService.findDishes(id));
     }
 
-    @ApiOperation({ summary: 'Patch a allergen', tags: ['allergens'] })
+    @ApiOperation({ summary: 'Patch an allergen', tags: ['allergens'] })
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'The allergen has been updated',
@@ -114,7 +114,8 @@ export class AllergensController {
     }
 
     @ApiOperation({
-        summary: 'Patch dishes that reference the allergen',
+        summary:
+            'Deletes an allergen and patches dishes that reference the allergen',
         tags: ['allergens']
     })
     @ApiResponse({
