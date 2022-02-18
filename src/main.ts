@@ -38,6 +38,7 @@ async function bootstrap() {
         .addTag('tables', 'all table endpoints')
         .addTag('orders', 'all order endpoints')
         .addTag('labels', 'all label endpoints')
+        .addTag('qr-codes', 'all qr code endpoints')
         .addTag('allergens', 'all allergen endpoints')
         .addTag('categories', 'all category endpoints')
         .build();
