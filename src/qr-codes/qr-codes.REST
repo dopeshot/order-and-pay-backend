@@ -1,0 +1,4 @@
+@host = http://localhost:3001
+@table=620f7afdf1d8483b3810a23b
+
+GET {{host}}/admin/qr-codes/{{table}}
