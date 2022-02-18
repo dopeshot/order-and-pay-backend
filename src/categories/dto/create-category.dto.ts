@@ -12,11 +12,12 @@ import { Choice } from '../entities/category.entity';
 
 export class CreateCategoryDto {
     @IsString()
-    @Length(2, 30)
+    @Length(2, 32)
     title: string;
 
+    @IsOptional()
     @IsString()
-    @Length(2, 200)
+    @Length(0, 240)
     description: string;
 
     @IsArray()
@@ -26,12 +27,12 @@ export class CreateCategoryDto {
 
     @IsOptional()
     @IsString()
-    @Length(2, 100)
+    @Length(0, 32)
     icon: string;
 
     @IsOptional()
     @IsString()
-    @Length(2, 100)
+    @Length(0, 240)
     image: string;
 
     @IsMongoId()
