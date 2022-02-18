@@ -1,5 +1,4 @@
 import {
-    ConflictException,
     HttpStatus,
     Injectable,
     InternalServerErrorException,
@@ -35,15 +34,6 @@ export class CategoriesService {
             );
             return category.toObject() as CategoryDocument;
         } catch (error) {
-            if (error.code == '11000') {
-                this.logger.warn(
-                    `Creating an category (title = ${createCategoryDto.title}) failed due to a conflict.`
-                );
-                throw new ConflictException(
-                    'This category title already exists'
-                );
-            }
-
             /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while creating a new category (${error})`
@@ -88,15 +78,6 @@ export class CategoriesService {
                 .findByIdAndUpdate(id, updateCategoryDto, { new: true })
                 .lean();
         } catch (error) {
-            if (error.code === 11000) {
-                this.logger.warn(
-                    `Updating a category (title = ${updateCategoryDto.title}) failed due to a conflict.`
-                );
-                throw new ConflictException(
-                    'This category title already exists'
-                );
-            }
-
             /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while updating a category (${error})`
