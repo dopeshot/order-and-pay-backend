@@ -75,7 +75,7 @@ export class Category {
     title: string;
 
     @Expose()
-    @Prop({ required: true })
+    @Prop()
     description: string;
 
     @Expose()
