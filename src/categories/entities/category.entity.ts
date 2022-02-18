@@ -25,7 +25,7 @@ export class Option {
     @Expose()
     @Prop()
     @IsString()
-    @Length(2, 30)
+    @Length(2, 32)
     name: string;
 
     @Expose()
