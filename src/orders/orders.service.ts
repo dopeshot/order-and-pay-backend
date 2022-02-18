@@ -1,5 +1,4 @@
 import {
-    BadRequestException,
     HttpException,
     HttpStatus,
     Injectable,
@@ -15,6 +14,7 @@ import { DishesService } from '../dishes/dishes.service';
 import { DishDocument } from '../dishes/entities/dish.entity';
 import { OrderEventType } from '../sse/enums/events.enum';
 import { SseService } from '../sse/sse.service';
+import { Table } from '../tables/entities/table.entity';
 import { TablesService } from '../tables/tables.service';
 import { CreateOrderDto } from './dtos/create-order.dto';
 import { UpdateOrderDto } from './dtos/update-order.dto';
@@ -47,7 +47,8 @@ export class OrdersService {
     }
 
     async create(order: CreateOrderDto): Promise<OrderDocument> {
-        // Validate the payment status (This is a mock in the prototype)
+        // Validate the payment status (This is a mock in the prototype and therefore can not fail)
+        /* istanbul ignore next */
         if (!this.validatePayment()) {
             this.logger.warn(`Invalid Payment for order`);
             throw new HttpException(
@@ -56,16 +57,25 @@ export class OrdersService {
             );
         }
 
+        let table: Table;
         // Validate the table number and find Id for said table
-        const table = await this.tablesService.findOneByTableNumber(
-            order.tableNumber
-        );
-
-        if (!table) {
-            this.logger.warn(
-                `Order for invalid table. This might indicate someone fiddling with the URL`
+        try {
+            table = await this.tablesService.findOneByTableNumber(
+                order.tableNumber
             );
-            throw new BadRequestException();
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                this.logger.warn(
+                    `Order for invalid table. This might indicate someone fiddling with the URL`
+                );
+                throw new UnprocessableEntityException();
+            } // This should never happen under normal circumstances
+            /* istanbul ignore next */
+            this.logger.error(
+                `Creating order failed while looking for dishes. (${error})`
+            );
+            /* istanbul ignore next */
+            throw new InternalServerErrorException();
         }
 
         // Calculate price of the dishes and also verify that every dish in order exists
@@ -87,10 +97,12 @@ export class OrdersService {
                     );
                     throw new UnprocessableEntityException();
                 }
-                console.log(e);
+                // This should never happen under normal circumstances
+                /* istanbul ignore next */
                 this.logger.error(
                     `Creating order failed while looking for dishes. (${e})`
                 );
+                /* istanbul ignore next */
                 throw new InternalServerErrorException();
             }
 
@@ -166,20 +178,25 @@ export class OrdersService {
 
             receivedOrder = newOrder.toObject() as OrderDocument;
         } catch (e) {
+            // This should never happen under normal circumstances
+            /* istanbul ignore next */
             this.logger.error(`Error occured while creating order(${e})`);
+            /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
 
-        // This should never happen
+        // This should never happen under normal circumstances
+        /* istanbul ignore next */
         if (!receivedOrder) {
             this.logger.error(`An error occured while creating order`);
             throw new InternalServerErrorException();
         }
+
         // Emit SSE for admin frontend
         this.sseService.emitOrderEvent(OrderEventType.new, receivedOrder);
 
         this.logger.debug(
-            `The Category (id = ${receivedOrder._id}) has been created successfully.`
+            `The order (id = ${receivedOrder._id}) has been created successfully.`
         );
 
         return receivedOrder;
@@ -206,7 +223,10 @@ export class OrdersService {
                 })
                 .lean();
         } catch (e) {
+            // This should never happen under normal circumstances
+            /* istanbul ignore next */
             this.logger.error(`Error occured while updating order(${e})`);
+            /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
 

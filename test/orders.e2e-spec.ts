@@ -266,15 +266,42 @@ describe('Ordercontroller (e2e)', () => {
                 .expect(HttpStatus.UNPROCESSABLE_ENTITY);
         });
 
-        it('should fail with invalid tableid', async () => {
+        it('should fail with invalid choices amount', async () => {
+            await dishModel.insertMany(getDishesForOrdersSeeder());
+            await categoryModel.create(getCategoryForOrdersSeeder());
+            const res = await request(app.getHttpServer())
+                .post('/client/order')
+                .send({
+                    price: 12700,
+                    tableNumber: getTablesSeeder()[0].tableNumber,
+                    items: [
+                        {
+                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+                            count: 2,
+                            note: 'my note',
+                            pickedChoices: [
+                                {
+                                    id: 0,
+                                    type: ChoiceType.RADIO,
+                                    valueId: [0, 1]
+                                }
+                            ]
+                        }
+                    ]
+                })
+                .expect(HttpStatus.UNPROCESSABLE_ENTITY);
+        });
+
+        it('should fail with invalid tableNumber', async () => {
+            await tableModel.deleteMany();
             await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
-                    tableId: 'yyxyxyxyyxxyxxyyxyxxyyxx',
+                    tableNumber: getTablesSeeder()[0].tableNumber,
                     items: [],
-                    payment: 'my transaction id'
+                    price: 0
                 })
-                .expect(HttpStatus.BAD_REQUEST);
+                .expect(HttpStatus.UNPROCESSABLE_ENTITY);
         });
 
         it('should fail with incomplete data', async () => {
@@ -312,9 +339,6 @@ describe('Ordercontroller (e2e)', () => {
             const res = await request(app.getHttpServer())
                 .get('/orders/current')
                 .expect(HttpStatus.OK);
-
-            console.log(res.body);
-            console.log(getActiveOrders());
 
             expect(res.body.length).toBe(getActiveOrders().length);
         });
