@@ -13,7 +13,7 @@ import {
     SerializeOptions,
     UseInterceptors
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import { Category } from '../categories/entities/category.entity';
 import { DeleteType } from '../shared/enums/delete-type.enum';
@@ -23,6 +23,7 @@ import { UpdateMenuDto } from './dto/update-menu.dto';
 import { Menu, MenuPopulated } from './entities/menu.entity';
 import { MenusService } from './menus.service';
 
+@ApiTags('menus')
 @Controller('menus')
 @UseInterceptors(ClassSerializerInterceptor)
 @SerializeOptions({ strategy: 'excludeAll' })

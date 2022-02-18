@@ -73,7 +73,7 @@ export class CategoriesService {
     }
 
     async findByMenu(id: ObjectId): Promise<CategoryDocument[]> {
-        return this.categoryModel.find({ menu: id }).lean();
+        return this.categoryModel.find({ menuId: id }).lean();
     }
 
     async update(

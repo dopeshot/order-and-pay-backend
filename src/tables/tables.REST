@@ -6,8 +6,7 @@ Content-Type: application/json
 
 {
     "tableNumber": "1A",
-    "capacity": 1,
-    "author": "12"
+    "capacity": 1
 }
 
 ### Get all tables

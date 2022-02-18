@@ -38,32 +38,34 @@ export class Dish {
     isAvailable: boolean;
 
     @Expose()
-    @Prop({ type: SchemaTypes.ObjectId, ref: 'Category', required: true })
-    @Transform((params) => params.obj.category.toString())
-    category: Category;
+    @Prop({ type: SchemaTypes.ObjectId, ref: Category.name, required: true })
+    @Transform((params) => params.obj.categoryId.toString())
+    categoryId: Category;
 
     @Expose()
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Allergen' }] })
+    @Prop({ type: [{ type: Types.ObjectId, ref: Allergen.name }] })
     @Transform((params) =>
-        params.obj.allergens.map((allergen) => allergen.toString())
+        params.obj.allergenIds.map((allergen) => allergen.toString())
     )
-    allergens: Allergen[];
+    allergenIds: Allergen[];
 
     @Expose()
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Label' }] })
-    @Transform((params) => params.obj.labels.map((label) => label.toString()))
-    labels: Label[];
+    @Prop({ type: [{ type: Types.ObjectId, ref: Label.name }] })
+    @Transform((params) => params.obj.labelIds.map((label) => label.toString()))
+    labelIds: Label[];
 }
 
 export type DishDocument = Dish & Document;
-export class DishPopulated extends OmitType(Dish, ['allergens', 'labels']) {
+export class DishPopulated extends OmitType(Dish, ['allergenIds', 'labelIds']) {
+    // TODO: using @Expose({name: 'allergens'}) removes the field during serialization for no reason.
     @Expose()
     @Type(() => Allergen)
-    allergens: Allergen;
+    allergenIds: Allergen[];
 
+    // TODO: using @Expose({name: 'labels'}) removes the field during serialization for no reason.
     @Expose()
     @Type(() => Label)
-    labels: Label;
+    labelIds: Label[];
 }
 
 export const DishSchema = SchemaFactory.createForClass(Dish);

@@ -1,5 +1,6 @@
 import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -8,6 +9,7 @@ import { Connection, Model } from 'mongoose';
 import { join } from 'path';
 import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
+import { JwtAuthGuard } from '../src/auth/strategies/jwt/jwt-auth.guard';
 import { User, UserDocument } from '../src/users/entities/user.entity';
 import { UsersModule } from '../src/users/users.module';
 import {
@@ -21,6 +23,7 @@ describe('UserModule (e2e)', () => {
     let app: NestExpressApplication;
     let connection: Connection;
     let userModel: Model<UserDocument>;
+    let reflector: Reflector;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -44,6 +47,8 @@ describe('UserModule (e2e)', () => {
         app.setBaseViewsDir(join(__dirname, '..', 'views'));
         app.setViewEngine('ejs');
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+        reflector = app.get(Reflector);
+        app.useGlobalGuards(new JwtAuthGuard(reflector));
         await app.init();
     });
 

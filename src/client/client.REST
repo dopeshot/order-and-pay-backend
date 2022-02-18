@@ -1,10 +1,13 @@
 @HOST=http://localhost:3001/client
 
 ### Create new order
-POST {{{HOST}}}/order
+POST {{HOST}}/order
 Content-Type: application/json
 
 {
-    "tableId": "620e94410c3d0cf4528ba172",
+    "tableId": "13A",
     "items": []
 }
+
+### Get the current menu TODO: remove admin here @coffemakingtoaster
+GET http://localhost:3001/admin/client/menu
