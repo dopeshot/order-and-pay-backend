@@ -5,6 +5,6 @@ POST {{{HOST}}}/order
 Content-Type: application/json
 
 {
-    "tableId": "620e94410c3d0cf4528ba172",
+    "tableId": "13A",
     "items": []
 }
