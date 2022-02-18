@@ -43,7 +43,7 @@ export class Choice {
 
     @Expose()
     @IsString()
-    @Length(2, 30)
+    @Length(2, 32)
     @Prop({ required: true })
     title: string;
 
