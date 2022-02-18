@@ -25,8 +25,8 @@ export const getDishWithReference = () => ({
     _id: '12345aaaaaaaaaaaaaaaaaaa',
     title: 'title',
     price: 100,
-    category: '1234567aaaaaaaaaaaaaaaaa',
-    allergens: ['123aaaaaaaaaaaaaaaaaaaaa', getAllergenSeeder()._id],
+    categoryId: '1234567aaaaaaaaaaaaaaaaa',
+    allergenIds: ['123aaaaaaaaaaaaaaaaaaaaa', getAllergenSeeder()._id],
     description: 'something',
     image: 'someImage'
 });

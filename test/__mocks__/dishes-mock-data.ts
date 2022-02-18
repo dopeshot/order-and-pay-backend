@@ -9,9 +9,9 @@ export const getDishesSeeder = () => [
         price: 950,
         image: 'imagelink',
         isAvailable: true,
-        category: 'aaaaaaaaaaaaaaaaaaaaaaab',
-        allergens: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
-        labels: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
+        categoryId: 'aaaaaaaaaaaaaaaaaaaaaaab',
+        allergenIds: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
+        labelIds: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
     },
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaab',
@@ -21,9 +21,9 @@ export const getDishesSeeder = () => [
         price: 10000,
         image: 'imagelink',
         isAvailable: true,
-        category: 'aaaaaaaaaaaaaaaaaaaaaaab',
-        allergens: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
-        labels: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
+        categoryId: 'aaaaaaaaaaaaaaaaaaaaaaab',
+        allergenIds: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
+        labelIds: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
     },
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaac',
@@ -33,9 +33,9 @@ export const getDishesSeeder = () => [
         price: 420,
         image: 'imagelink',
         isAvailable: true,
-        category: 'aaaaaaaaaaaaaaaaaaaaaaac',
-        allergens: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
-        labels: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
+        categoryId: 'aaaaaaaaaaaaaaaaaaaaaaac',
+        allergenIds: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
+        labelIds: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
     }
 ];
 
@@ -72,7 +72,7 @@ export const getSampleDish = () => ({
     price: 950,
     image: 'imagelink',
     isAvailable: true,
-    category: 'aaaaaaaaaaaaaaaaaaaaaaba',
-    allergens: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
-    labels: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
+    categoryId: 'aaaaaaaaaaaaaaaaaaaaaaba',
+    allergenIds: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
+    labelIds: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
 });

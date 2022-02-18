@@ -15,7 +15,7 @@ export class Menu {
     title: string;
 
     @Expose()
-    @Prop({})
+    @Prop()
     description: string;
 
     @Expose()

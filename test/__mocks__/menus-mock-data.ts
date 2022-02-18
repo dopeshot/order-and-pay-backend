@@ -76,7 +76,7 @@ export const getCategoryForMenu = () => ({
     description: 'Bread with stuff in between',
     icon: 'burger',
     image: 'burger',
-    menu: getMenuSeeder()[0]._id
+    menuId: getMenuSeeder()[0]._id
 });
 
 export const getDishForMenu = () => ({
@@ -86,7 +86,7 @@ export const getDishForMenu = () => ({
     price: 950,
     image: 'imagelink',
     isAvailable: true,
-    category: getCategoryForMenu()._id,
-    allergens: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
-    labels: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
+    categoryId: getCategoryForMenu()._id,
+    allergenIds: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
+    labelIds: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
 });

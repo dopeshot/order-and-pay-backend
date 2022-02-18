@@ -182,15 +182,14 @@ describe('MenuController (e2e)', () => {
                     ).toBeDefined();
                     // Check if dishes are populated correctly
                     category.dishes.forEach((dish) => {
-                        expect(dish.category).toEqual(category._id);
+                        expect(dish.categoryId).toEqual(category._id);
                         expect(
                             dishes.find(
                                 (d) => d._id.toString() === dish._id.toString()
                             )
                         ).toBeDefined();
-
                         // Check if labels are populated correctly
-                        dish.labels.forEach((label) => {
+                        dish.labelIds.forEach((label) => {
                             expect(
                                 labels.find(
                                     (l) =>
@@ -201,7 +200,7 @@ describe('MenuController (e2e)', () => {
                         });
 
                         // Check if allergens are populated correctly
-                        dish.allergens.forEach((allergen) => {
+                        dish.allergenIds.forEach((allergen) => {
                             expect(
                                 allergens.find(
                                     (a) =>

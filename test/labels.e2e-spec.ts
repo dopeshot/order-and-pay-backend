@@ -271,7 +271,7 @@ describe('LabelsController (e2e)', () => {
             expect(await labelModel.find()).toHaveLength(0);
 
             expect(
-                (await dishModel.findById(getDishWithReference()._id)).labels
+                (await dishModel.findById(getDishWithReference()._id)).labelIds
             ).toHaveLength(1);
         });
 

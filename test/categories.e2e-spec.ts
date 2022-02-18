@@ -215,7 +215,7 @@ describe('CategoriesController (e2e)', () => {
             it('should return BAD_REQUEST with menu missing ', async () => {
                 await request(app.getHttpServer())
                     .post(`${path}`)
-                    .send({ ...getSampleCategory(), menu: undefined })
+                    .send({ ...getSampleCategory(), menuId: undefined })
                     .expect(HttpStatus.BAD_REQUEST);
             });
 
@@ -433,7 +433,7 @@ describe('CategoriesController (e2e)', () => {
             expect(resCategory.description).toBe(controllCategory.description);
             expect(resCategory.icon).toBe(controllCategory.icon);
             expect(resCategory.image).toBe(controllCategory.image);
-            expect(resCategory.menu).toBe(controllCategory.menu);
+            expect(resCategory.menuId).toBe(controllCategory.menuId);
             expect(resCategory.title).toBe(controllCategory.title);
         });
 
@@ -456,7 +456,7 @@ describe('CategoriesController (e2e)', () => {
             expect(resCategory.description).toBe(controllCategory.description);
             expect(resCategory.icon).toBe(controllCategory.icon);
             expect(resCategory.image).toBe(controllCategory.image);
-            expect(resCategory.menu).toBe(controllCategory.menu);
+            expect(resCategory.menuId).toBe(controllCategory.menuId);
             expect(resCategory.title).toBe(controllCategory.title);
         });
 
