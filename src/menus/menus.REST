@@ -2,18 +2,27 @@
 
 @MENU = aaaaaababaaaaaaaaaaaaaae
 
-@MENU_ID = 61f1a3030b34b202b7eb4786
+@MENU_ID = 620fb2538cf136e85618e17c
+
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik5vcm1hbCBVc2VyIiwic3ViIjoiNjIwZjhiMWFhMWUwM2Y1MTFlOTU3NjQwIiwiaWF0IjoxNjQ1MTkwNjU3LCJleHAiOjE2NDUyMjY2NTd9.tmXfwvmRnS_hbyoOY28bScNJ7hZD1rjdD0z0w_Y_5r8
+
 
 ### GET all menus
 GET {{HOST}}
+Authorization: Bearer {{token}}
 
 ### GET menu by id
-
 GET {{HOST}}/{{MENU_ID}}
+Authorization: Bearer {{token}}
+
+### GET menu by id
+GET {{HOST}}/{{MENU_ID}}/editor
+Authorization: Bearer {{token}}
 
 ### POST new menu
 POST {{HOST}}
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "title": "{{MENU}}",
@@ -22,4 +31,5 @@ Content-Type: application/json
 
 ### Delete menu
 DELETE {{HOST}}/{{MENU}}
+Authorization: Bearer {{token}}
 

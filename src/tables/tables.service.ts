@@ -10,7 +10,7 @@ import { DeleteResult } from 'mongodb';
 import { Model, ObjectId } from 'mongoose';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
-import { TableDocument } from './entities/table.entity';
+import { Table, TableDocument } from './entities/table.entity';
 
 @Injectable()
 export class TablesService {
@@ -55,6 +55,23 @@ export class TablesService {
         if (!table) {
             this.logger.debug(
                 `A table (id = ${id}) was requested but could not be found.`
+            );
+            throw new NotFoundException();
+        }
+
+        return table;
+    }
+
+    async findOneByTableNumber(tableNumber): Promise<Table> {
+        const table = await this.tableModel
+            .findOne({
+                tableNumber: tableNumber
+            })
+            .lean();
+
+        if (!table) {
+            this.logger.debug(
+                `A table (number = ${tableNumber}) was requested but could not be found.`
             );
             throw new NotFoundException();
         }

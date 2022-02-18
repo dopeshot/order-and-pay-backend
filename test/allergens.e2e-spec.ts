@@ -275,7 +275,8 @@ describe('AllergensController (e2e)', () => {
             expect(await allergenModel.find()).toHaveLength(0);
 
             expect(
-                (await dishModel.findById(getDishWithReference()._id)).allergens
+                (await dishModel.findById(getDishWithReference()._id))
+                    .allergenIds
             ).toHaveLength(1);
         });
 

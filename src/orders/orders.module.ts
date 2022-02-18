@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { CategoriesModule } from '../categories/categories.module';
+import { DishesModule } from '../dishes/dishes.module';
 import { SseModule } from '../sse/sse.module';
 import { TablesModule } from '../tables/tables.module';
 import { OrderSchema } from './entities/order.entity';
@@ -12,7 +14,9 @@ import { OrdersService } from './orders.service';
     imports: [
         SseModule,
         MongooseModule.forFeature([{ name: 'Order', schema: OrderSchema }]),
-        TablesModule
+        TablesModule,
+        DishesModule,
+        CategoriesModule
     ],
     exports: [OrdersService]
 })

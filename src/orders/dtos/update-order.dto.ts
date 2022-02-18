@@ -1,18 +1,15 @@
 import { OmitType, PartialType } from '@nestjs/mapped-types';
-import { Type } from 'class-transformer';
-import { IsEnum, IsOptional, ValidateNested } from 'class-validator';
-import { Payment } from '../entities/order.entity';
+import { IsEnum, IsOptional } from 'class-validator';
 import { OrderStatus } from '../enums/order-status.enum';
+import { PaymentStatus } from '../enums/payment-status.enum';
 import { CreateOrderDto } from './create-order.dto';
 
-export class PaymentDto extends PartialType(Payment) {}
 export class UpdateOrderDto extends PartialType(
-    OmitType(CreateOrderDto, ['tableId', 'items'])
+    OmitType(CreateOrderDto, ['tableNumber', 'items', 'price'])
 ) {
     @IsOptional()
-    @ValidateNested()
-    @Type(() => Payment)
-    PaymentStatus: PaymentDto;
+    @IsEnum(PaymentStatus)
+    PaymentStatus: PaymentStatus;
 
     @IsOptional()
     @IsEnum(OrderStatus)

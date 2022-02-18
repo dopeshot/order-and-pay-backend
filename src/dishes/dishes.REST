@@ -1,20 +1,22 @@
 @HOST = http://localhost:3001/admin
 @dishId = 123456123456123456123456
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik5vcm1hbCBVc2VyIiwic3ViIjoiNjIwZjhiMWFhMWUwM2Y1MTFlOTU3NjQwIiwiaWF0IjoxNjQ1MTkwNjU3LCJleHAiOjE2NDUyMjY2NTd9.tmXfwvmRnS_hbyoOY28bScNJ7hZD1rjdD0z0w_Y_5r8
 
 ### POST one dish
 POST {{HOST}}/dishes
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-    "title": "Isabellano",
+    "title": "Isabellana",
     "description":
         "Pizza with mortadella and the finest prosciutto crudo from napoli",
     "price": 950,
     "image": "imagelink",
     "isActive": true,
-    "category": "aaaaaaaaaaaaaaaaaaaaaaba",
-    "allergens": ["aaaaaaaaaaaaaaaaaaaaaaca", "aaaaaaaaaaaaaaaaaaaaaacb"],
-    "labels": ["aaaaaaaaaaaaaaaaaaaaaada", "aaaaaaaaaaaaaaaaaaaaaadb"]
+    "categoryId": "620fe439de4327563cc21f3d",
+    "allergenIds": ["aaaaaaaaaaaaaaaaaaaaaaca", "aaaaaaaaaaaaaaaaaaaaaacb"],
+    "labelIds": ["aaaaaaaaaaaaaaaaaaaaaada", "aaaaaaaaaaaaaaaaaaaaaadb"]
 }
 
 ### GET all dishes

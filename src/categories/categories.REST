@@ -1,16 +1,18 @@
 @HOST = http://localhost:3001
 @categoryId = 61f01b2d7b82bb3d86f9035b
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik5vcm1hbCBVc2VyIiwic3ViIjoiNjIwZjhiMWFhMWUwM2Y1MTFlOTU3NjQwIiwiaWF0IjoxNjQ1MTkwNjU3LCJleHAiOjE2NDUyMjY2NTd9.tmXfwvmRnS_hbyoOY28bScNJ7hZD1rjdD0z0w_Y_5r8
 
 ### POST one category
 POST {{HOST}}/admin/categories
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "title": "Pizza3",
     "description": "Loaf with stuff on it",
     "icon": "pizza",
     "image": "pizza",
-    "menu": "aaaaaaaaaaaaaaaaaaaaaaaa",
+    "menuId": "620fb2538cf136e85618e17c",
     "choices": [{
         "id": 0,
         "title": "size",

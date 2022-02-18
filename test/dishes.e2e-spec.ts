@@ -120,7 +120,7 @@ describe('DishController (e2e)', () => {
         it('should create a dish with empty allergens', async () => {
             const res = await request(app.getHttpServer())
                 .post(`${path}`)
-                .send({ ...getSampleDish(), allergens: [] })
+                .send({ ...getSampleDish(), allergenIds: [] })
                 .expect(HttpStatus.CREATED);
 
             expect(await dishModel.find()).toHaveLength(2);
@@ -131,7 +131,7 @@ describe('DishController (e2e)', () => {
         it('should create a dish with empty labels', async () => {
             const res = await request(app.getHttpServer())
                 .post(`${path}`)
-                .send({ ...getSampleDish(), labels: [] })
+                .send({ ...getSampleDish(), labelIds: [] })
                 .expect(HttpStatus.CREATED);
 
             expect(await dishModel.find()).toHaveLength(2);
@@ -205,7 +205,7 @@ describe('DishController (e2e)', () => {
             it('should return BAD_REQUEST with category missing ', async () => {
                 await request(app.getHttpServer())
                     .post(`${path}`)
-                    .send({ ...getSampleDish(), category: undefined })
+                    .send({ ...getSampleDish(), categoryId: undefined })
                     .expect(HttpStatus.BAD_REQUEST);
             });
 
@@ -214,7 +214,7 @@ describe('DishController (e2e)', () => {
                     .post(`${path}`)
                     .send({
                         ...getSampleDish(),
-                        category: 111111111111111111111111
+                        categoryId: 111111111111111111111111
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -222,7 +222,7 @@ describe('DishController (e2e)', () => {
             it('should return BAD_REQUEST with category not a MongoId (too short)', async () => {
                 await request(app.getHttpServer())
                     .post(`${path}`)
-                    .send({ ...getSampleDish(), category: 'a' })
+                    .send({ ...getSampleDish(), categoryId: 'a' })
                     .expect(HttpStatus.BAD_REQUEST);
             });
 
@@ -231,7 +231,7 @@ describe('DishController (e2e)', () => {
                     .post(`${path}`)
                     .send({
                         ...getSampleDish(),
-                        category: 'aaaaaaaaaaaaaaaaaaaaaaaaa'
+                        categoryId: 'aaaaaaaaaaaaaaaaaaaaaaaaa'
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -241,7 +241,7 @@ describe('DishController (e2e)', () => {
                     .post(`${path}`)
                     .send({
                         ...getSampleDish(),
-                        category: 'AAAAAAAAAAAANMKPLBV789XZ'
+                        categoryId: 'AAAAAAAAAAAANMKPLBV789XZ'
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -261,7 +261,7 @@ describe('DishController (e2e)', () => {
                     .post(`${path}`)
                     .send({
                         ...getSampleDish(),
-                        allergens: undefined
+                        allergenIds: undefined
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -271,7 +271,7 @@ describe('DishController (e2e)', () => {
                     .post(`${path}`)
                     .send({
                         ...getSampleDish(),
-                        allergens: [1, 2]
+                        allergenIds: [1, 2]
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -281,7 +281,7 @@ describe('DishController (e2e)', () => {
                     .post(`${path}`)
                     .send({
                         ...getSampleDish(),
-                        allergens: ['a', 'b']
+                        allergenIds: ['a', 'b']
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -291,7 +291,7 @@ describe('DishController (e2e)', () => {
                     .post(`${path}`)
                     .send({
                         ...getSampleDish(),
-                        labels: undefined
+                        labelIds: undefined
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -301,7 +301,7 @@ describe('DishController (e2e)', () => {
                     .post(`${path}`)
                     .send({
                         ...getSampleDish(),
-                        labels: [1, 2]
+                        labelIds: [1, 2]
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -311,7 +311,7 @@ describe('DishController (e2e)', () => {
                     .post(`${path}`)
                     .send({
                         ...getSampleDish(),
-                        labels: ['a', 'b']
+                        labelIds: ['a', 'b']
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -370,11 +370,11 @@ describe('DishController (e2e)', () => {
             // Either delete __v updatedAt and createdAt or check the rest (chose 2nd)
             expect(resDish.description).toBe(controllDish.description);
             expect(resDish.image).toBe(controllDish.image);
-            expect(resDish.category).toBe(controllDish.category);
+            expect(resDish.categoryId).toBe(controllDish.categoryId);
             expect(resDish.title).toBe(controllDish.title);
             expect(resDish.price).toBe(controllDish.price);
-            expect(resDish.allergens).toStrictEqual(controllDish.allergens);
-            expect(resDish.labels).toStrictEqual(controllDish.labels);
+            expect(resDish.allergenIds).toStrictEqual(controllDish.allergenIds);
+            expect(resDish.labelIds).toStrictEqual(controllDish.labelIds);
         });
 
         it('should return OK with image as empty string', async () => {
