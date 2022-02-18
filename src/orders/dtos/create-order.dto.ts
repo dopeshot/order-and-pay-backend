@@ -11,7 +11,6 @@ import {
     MinLength,
     ValidateNested
 } from 'class-validator';
-import { ObjectId } from 'mongoose';
 import { Item } from '../entities/order.entity';
 
 class OrderItemDto extends PartialType(OmitType(Item, ['dishId'])) {
@@ -24,7 +23,7 @@ export class CreateOrderDto {
     @IsString()
     @MinLength(1)
     @MaxLength(8)
-    tableNumber: ObjectId;
+    tableNumber: string;
 
     @IsArray()
     @ValidateNested({ each: true })

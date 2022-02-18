@@ -120,19 +120,19 @@ export class OrdersService {
                     (choice) => choice.id === orderChoice.id
                 );
 
+                if (!selectedChoice) {
+                    this.logger.warn(
+                        'An invalid choice id was provided. This could incicate someone fiddeling with the request'
+                    );
+                    throw new UnprocessableEntityException();
+                }
+
                 if (
                     selectedChoice.type === ChoiceType.RADIO &&
                     orderChoice.valueId.length !== 1
                 ) {
                     this.logger.warn(
                         'An order with an impossible choice has occured. This could incicate someone fiddeling with the request'
-                    );
-                    throw new UnprocessableEntityException();
-                }
-
-                if (!selectedChoice) {
-                    this.logger.warn(
-                        'An invalid choice id was provided. This could incicate someone fiddeling with the request'
                     );
                     throw new UnprocessableEntityException();
                 }
