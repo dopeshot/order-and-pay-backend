@@ -13,6 +13,7 @@ import { OrdersModule } from './orders/orders.module';
 import { SseModule } from './sse/sse.module';
 import { TablesModule } from './tables/tables.module';
 import { UsersModule } from './users/users.module';
+import { QrCodesModule } from './qr-codes/qr-codes.module';
 
 @Module({
     imports: [
@@ -41,7 +42,8 @@ import { UsersModule } from './users/users.module';
         LabelsModule,
         AllergensModule,
         OrdersModule,
-        SseModule
+        SseModule,
+        QrCodesModule
     ]
 })
 export class AppModule {}
