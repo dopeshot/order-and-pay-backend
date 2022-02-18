@@ -1,4 +1,8 @@
-import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+    ExecutionContext,
+    HttpStatus,
+    UnauthorizedException
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -20,8 +24,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
             return null;
         }
 
-        // If user provided invalid token, throw error
-        if (req.authInfo) {
+        // If user provided invalid token or was unauthorized by user validation, throw error
+        if (req.authInfo || err?.status === HttpStatus.UNAUTHORIZED) {
             throw new UnauthorizedException(
                 'Your are not allowed to use this service.'
             );

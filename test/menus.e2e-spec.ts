@@ -1,4 +1,5 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { plainToClass } from 'class-transformer';
@@ -45,13 +46,14 @@ import {
 import { getWrongId } from './__mocks__/shared-mock-data';
 
 describe('MenuController (e2e)', () => {
+    let reflector: Reflector;
     let app: INestApplication;
     let connection: Connection;
     let dishModel: Model<DishDocument>;
-    let categoryModel: Model<CategoryDocument>;
-    let allergyModel: Model<AllergenDocument>;
-    let labelModel: Model<LabelDocument>;
     let menuModel: Model<MenuDocument>;
+    let labelModel: Model<LabelDocument>;
+    let allergenModel: Model<AllergenDocument>;
+    let categoryModel: Model<CategoryDocument>;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -59,19 +61,19 @@ describe('MenuController (e2e)', () => {
                 rootMongooseTestModule(),
                 MenusModule,
                 AdminModule,
-                AllergensModule,
                 DishesModule,
                 LabelsModule,
-                CategoriesModule,
-                ClientModule
+                ClientModule,
+                AllergensModule,
+                CategoriesModule
             ]
         }).compile();
 
         connection = await module.get(getConnectionToken());
         menuModel = connection.model('Menu');
         dishModel = connection.model('Dish');
-        allergyModel = connection.model('Allergen');
         labelModel = connection.model('Label');
+        allergenModel = connection.model('Allergen');
         categoryModel = connection.model('Category');
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
@@ -87,7 +89,7 @@ describe('MenuController (e2e)', () => {
     afterEach(async () => {
         await menuModel.deleteMany();
         await dishModel.deleteMany();
-        await allergyModel.deleteMany();
+        await allergenModel.deleteMany();
         await categoryModel.deleteMany();
         await labelModel.deleteMany();
     });
@@ -153,7 +155,7 @@ describe('MenuController (e2e)', () => {
         describe('menus/:id/editor (GET)', () => {
             it('should return a populated menu', async () => {
                 await dishModel.insertMany(getDishesSeeder());
-                await allergyModel.insertMany(getAllergensForDishesSeeder());
+                await allergenModel.insertMany(getAllergensForDishesSeeder());
                 await categoryModel.insertMany(getCategoriesSeeder());
                 await labelModel.insertMany(getLabelsForDishesSeeder());
                 const res = await request(app.getHttpServer())
@@ -236,7 +238,7 @@ describe('MenuController (e2e)', () => {
         describe('client/menu (GET)', () => {
             it('should currently active menu', async () => {
                 await dishModel.insertMany(getDishSeeder());
-                await allergyModel.insertMany(getAllergensForDishesSeeder());
+                await allergenModel.insertMany(getAllergensForDishesSeeder());
                 await categoryModel.insertMany(getCategorySeeder());
                 await labelModel.insertMany(getLabelsForDishesSeeder());
                 const res = await request(app.getHttpServer())
@@ -373,7 +375,7 @@ describe('MenuController (e2e)', () => {
             it('should fail for duplicates', async () => {
                 const target = getMenuSeeder()[0];
                 const another = getMenuSeeder()[1];
-                const res = await request(app.getHttpServer())
+                await request(app.getHttpServer())
                     .patch('/menus/' + target._id)
                     .send({
                         description:
@@ -385,8 +387,7 @@ describe('MenuController (e2e)', () => {
 
             it('should fail with invalid data', async () => {
                 const target = getMenuSeeder()[0];
-                const another = getMenuSeeder()[1];
-                const res = await request(app.getHttpServer())
+                await request(app.getHttpServer())
                     .patch('/menus/' + target._id)
                     .send({
                         title: 'x'

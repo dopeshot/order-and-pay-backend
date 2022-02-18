@@ -69,7 +69,6 @@ export class TablesController {
         description: 'The table could not be found'
     })
     @Get(':id')
-    //@UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Get information of one table via id' })
     async findOne(@Param() { id }: MongoIdDto): Promise<Table> {
         return plainToClass(Table, await this.tableService.findOne(id));
