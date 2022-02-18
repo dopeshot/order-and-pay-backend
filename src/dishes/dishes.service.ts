@@ -47,7 +47,7 @@ export class DishesService {
     }
 
     async findOne(id: ObjectId): Promise<DishDocument> {
-        const dish: DishDocument = await this.dishModel.findById(id).lean();
+        const dish: DishDocument = await this.dishModel.findById(id);
         if (!dish) {
             this.logger.debug(
                 `A dish (id = ${id}) was requested but could not be found.`

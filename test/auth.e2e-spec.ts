@@ -223,8 +223,9 @@ describe('AuthMdoule (e2e)', () => {
                     await request(app.getHttpServer())
                         .post('/client/order')
                         .send({
-                            tableId: getSampleTable()._id,
-                            items: []
+                            tableNumber: getSampleTable().tableNumber,
+                            items: [],
+                            price: 0
                         })
                         .expect(HttpStatus.CREATED);
                 });

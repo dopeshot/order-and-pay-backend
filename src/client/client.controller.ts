@@ -30,6 +30,15 @@ export class ClientController {
     @Public()
     @Get('menu')
     @ApiOperation({ summary: 'Get currently active menu' })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Currently active menu populated',
+        type: MenuPopulated
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: 'No current menu found'
+    })
     async getMenu() {
         return plainToClass(
             MenuPopulated,
@@ -50,9 +59,8 @@ export class ClientController {
         type: Order
     })
     @ApiResponse({
-        status: HttpStatus.PAYMENT_REQUIRED,
-        description: 'Failed to create order due to payment issues ',
-        type: Order
+        status: HttpStatus.NOT_FOUND,
+        description: 'Dish was requested that might not be on the menu anymore'
     })
     async createOrder(@Body() order: CreateOrderDto) {
         return plainToClass(Order, await this.orderService.create(order));

@@ -3,6 +3,7 @@ import { Expose, Transform, Type } from 'class-transformer';
 import {
     IsArray,
     IsEnum,
+    IsMongoId,
     IsNotEmpty,
     IsNumber,
     IsOptional,
@@ -17,12 +18,6 @@ import { ChoiceType } from '../enums/choice-type.enum';
 import { OrderStatus } from '../enums/order-status.enum';
 import { PaymentStatus } from '../enums/payment-status.enum';
 
-export class Payment {
-    @Expose()
-    @Prop()
-    @IsEnum(PaymentStatus)
-    status: PaymentStatus;
-}
 export class PickedChoices {
     @Expose()
     @Prop()
@@ -44,8 +39,10 @@ export class PickedChoices {
 
 export class Item {
     @Expose()
+    @IsMongoId()
+    @IsNotEmpty()
     @Prop({ type: SchemaTypes.ObjectId, ref: Dish.name, required: true })
-    dish: Dish;
+    dishId: Dish;
 
     @Expose()
     @Prop()
@@ -85,12 +82,15 @@ export class Order {
 
     @Expose()
     @Prop({ required: true })
-    @Type(() => Payment)
-    PaymentStatus: Payment;
+    PaymentStatus: PaymentStatus;
 
     @Expose()
     @Prop({ default: OrderStatus.RECEIVED })
     Status: OrderStatus;
+
+    @Expose()
+    @Prop({ required: true })
+    price: number;
 }
 
 export type OrderDocument = Order & Document;
