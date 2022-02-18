@@ -34,6 +34,7 @@ export class DishesService {
                 throw new ConflictException('This dish title already exists');
             }
 
+            /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while creating a new dish (${error})`
             );
@@ -100,6 +101,7 @@ export class DishesService {
                 throw new ConflictException('This dish title already exists');
             }
 
+            /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while updating a dish (${error})`
             );

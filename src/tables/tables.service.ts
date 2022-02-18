@@ -35,6 +35,7 @@ export class TablesService {
                 );
                 throw new ConflictException('This table number already exists');
             }
+            /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while creating a new table (${error})`
             );
@@ -97,7 +98,9 @@ export class TablesService {
                 );
                 throw new ConflictException('This table number already exists');
             }
+            /* istanbul ignore next */
             this.logger.error(`Error while updating a table (${error})`);
+            /* istanbul ignore next */
             throw new InternalServerErrorException();
         }
         if (!table) {

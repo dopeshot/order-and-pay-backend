@@ -43,6 +43,8 @@ export class CategoriesService {
                     'This category title already exists'
                 );
             }
+
+            /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while creating a new category (${error})`
             );
@@ -95,6 +97,7 @@ export class CategoriesService {
                 );
             }
 
+            /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while updating a category (${error})`
             );
@@ -170,9 +173,11 @@ export class CategoriesService {
                         `A category remove (id = ${category._id}) was requested but could not be found.`
                     );
                 } else {
+                    /* istanbul ignore next */
                     this.logger.error(
                         `An error has occured while deleting a category (${error})`
                     );
+                    /* istanbul ignore next */
                     throw new InternalServerErrorException();
                 }
             }

@@ -37,6 +37,8 @@ export class AllergensService {
                     'This allergen title already exists'
                 );
             }
+
+            /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while creating a new allergen (${error})`
             );
@@ -87,6 +89,7 @@ export class AllergensService {
                 );
             }
 
+            /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while creating a new allergen (${error})`
             );

@@ -36,6 +36,7 @@ export class LabelsService {
                 throw new ConflictException('This label title already exists');
             }
 
+            /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while creating a new label (${error})`
             );
@@ -81,6 +82,8 @@ export class LabelsService {
                 );
                 throw new ConflictException('This label title already exists');
             }
+
+            /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while updating a label (${error})`
             );

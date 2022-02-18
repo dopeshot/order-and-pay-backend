@@ -63,7 +63,7 @@ export class UsersService {
                 );
                 throw new ConflictException('Email is already taken.');
             }
-
+            /* istanbul ignore next */
             this.logger.error(
                 `An error occured while creating a new user. (${error})`
             );
@@ -136,15 +136,9 @@ export class UsersService {
         let updatedUser: User;
         try {
             updatedUser = await this.userModel
-                .findByIdAndUpdate(
-                    id,
-                    {
-                        ...updateUserDto
-                    },
-                    {
-                        new: true
-                    }
-                )
+                .findByIdAndUpdate(id, updateUserDto, {
+                    new: true
+                })
                 .lean();
         } catch (error) {
             if (error.code === 11000) {
@@ -155,6 +149,7 @@ export class UsersService {
             }
             // This should not occur under normal conditions
             else {
+                /* istanbul ignore next */
                 this.logger.error(
                     `An error occured while creating a new user. (${error})`
                 );
@@ -164,6 +159,7 @@ export class UsersService {
         }
         // Seperate exception to ensure that user gets a specific error
         if (!updatedUser) {
+            // TODO: @coffemakingtoaster Same as TODO below, this cannot occur
             this.logger.warn(
                 `Updating a user (id = ${id}) was requested but the user could not be found`
             );
@@ -185,6 +181,7 @@ export class UsersService {
 
         const user = await this.userModel.findByIdAndDelete(id);
 
+        // TODO: @coffemakingtoaster This can't occur since the check above ensures the the id can only be that of the owner, and the owners id is checked by the Guard
         if (!user) {
             this.logger.warn(
                 `Deleting a user (id = ${id}) was requested but the user could not be found`

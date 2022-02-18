@@ -32,9 +32,7 @@ export class MenusService {
 
     async createMenu(createMenuDto: CreateMenuDto): Promise<MenuDocument> {
         try {
-            const menu = await this.menuModel.create({
-                ...createMenuDto
-            });
+            const menu = await this.menuModel.create(createMenuDto);
 
             if (menu.isActive) {
                 await this.updateActivation(menu._id);
@@ -55,6 +53,7 @@ export class MenusService {
                 );
             }
 
+            /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while creating a new menu (${error})`
             );
@@ -107,6 +106,8 @@ export class MenusService {
                     'A menu with this name already exists'
                 );
             }
+
+            /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while updating a menu (${error})`
             );
