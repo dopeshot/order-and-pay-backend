@@ -5,7 +5,7 @@ import { AuthService } from '../../auth.service';
 import { JwtPayloadDto, JwtUserDto } from '../../dto/jwt.dto';
 
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-    private readonly logger = new Logger('JWTStrategy');
+    private readonly logger = new Logger(JwtStrategy.name);
     constructor(@Inject(AuthService) private authService: AuthService) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

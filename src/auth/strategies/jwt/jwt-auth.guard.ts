@@ -8,7 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
 export class JwtAuthGuard extends AuthGuard('jwt') {
-    private readonly logger = new Logger('JwtAuthGuard');
+    private readonly logger = new Logger(JwtAuthGuard.name);
     public constructor(private readonly reflector: Reflector) {
         super();
     }
@@ -31,7 +31,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         // If user provided invalid token or was unauthorized by user validation, throw error
         if (req.authInfo || err?.status === HttpStatus.UNAUTHORIZED) {
             this.logger.warn(
-                `User login failed. The user with id ${user.userId} tried to log in but was unauthorized`
+                `User login failed. The user (${user}) tried to log in but was unauthorized`
             );
             throw new UnauthorizedException(
                 'Your are not allowed to use this service.'
