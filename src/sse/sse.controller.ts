@@ -10,14 +10,16 @@ export class SseController {
 
     @Sse('orders')
     @ApiOperation({ summary: 'SSE endpoints for orders' })
-    adminSSE() {
+    orderSSE() {
         return this.sseService.subscribe('order');
     }
 
     @Get('test')
     @ApiOperation({ summary: 'Testing endpoint for dev only' })
     @UseGuards(ENVGuard)
-    sendSse() {
+    // Testing endpoint for dev only
+    /* istanbul ignore next */
+    testSse() {
         return this.sseService.emit('order', {
             data: 'sse me harder',
             type: 'test'

@@ -18,6 +18,7 @@ import { UserStatus } from './enums/status.enum';
 @Injectable()
 export class UsersService {
     private readonly logger = new Logger(UsersService.name);
+
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>
     ) {}
@@ -157,9 +158,9 @@ export class UsersService {
                 throw new InternalServerErrorException('Update User failed');
             }
         }
-        // Seperate exception to ensure that user gets a specific error
+        // Seperate exception to ensure that user gets a specific error but should never happen
+        /* istanbul ignore next */
         if (!updatedUser) {
-            // TODO: @coffemakingtoaster Same as TODO below, this cannot occur
             this.logger.warn(
                 `Updating a user (id = ${id}) was requested but the user could not be found`
             );
@@ -181,7 +182,8 @@ export class UsersService {
 
         const user = await this.userModel.findByIdAndDelete(id);
 
-        // TODO: @coffemakingtoaster This can't occur since the check above ensures the the id can only be that of the owner, and the owners id is checked by the Guard
+        // Failsave that should never occur
+        /* istanbul ignore next */
         if (!user) {
             this.logger.warn(
                 `Deleting a user (id = ${id}) was requested but the user could not be found`
