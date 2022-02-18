@@ -10,6 +10,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AccessTokenDto } from './dto/jwt.dto';
 import { RegisterDto } from './dto/register.dto';
+import { Public } from './strategies/jwt/public.decorator';
 import { LocalAuthGuard } from './strategies/local/local-auth.guard';
 
 @ApiTags('auth')
@@ -30,6 +31,7 @@ export class AuthController {
         return await this.authService.registerUser(credentials);
     }
 
+    @Public()
     @Post('login')
     @ApiOperation({ summary: 'User login with mail and password' })
     @ApiResponse({

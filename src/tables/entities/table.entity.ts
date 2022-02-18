@@ -18,11 +18,6 @@ export class Table {
     capacity: number;
 
     @Expose()
-    // @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true }) TODO: implement this, if wanted
-    @Prop({ required: true })
-    author: string;
-
-    @Expose()
     updatedAt: Date;
 }
 

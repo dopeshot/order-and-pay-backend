@@ -17,7 +17,7 @@ export const getCategoryForOrdersSeeder = () => ({
     description: 'Bread with stuff in between',
     icon: 'buger',
     image: 'burger',
-    menu: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+    menuId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
     choices: [
         {
             id: 0,
@@ -76,9 +76,9 @@ export const getDishesForOrdersSeeder = () => [
         price: 950,
         image: 'imagelink',
         isAvailable: true,
-        category: 'aaaaaaaaaaaaaaaaaaaaaaab',
-        allergens: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
-        labels: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
+        categoryId: 'aaaaaaaaaaaaaaaaaaaaaaab',
+        allergenIds: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
+        labelIds: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
     },
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaa1',
@@ -88,9 +88,9 @@ export const getDishesForOrdersSeeder = () => [
         price: 10000,
         image: 'imagelink',
         isAvailable: true,
-        category: 'aaaaaaaaaaaaaaaaaaaaaaab',
-        allergens: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
-        labels: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
+        categoryId: 'aaaaaaaaaaaaaaaaaaaaaaab',
+        allergenIds: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
+        labelIds: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
     }
 ];
 

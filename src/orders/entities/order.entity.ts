@@ -41,7 +41,7 @@ export class Item {
     @Expose()
     @IsMongoId()
     @IsNotEmpty()
-    @Prop({ type: SchemaTypes.ObjectId, ref: 'Dish', required: true })
+    @Prop({ type: SchemaTypes.ObjectId, ref: Dish.name, required: true })
     dishId: Dish;
 
     @Expose()
@@ -72,7 +72,7 @@ export class Order {
 
     @Expose()
     @Transform((params) => params.obj.tableId.toString())
-    @Prop({ type: SchemaTypes.ObjectId, ref: 'Table', required: true })
+    @Prop({ type: SchemaTypes.ObjectId, ref: Table.name, required: true })
     tableId: Table;
 
     @Expose()

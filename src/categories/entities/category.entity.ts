@@ -9,7 +9,7 @@ import {
     Length,
     ValidateNested
 } from 'class-validator';
-import { Document, ObjectId } from 'mongoose';
+import { Document, ObjectId, SchemaTypes } from 'mongoose';
 import { DishPopulated } from '../../dishes/entities/dish.entity';
 import { Menu } from '../../menus/entities/menu.entity';
 import { Status } from '../../menus/enums/status.enum';
@@ -96,8 +96,9 @@ export class Category {
     status: Status;
 
     @Expose()
-    @Prop({ ref: Menu.name })
-    menu: string;
+    @Prop({ type: SchemaTypes.ObjectId, ref: Menu.name })
+    @Transform((params) => params.obj.menuId.toString())
+    menuId: Menu;
 }
 
 export type CategoryDocument = Category & Document;

@@ -7,7 +7,7 @@ export const getCategoriesSeeder = () => [
         description: 'Bread with stuff in between',
         icon: 'buger',
         image: 'burger',
-        menu: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+        menuId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
         choices: [
             {
                 id: 0,
@@ -62,7 +62,7 @@ export const getCategoriesSeeder = () => [
         description: 'Stuff with bread in between',
         icon: 'not burger',
         image: 'not burger',
-        menu: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+        menuId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
         choices: [
             {
                 id: 0,
@@ -91,7 +91,7 @@ export const getSampleCategory = () => ({
     description: 'Loaf with stuff on it',
     icon: 'pizza',
     image: 'pizza',
-    menu: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+    menuId: 'aaaaaaaaaaaaaaaaaaaaaaaa',
     choices: [
         {
             id: 0,
@@ -150,8 +150,8 @@ export const getDishForCategorySeeder = () => [
         price: 950,
         image: 'imagelink',
         isAvailable: true,
-        category: 'aaaaaaaaaaaaaaaaaaaaaaab',
-        allergens: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
-        labels: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
+        categoryId: 'aaaaaaaaaaaaaaaaaaaaaaab',
+        allergenIds: ['aaaaaaaaaaaaaaaaaaaaaaca', 'aaaaaaaaaaaaaaaaaaaaaacb'],
+        labelIds: ['aaaaaaaaaaaaaaaaaaaaaada', 'aaaaaaaaaaaaaaaaaaaaaadb']
     }
 ];

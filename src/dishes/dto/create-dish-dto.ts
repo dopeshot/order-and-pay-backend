@@ -35,13 +35,13 @@ export class CreateDishDto {
 
     @IsMongoId({ each: true })
     @IsNotEmpty()
-    category: string;
+    categoryId: string;
 
     @IsArray()
     @IsMongoId({ each: true })
-    allergens: string[];
+    allergenIds: string[];
 
     @IsArray()
     @IsMongoId({ each: true })
-    labels: string[];
+    labelIds: string[];
 }

@@ -36,5 +36,5 @@ export class CreateCategoryDto {
 
     @IsMongoId()
     @IsNotEmpty()
-    menu: string;
+    menuId: string;
 }

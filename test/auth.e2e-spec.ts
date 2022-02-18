@@ -1,11 +1,18 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
 import { AuthService } from '../src/auth/auth.service';
+import { JwtAuthGuard } from '../src/auth/strategies/jwt/jwt-auth.guard';
+import { ClientModule } from '../src/client/client.module';
+import { MenuDocument } from '../src/menus/entities/menu.entity';
+import { MenusModule } from '../src/menus/menus.module';
+import { TableDocument } from '../src/tables/entities/table.entity';
+import { TablesModule } from '../src/tables/tables.module';
 import { UserDocument } from '../src/users/entities/user.entity';
 import { UserStatus } from '../src/users/enums/status.enum';
 import { UsersModule } from '../src/users/users.module';
@@ -13,21 +20,29 @@ import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
-import { getJWT, getTestUser } from './__mocks__/users-mock-data';
+import { getMenuSeeder } from './__mocks__/menus-mock-data';
+import { getSampleTable } from './__mocks__/tables-mock-data';
+import { getJWT, getTestAdmin, getTestUser } from './__mocks__/users-mock-data';
 const { mock } = require('nodemailer');
 
 describe('AuthMdoule (e2e)', () => {
     let app: INestApplication;
     let connection: Connection;
     let userModel: Model<UserDocument>;
+    let tableModel: Model<TableDocument>;
+    let menuModel: Model<MenuDocument>;
     let authService: AuthService;
+    let reflector: Reflector;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
             imports: [
                 rootMongooseTestModule(),
-                UsersModule,
                 AuthModule,
+                MenusModule,
+                UsersModule,
+                ClientModule,
+                TablesModule,
                 ConfigModule.forRoot({
                     envFilePath: ['.env', '.development.env']
                 })
@@ -37,17 +52,25 @@ describe('AuthMdoule (e2e)', () => {
         connection = await module.get(getConnectionToken());
         authService = module.get<AuthService>(AuthService);
         userModel = connection.model('User');
+        tableModel = connection.model('Table');
+        menuModel = connection.model('Menu');
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+        reflector = app.get(Reflector);
+        app.useGlobalGuards(new JwtAuthGuard(reflector));
         await app.init();
     });
 
     // Insert test data
-    beforeEach(async () => {});
+    beforeEach(async () => {
+        userModel.insertMany(await getTestAdmin());
+    });
 
     // Empty the collection from all possible impurities
     afterEach(async () => {
         await userModel.deleteMany();
+        await tableModel.deleteMany();
+        await menuModel.deleteMany();
     });
 
     afterAll(async () => {
@@ -66,6 +89,10 @@ describe('AuthMdoule (e2e)', () => {
                         email: 'fictional@gmail.com',
                         password: '12345678'
                     })
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestAdmin())}`
+                    )
                     .expect(HttpStatus.CREATED);
             });
 
@@ -78,6 +105,10 @@ describe('AuthMdoule (e2e)', () => {
                         email: 'mock@mock.mock',
                         password: 'mensa essen'
                     })
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestAdmin())}`
+                    )
                     .expect(HttpStatus.CONFLICT);
             });
 
@@ -90,6 +121,10 @@ describe('AuthMdoule (e2e)', () => {
                         email: 'notMock@mock.mock',
                         password: 'mensa essen'
                     })
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestAdmin())}`
+                    )
                     .expect(HttpStatus.CONFLICT);
             });
         });
@@ -155,10 +190,17 @@ describe('AuthMdoule (e2e)', () => {
                     .expect(HttpStatus.UNAUTHORIZED);
             });
 
+            it('Guard should block with no token', async () => {
+                await request(app.getHttpServer())
+                    .get('/users')
+                    .expect(HttpStatus.UNAUTHORIZED);
+            });
+
             it('Guard should block when user is banned ', async () => {
                 let user = await getTestUser();
                 user = { ...user, status: UserStatus.BANNED };
                 await userModel.create(user);
+
                 await request(app.getHttpServer())
                     .get('/users')
                     .set(
@@ -166,6 +208,29 @@ describe('AuthMdoule (e2e)', () => {
                         `Bearer ${await getJWT(await getTestUser())}`
                     )
                     .expect(HttpStatus.UNAUTHORIZED);
+            });
+
+            describe('Allowed Endpoints', () => {
+                it('Guard should allow if @Public() decorator is used ', async () => {
+                    await menuModel.insertMany(getMenuSeeder()[0]);
+                    await request(app.getHttpServer())
+                        .get('/client/menu')
+                        .expect(HttpStatus.OK);
+                });
+
+                it('Guard should allow if @Public() decorator is used ', async () => {
+                    await tableModel.insertMany(getSampleTable());
+                    await request(app.getHttpServer())
+                        .post('/client/order')
+                        .send({
+                            tableNumber: getSampleTable().tableNumber,
+                            items: [],
+                            price: 0
+                        })
+                        .expect(HttpStatus.CREATED);
+                });
+
+                // The public endpoint auth/login is already tested above
             });
         });
     });

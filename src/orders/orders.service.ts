@@ -89,7 +89,7 @@ export class OrdersService {
             try {
                 dish = await (
                     await this.dishesService.findOne(orderItem.dishId as any)
-                ).populate('category');
+                ).populate('categoryId');
             } catch (error) {
                 if (error instanceof NotFoundException) {
                     this.logger.warn(
@@ -116,7 +116,7 @@ export class OrdersService {
                 choiceIndex++
             ) {
                 const orderChoice = orderItem.pickedChoices[choiceIndex];
-                const selectedChoice = dish.category.choices.find(
+                const selectedChoice = dish.categoryId.choices.find(
                     (choice) => choice.id === orderChoice.id
                 );
 
