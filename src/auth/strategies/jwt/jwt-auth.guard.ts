@@ -13,9 +13,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         super();
     }
 
-    // Since we can't intersect before the strategy, the check for public paths is done after jwt token was checked
+    // Since we can't evaluate public paths before the strategy, the check for public paths is done after jwt token was checked
     handleRequest(err, user, info, context: ExecutionContext) {
-        const req: any = context.switchToHttp().getRequest<Request>();
+        // Two any fields since they are provided as any and do not exist in Request
+        const req = context
+            .switchToHttp()
+            .getRequest<Request & { authInfo: any; user: any }>();
         const isPublic = this.reflector.get<boolean>(
             'isPublic',
             context.getHandler()

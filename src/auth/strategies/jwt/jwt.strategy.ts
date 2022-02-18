@@ -20,7 +20,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
      * @returns decoded payload from JWT token
      */
     async validate(payload: JwtPayloadDto): Promise<JwtUserDto> {
-        // Check if path is public and allow if so
         const user = await this.authService.isValidJWT(payload.sub);
 
         // Validate if user still exists. This keeps tokens from being valid for users that have been deleted
