@@ -9,5 +9,5 @@ Content-Type: application/json
     "items": []
 }
 
-### Get the current menu TODO: remove admin here @coffemakingtoaster
-GET http://localhost:3001/admin/client/menu
+### Get the current menu 
+GET {{HOST}}/menu
