@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
+import { Public } from '../auth/strategies/jwt/public.decorator';
 import { MenuPopulated } from '../menus/entities/menu.entity';
 import { MenusService } from '../menus/menus.service';
 import { CreateOrderDto } from '../orders/dtos/create-order.dto';
@@ -26,6 +27,7 @@ export class ClientController {
         private readonly orderService: OrdersService
     ) {}
 
+    @Public()
     @Get('menu')
     @ApiOperation({ summary: 'Get currently active menu' })
     async getMenu() {
@@ -39,6 +41,7 @@ export class ClientController {
         );
     }
 
+    @Public()
     @Post('order')
     @ApiOperation({ summary: 'Create new order' })
     @ApiResponse({
