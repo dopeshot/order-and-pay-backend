@@ -47,12 +47,10 @@ export class ClientController {
         type: Order
     })
     @ApiResponse({
-        status: HttpStatus.PAYMENT_REQUIRED,
-        description: 'Failed to create order due to payment issues ',
-        type: Order
+        status: HttpStatus.NOT_FOUND,
+        description: 'Dish was requested that might not be on the menu anymore'
     })
     async createOrder(@Body() order: CreateOrderDto) {
-        console.log(order);
         return plainToClass(Order, await this.orderService.create(order));
     }
 }

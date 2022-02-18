@@ -108,7 +108,7 @@ export const getOrdersSeeder = () => [
         tableId: 'aaaaaaaaaaaaaaaaaaaaaaa2',
         items: [
             {
-                dish: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+                dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
                 count: 2,
                 note: 'my note',
                 pickedChoices: {
@@ -118,7 +118,7 @@ export const getOrdersSeeder = () => [
                 }
             },
             {
-                dish: 'aaaaaaaaaaaaaaaaaaaaaaa1',
+                dishId: 'aaaaaaaaaaaaaaaaaaaaaaa1',
                 count: 1,
                 note: 'your note',
                 pickedChoices: {

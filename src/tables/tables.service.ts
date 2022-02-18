@@ -62,7 +62,7 @@ export class TablesService {
         return table;
     }
 
-    async findOneByNumber(tableNumber): Promise<Table> {
+    async findOneByTableNumber(tableNumber): Promise<Table> {
         const table = await this.tableModel
             .findOne({
                 tableNumber: tableNumber

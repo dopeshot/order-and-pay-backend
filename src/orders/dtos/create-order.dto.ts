@@ -14,10 +14,10 @@ import {
 import { ObjectId } from 'mongoose';
 import { Item } from '../entities/order.entity';
 
-class OrderItemDto extends PartialType(OmitType(Item, ['dish'])) {
+class OrderItemDto extends PartialType(OmitType(Item, ['dishId'])) {
     @IsMongoId({ each: true })
     @IsNotEmpty()
-    dish: string;
+    dishId: string;
 }
 
 export class CreateOrderDto {

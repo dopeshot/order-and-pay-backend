@@ -11,8 +11,8 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { CategoriesService } from '../categories/categories.service';
 import { DishesService } from '../dishes/dishes.service';
+import { DishDocument } from '../dishes/entities/dish.entity';
 import { OrderEventType } from '../sse/enums/events.enum';
 import { SseService } from '../sse/sse.service';
 import { TablesService } from '../tables/tables.service';
@@ -22,14 +22,12 @@ import { OrderDocument } from './entities/order.entity';
 import { ChoiceType } from './enums/choice-type.enum';
 import { OrderStatus } from './enums/order-status.enum';
 import { PaymentStatus } from './enums/payment-status.enum';
-
 @Injectable()
 export class OrdersService {
     private readonly logger = new Logger(OrdersService.name);
     constructor(
         private readonly sseService: SseService,
         @InjectModel('Order') private readonly orderModel: Model<OrderDocument>,
-        private readonly categoryService: CategoriesService,
         private readonly dishesService: DishesService,
         private readonly tablesService: TablesService
     ) {}
@@ -59,7 +57,7 @@ export class OrdersService {
         }
 
         // Validate the table number and find Id for said table
-        const table = await this.tablesService.findOneByNumber(
+        const table = await this.tablesService.findOneByTableNumber(
             order.tableNumber
         );
 
@@ -70,78 +68,88 @@ export class OrdersService {
             throw new BadRequestException();
         }
 
-        // Validate dishes and check if received price is correct
-        let calculatedPrice = 0;
-        console.log(order.items);
-        order.items.forEach(async (item) => {
-            // go through each dish and check if it exists
-            this.dishesService.findOne(item.dish as any).then(async (dish) => {
-                // If the dish is not an actual dish, throw an error
-                if (!dish) {
+        // Calculate price of the dishes and also verify that every dish in order exists
+        let baseprice = 0;
+        let choicesPrice = 0;
+
+        for (let dishIndex = 0; dishIndex < order.items.length; dishIndex++) {
+            const orderItem = order.items[dishIndex];
+            // Find dish
+            let dish: DishDocument;
+            try {
+                dish = await (
+                    await this.dishesService.findOne(orderItem.dishId as any)
+                ).populate('category');
+            } catch (e) {
+                if (e instanceof NotFoundException) {
                     this.logger.warn(
                         `Order for invalid dish. This might indicate someone fiddling with the order`
                     );
                     throw new UnprocessableEntityException();
                 }
-                // Find category for that dish
-                const category = await this.categoryService.findOne(
-                    dish.category._id
+                console.log(e);
+                this.logger.error(
+                    `Creating order failed while looking for dishes. (${e})`
                 );
-                let choicesPrice = 0;
+                throw new InternalServerErrorException();
+            }
 
-                //Calculate price by going through each dish
-                console.log(item.pickedChoices);
+            // Calculate dish price
+            baseprice += dish.price * orderItem.count;
 
-                item.pickedChoices.forEach((choice) => {
-                    // Find the choice in the category object
-                    const categoryChoice = category.choices.find(
-                        (c) => c.id === choice.id
+            // Go through every choice
+            for (
+                let choiceIndex = 0;
+                choiceIndex < orderItem.pickedChoices.length;
+                choiceIndex++
+            ) {
+                const orderChoice = orderItem.pickedChoices[choiceIndex];
+                const selectedChoice = dish.category.choices.find(
+                    (choice) => choice.id === orderChoice.id
+                );
+
+                if (
+                    orderChoice.type === ChoiceType.RADIO &&
+                    orderChoice.valueId.length !== 1
+                ) {
+                    this.logger.warn(
+                        'An order with an impossible choice has occured. This could incicate someone fiddeling with the request'
+                    );
+                    throw new UnprocessableEntityException();
+                }
+
+                if (!selectedChoice) {
+                    this.logger.warn(
+                        'An invalid choice id was provided. This could incicate someone fiddeling with the request'
+                    );
+                    throw new UnprocessableEntityException();
+                }
+
+                // Choices (checkbox) can have multiple values, so loop over this as well
+                for (
+                    let optionsIndex = 0;
+                    optionsIndex < orderChoice.valueId.length;
+                    optionsIndex++
+                ) {
+                    const orderOption = orderChoice.valueId[optionsIndex];
+
+                    const selectedOption = selectedChoice.options.find(
+                        (option) => option.id === orderOption
                     );
 
-                    // If the choice is not found, throw an error
-                    if (!categoryChoice) {
+                    if (!selectedOption) {
                         this.logger.warn(
-                            `Invalid Id for choice provided (id = ${choice.id})`
+                            'An invalid choice id was provided. This could incicate someone fiddeling with the request'
                         );
                         throw new UnprocessableEntityException();
                     }
 
-                    // add the choices to the price
-                    if (choice.type === ChoiceType.RADIO) {
-                        const foundChoice = categoryChoice.options.find(
-                            (o) => o.id === choice.valueId[0]
-                        );
-                        if (!foundChoice) {
-                            this.logger.warn(
-                                `Invalid Id for option provided (id = ${choice.valueId})`
-                            );
-                            throw new UnprocessableEntityException();
-                        }
-                        choicesPrice += foundChoice.price;
-                    } else {
-                        choice.valueId.forEach((valueId) => {
-                            const foundChoice = categoryChoice.options.find(
-                                (o) => o.id === valueId
-                            );
-                            if (!foundChoice) {
-                                this.logger.warn(
-                                    `Invalid Id for option provided (id = ${choice.valueId})`
-                                );
-                                throw new UnprocessableEntityException();
-                            }
-                            choicesPrice += foundChoice.price;
-                        });
-                    }
-                    console.log('choicesPrice', choicesPrice);
+                    choicesPrice += selectedOption.price * orderItem.count;
+                }
+            }
+        }
 
-                    calculatedPrice += (dish.price + choicesPrice) * item.count;
-                });
-            });
-        });
-
-        this.logger.debug('calculatedPrice', calculatedPrice);
-        // Price mismatch throws an error
-        if (order.price !== calculatedPrice) {
+        if (order.price !== choicesPrice + baseprice) {
             this.logger.warn(
                 `Order price mismatch. This might indicate someone fiddling with the order`
             );

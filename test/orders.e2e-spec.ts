@@ -75,6 +75,8 @@ describe('Ordercontroller (e2e)', () => {
     afterEach(async () => {
         await tableModel.deleteMany();
         await orderModel.deleteMany();
+        await dishModel.deleteMany();
+        await categoryModel.deleteMany();
     });
 
     afterAll(async () => {
@@ -89,11 +91,11 @@ describe('Ordercontroller (e2e)', () => {
             const res = await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
-                    price: 0,
+                    price: 12700,
                     tableNumber: getTablesSeeder()[0].tableNumber,
                     items: [
                         {
-                            dish: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
                             count: 2,
                             note: 'my note',
                             pickedChoices: [
@@ -105,7 +107,7 @@ describe('Ordercontroller (e2e)', () => {
                             ]
                         },
                         {
-                            dish: 'aaaaaaaaaaaaaaaaaaaaaaa1',
+                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa1',
                             count: 1,
                             note: 'your note',
                             pickedChoices: [
@@ -148,6 +150,122 @@ describe('Ordercontroller (e2e)', () => {
             expect(helper.messages[0].data.type).toBe(OrderEventType.new);
         });
 
+        it('should fail with mismatched price', async () => {
+            await dishModel.insertMany(getDishesForOrdersSeeder());
+            await categoryModel.create(getCategoryForOrdersSeeder());
+            const res = await request(app.getHttpServer())
+                .post('/client/order')
+                .send({
+                    price: 105,
+                    tableNumber: getTablesSeeder()[0].tableNumber,
+                    items: [
+                        {
+                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+                            count: 2,
+                            note: 'my note',
+                            pickedChoices: [
+                                {
+                                    id: 1,
+                                    type: ChoiceType.CHECKBOX,
+                                    valueId: [1, 2]
+                                }
+                            ]
+                        },
+                        {
+                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa1',
+                            count: 1,
+                            note: 'your note',
+                            pickedChoices: [
+                                {
+                                    id: 0,
+                                    type: ChoiceType.RADIO,
+                                    valueId: [2]
+                                }
+                            ]
+                        }
+                    ]
+                })
+                .expect(HttpStatus.NOT_ACCEPTABLE);
+        });
+
+        it('should fail with invalid dish id', async () => {
+            await dishModel.insertMany(getDishesForOrdersSeeder());
+            await categoryModel.create(getCategoryForOrdersSeeder());
+            const res = await request(app.getHttpServer())
+                .post('/client/order')
+                .send({
+                    price: 12700,
+                    tableNumber: getTablesSeeder()[0].tableNumber,
+                    items: [
+                        {
+                            dishId: 'aaaaaaaaaaaaaaacaacaaaa0',
+                            count: 2,
+                            note: 'my note',
+                            pickedChoices: [
+                                {
+                                    id: 1,
+                                    type: ChoiceType.CHECKBOX,
+                                    valueId: [1, 2]
+                                }
+                            ]
+                        }
+                    ]
+                })
+                .expect(HttpStatus.UNPROCESSABLE_ENTITY);
+        });
+
+        it('should fail with invalid option id', async () => {
+            await dishModel.insertMany(getDishesForOrdersSeeder());
+            await categoryModel.create(getCategoryForOrdersSeeder());
+            const res = await request(app.getHttpServer())
+                .post('/client/order')
+                .send({
+                    price: 12700,
+                    tableNumber: getTablesSeeder()[0].tableNumber,
+                    items: [
+                        {
+                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+                            count: 2,
+                            note: 'my note',
+                            pickedChoices: [
+                                {
+                                    id: 1,
+                                    type: ChoiceType.CHECKBOX,
+                                    valueId: [1, 2, 99]
+                                }
+                            ]
+                        }
+                    ]
+                })
+                .expect(HttpStatus.UNPROCESSABLE_ENTITY);
+        });
+
+        it('should fail with invalid choices id', async () => {
+            await dishModel.insertMany(getDishesForOrdersSeeder());
+            await categoryModel.create(getCategoryForOrdersSeeder());
+            const res = await request(app.getHttpServer())
+                .post('/client/order')
+                .send({
+                    price: 12700,
+                    tableNumber: getTablesSeeder()[0].tableNumber,
+                    items: [
+                        {
+                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+                            count: 2,
+                            note: 'my note',
+                            pickedChoices: [
+                                {
+                                    id: 99,
+                                    type: ChoiceType.CHECKBOX,
+                                    valueId: [1, 2]
+                                }
+                            ]
+                        }
+                    ]
+                })
+                .expect(HttpStatus.UNPROCESSABLE_ENTITY);
+        });
+
         it('should fail with invalid tableid', async () => {
             await request(app.getHttpServer())
                 .post('/client/order')
@@ -167,9 +285,6 @@ describe('Ordercontroller (e2e)', () => {
                 })
                 .expect(HttpStatus.BAD_REQUEST);
         });
-
-        // TODO: Should fail with invalid dishes and no dishes
-        // Should also fail with invalid transactionId
     });
 
     describe('/orders (GET)', () => {

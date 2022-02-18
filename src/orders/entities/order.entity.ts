@@ -39,7 +39,7 @@ export class PickedChoices {
 export class Item {
     @Expose()
     @Prop({ type: SchemaTypes.ObjectId, ref: 'Dish', required: true })
-    dish: Dish;
+    dishId: Dish;
 
     @Expose()
     @Prop()
