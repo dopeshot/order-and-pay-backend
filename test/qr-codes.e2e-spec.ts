@@ -15,8 +15,8 @@ import {
 import { getTablesSeeder } from './__mocks__/tables-mock-data';
 
 describe('QrCodeController (e2e)', () => {
-    let app: NestExpressApplication;
     let connection: Connection;
+    let app: NestExpressApplication;
     let tableModel: Model<TableDocument>;
 
     beforeAll(async () => {
