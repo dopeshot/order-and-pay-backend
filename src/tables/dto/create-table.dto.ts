@@ -1,6 +1,5 @@
 import {
     IsNumber,
-    IsOptional,
     IsPositive,
     IsString,
     MaxLength,
@@ -18,7 +17,4 @@ export class CreateTableDto {
     @IsPositive()
     @Min(1)
     capacity: number;
-
-    @IsOptional()
-    author = 'Default User';
 }

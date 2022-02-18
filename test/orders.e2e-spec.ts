@@ -215,8 +215,7 @@ describe('Ordercontroller (e2e)', () => {
             await tableModel.insertMany({
                 _id: 'aaaaaaaaaaaaaaaaaaaaaa69',
                 tableNumber: 'C9',
-                capacity: 1,
-                author: 'Me0'
+                capacity: 1
             });
             const order = getUniqueOrder();
             await orderModel.insertMany(order);
