@@ -21,13 +21,10 @@ jobs:
             - name: install dependencies
               run: npm i
 
-            - name: e2e-tests
-              run: npm run test:e2e
-
-            - name: unit tests
+            - name: run tests
               run: npm run test
 
             - name: Upload coverage to Codecov
               uses: codecov/codecov-action@v1
               with:
-                token: ${{ secrets.CODECOV_SECRET }}
+                  token: ${{ secrets.CODECOV_SECRET }}

@@ -12,7 +12,7 @@ describe('SSE functionality', () => {
         sseService = new SseService();
         sseController = new SseController(sseService);
         // Disable Logger
-        Logger.overrideLogger(['log', 'warn', 'debug', 'verbose']);
+        Logger.overrideLogger(true);
     });
 
     describe('get Observable', () => {
