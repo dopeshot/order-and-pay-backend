@@ -104,13 +104,6 @@ describe('CategoriesController (e2e)', () => {
             expect(res.body).toMatchObject(category);
         });
 
-        it('should return CONFLICT with duplicate title', async () => {
-            await request(app.getHttpServer())
-                .post(`${path}`)
-                .send(getCategorySeeder())
-                .expect(HttpStatus.CONFLICT);
-        });
-
         describe('dto tests for category', () => {
             it('should return BAD_REQUEST with no data in body ', async () => {
                 await request(app.getHttpServer())
@@ -427,14 +420,6 @@ describe('CategoriesController (e2e)', () => {
             await request(app.getHttpServer())
                 .patch(`${path}/${getWrongId()}`)
                 .expect(HttpStatus.NOT_FOUND);
-        });
-
-        it('should return CONFLICT with duplicate title', async () => {
-            await categoryModel.insertMany(getSampleCategory());
-            await request(app.getHttpServer())
-                .patch(`${path}/${getCategorySeeder()._id}`)
-                .send({ title: getSampleCategory().title })
-                .expect(HttpStatus.CONFLICT);
         });
     });
 

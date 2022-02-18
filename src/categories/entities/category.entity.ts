@@ -71,7 +71,7 @@ export class Category {
     _id: ObjectId;
 
     @Expose()
-    @Prop({ required: true, unique: true })
+    @Prop({ required: true })
     title: string;
 
     @Expose()
