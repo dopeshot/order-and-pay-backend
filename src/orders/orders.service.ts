@@ -121,7 +121,7 @@ export class OrdersService {
                 );
 
                 if (
-                    orderChoice.type === ChoiceType.RADIO &&
+                    selectedChoice.type === ChoiceType.RADIO &&
                     orderChoice.valueId.length !== 1
                 ) {
                     this.logger.warn(
