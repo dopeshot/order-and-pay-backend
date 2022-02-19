@@ -21,7 +21,7 @@ lerna-debug.log*
 /test/coverage
 
 # Secrets
-.env
+#.env
 
 # IDEs and editors
 /.idea
