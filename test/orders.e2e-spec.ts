@@ -10,7 +10,6 @@ import { ClientModule } from '../src/client/client.module';
 import { DishesModule } from '../src/dishes/dishes.module';
 import { DishDocument } from '../src/dishes/entities/dish.entity';
 import { Order, OrderDocument } from '../src/orders/entities/order.entity';
-import { ChoiceType } from '../src/orders/enums/choice-type.enum';
 import { OrderStatus } from '../src/orders/enums/order-status.enum';
 import { PaymentStatus } from '../src/orders/enums/payment-status.enum';
 import { OrdersModule } from '../src/orders/orders.module';
@@ -101,7 +100,6 @@ describe('Ordercontroller (e2e)', () => {
                             pickedChoices: [
                                 {
                                     id: 1,
-                                    type: ChoiceType.CHECKBOX,
                                     valueId: [1, 2]
                                 }
                             ]
@@ -113,7 +111,6 @@ describe('Ordercontroller (e2e)', () => {
                             pickedChoices: [
                                 {
                                     id: 0,
-                                    type: ChoiceType.RADIO,
                                     valueId: [2]
                                 }
                             ]
@@ -151,7 +148,6 @@ describe('Ordercontroller (e2e)', () => {
                             pickedChoices: [
                                 {
                                     id: 1,
-                                    type: ChoiceType.CHECKBOX,
                                     valueId: [1, 2]
                                 }
                             ]
@@ -163,7 +159,6 @@ describe('Ordercontroller (e2e)', () => {
                             pickedChoices: [
                                 {
                                     id: 0,
-                                    type: ChoiceType.RADIO,
                                     valueId: [2]
                                 }
                             ]
@@ -193,7 +188,6 @@ describe('Ordercontroller (e2e)', () => {
                             pickedChoices: [
                                 {
                                     id: 1,
-                                    type: ChoiceType.CHECKBOX,
                                     valueId: [1, 2]
                                 }
                             ]
@@ -205,7 +199,6 @@ describe('Ordercontroller (e2e)', () => {
                             pickedChoices: [
                                 {
                                     id: 0,
-                                    type: ChoiceType.RADIO,
                                     valueId: [2]
                                 }
                             ]
@@ -231,7 +224,6 @@ describe('Ordercontroller (e2e)', () => {
                             pickedChoices: [
                                 {
                                     id: 1,
-                                    type: ChoiceType.CHECKBOX,
                                     valueId: [1, 2]
                                 }
                             ]
@@ -257,7 +249,6 @@ describe('Ordercontroller (e2e)', () => {
                             pickedChoices: [
                                 {
                                     id: 1,
-                                    type: ChoiceType.CHECKBOX,
                                     valueId: [1, 2, 99]
                                 }
                             ]
@@ -283,7 +274,6 @@ describe('Ordercontroller (e2e)', () => {
                             pickedChoices: [
                                 {
                                     id: 99,
-                                    type: ChoiceType.CHECKBOX,
                                     valueId: [1, 2]
                                 }
                             ]
@@ -309,7 +299,6 @@ describe('Ordercontroller (e2e)', () => {
                             pickedChoices: [
                                 {
                                     id: 0,
-                                    type: ChoiceType.RADIO,
                                     valueId: [0, 1]
                                 }
                             ]
@@ -334,7 +323,6 @@ describe('Ordercontroller (e2e)', () => {
                             pickedChoices: [
                                 {
                                     id: 1,
-                                    type: ChoiceType.CHECKBOX,
                                     valueId: [1, 2]
                                 }
                             ]
@@ -346,7 +334,6 @@ describe('Ordercontroller (e2e)', () => {
                             pickedChoices: [
                                 {
                                     id: 0,
-                                    type: ChoiceType.RADIO,
                                     valueId: [2]
                                 }
                             ]
@@ -387,6 +374,8 @@ describe('Ordercontroller (e2e)', () => {
 
     describe('/orders/current (GET)', () => {
         it('should return all active orders', async () => {
+            await dishModel.insertMany(getDishesForOrdersSeeder());
+            await categoryModel.create(getCategoryForOrdersSeeder());
             await orderModel.insertMany(getOrdersSeeder());
             const res = await request(app.getHttpServer())
                 .get('/orders/current')

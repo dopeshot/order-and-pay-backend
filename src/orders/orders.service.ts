@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
+import { CategoriesService } from '../categories/categories.service';
+import { Category } from '../categories/entities/category.entity';
 import { DishesService } from '../dishes/dishes.service';
 import { DishDocument } from '../dishes/entities/dish.entity';
 import { OrderEventType } from '../sse/enums/events.enum';
@@ -22,6 +24,10 @@ import { OrderDocument } from './entities/order.entity';
 import { ChoiceType } from './enums/choice-type.enum';
 import { OrderStatus } from './enums/order-status.enum';
 import { PaymentStatus } from './enums/payment-status.enum';
+import {
+    readableItem,
+    readableOrder
+} from './responses/readable-order.response';
 @Injectable()
 export class OrdersService {
     private readonly logger = new Logger(OrdersService.name);
@@ -29,21 +35,96 @@ export class OrdersService {
         private readonly sseService: SseService,
         @InjectModel('Order') private readonly orderModel: Model<OrderDocument>,
         private readonly dishesService: DishesService,
-        private readonly tablesService: TablesService
+        private readonly tablesService: TablesService,
+        private readonly categoryService: CategoriesService
     ) {}
 
     async findAll(): Promise<OrderDocument[]> {
         return await this.orderModel.find().lean();
     }
 
-    async findActive(): Promise<OrderDocument[]> {
-        return await this.orderModel
+    async findActive(): Promise<readableOrder[]> {
+        const orders = await this.orderModel
             .find({
                 Status: {
                     $nin: [OrderStatus.FINISHED, OrderStatus.CANCELLED]
                 }
             })
             .lean();
+        return await Promise.all(
+            orders.map((order) => this.transformToReadable(order._id))
+        );
+    }
+
+    async transformToReadable(id): Promise<readableOrder> {
+        // Get order with table populated
+        const orderPopulated = await this.orderModel
+            .findById(id)
+            .populate('tableId')
+            .populate({
+                path: 'items.dishId',
+                model: 'Dish'
+            })
+            .lean();
+
+        //console.log(order.items);
+
+        // Seperately populate dish
+
+        // Cache categories to reduce db calls
+        const categories: Category[] = [];
+
+        const readableItems: readableItem[] = await Promise.all(
+            (
+                await orderPopulated
+            ).items.map(async (item) => {
+                // Check if category has already been used, if so skip unneeded db query
+                let itemCategory: Category = categories.find(
+                    (cat) =>
+                        cat._id.toString() === item.dishId.categoryId.toString()
+                );
+                if (!itemCategory) {
+                    try {
+                        // Find unused category and add to categories array
+                        itemCategory = await this.categoryService.findOne(
+                            item.dishId.categoryId._id
+                        );
+                        categories.push(itemCategory);
+                    } catch (error) {
+                        this.logger.error(
+                            `A non existant dish was found in order (id = ${orderPopulated._id})`
+                        );
+                    }
+                }
+
+                let pickedChoices = [];
+
+                try {
+                    // Populate picked choices
+                    pickedChoices = item.pickedChoices.map((choice) =>
+                        itemCategory.choices.find((cat) => choice.id === cat.id)
+                    );
+                } catch (e) {
+                    console.log(item.pickedChoices);
+                }
+
+                // Insert non populated dish
+                return {
+                    ...(await orderPopulated.items.find(
+                        (i) => item.dishId === i.dishId
+                    )),
+                    dishId: item.dishId.title,
+                    pickedChoices: pickedChoices
+                } as readableItem;
+            })
+        );
+        const readable: readableOrder = {
+            ...orderPopulated,
+            items: readableItems,
+            tableId: orderPopulated.tableId.tableNumber
+        };
+
+        return readable;
     }
 
     async create(order: CreateOrderDto): Promise<OrderDocument> {
@@ -193,7 +274,10 @@ export class OrdersService {
         }
 
         // Emit SSE for admin frontend
-        this.sseService.emitOrderEvent(OrderEventType.new, receivedOrder);
+        this.sseService.emitOrderEvent(
+            OrderEventType.new,
+            await this.transformToReadable(receivedOrder._id)
+        );
 
         this.logger.debug(
             `The order (id = ${receivedOrder._id}) has been created successfully.`
@@ -245,9 +329,15 @@ export class OrdersService {
             updateData.Status === OrderStatus.FINISHED ||
             updateData.Status === OrderStatus.CANCELLED
         ) {
-            this.sseService.emitOrderEvent(OrderEventType.close, order);
+            this.sseService.emitOrderEvent(
+                OrderEventType.close,
+                await this.transformToReadable(order._id)
+            );
         } else {
-            this.sseService.emitOrderEvent(OrderEventType.update, order);
+            this.sseService.emitOrderEvent(
+                OrderEventType.update,
+                await this.transformToReadable(order._id)
+            );
         }
         this.logger.debug(
             `The order (id = ${order._id}) has been updated successfully.`
