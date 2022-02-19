@@ -14,7 +14,9 @@ export class QrCodesService {
     ): Promise<{ qrcode: string; tableURL: string; tableNumber: string }> {
         const table: TableDocument = await this.tablesService.findOne(id);
         const url =
-            process.env.FRONTEND_URL + '/menu?table=' + table.tableNumber;
+            process.env.CLIENT_FRONTEND_URL +
+            '/menu?table=' +
+            table.tableNumber;
 
         const qr = await QRCode.toDataURL(url, { errorCorrectionLevel: 'H' });
         this.logger.debug(`Generated QR Code for table ${table.tableNumber}`);
