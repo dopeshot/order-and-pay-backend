@@ -41,8 +41,7 @@ export class AuthController {
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
-        description: 'The client has provided invalid credentials',
-        type: AccessTokenDto
+        description: 'The client has provided invalid credentials'
     })
     @UseGuards(LocalAuthGuard)
     async login(@Request() req): Promise<AccessTokenDto> {

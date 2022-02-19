@@ -1,15 +1,16 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik5vcm1hbCBVc2VyIiwic3ViIjoiNjIwZjhiMWFhMWUwM2Y1MTFlOTU3NjQwIiwiaWF0IjoxNjQ1MTg1ODI3LCJleHAiOjE2NDUyMjE4Mjd9.2xYkuyqLZE0n2jx4pOJOk0o9VKmHThhCLPjuUB_PddA
-@user = 61ddde6cfe895e091cf3fbb3
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik5vcm1hbCBVc2VyIiwic3ViIjoiNjIxMDI2ZGVkZGZhZGQwMTc2Y2U1MjI2IiwiaWF0IjoxNjQ1MjI1NzE2LCJleHAiOjE2NDUyNjE3MTZ9.1j9k5uqCYc-W0XUATbxy8LjXK6Y27Fy9JbPz4j1_5lQ
+@user = 621026deddfadd0176ce5226
 @adress = http://localhost:3001/admin/users
-### Get current User
+
+### GET current User
 GET {{adress}}/profile
 Authorization: Bearer {{token}}
 
-### Get all User (Protected Route for Testing Reasons, access only with admin role)
+### GET all User
 GET {{adress}}
 Authorization: Bearer {{token}}
 
-### Patch user by id 
+### PATCH user by id 
 PATCH {{adress}}/{{user}}
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -20,6 +21,6 @@ Content-Type: application/json
     "email": "45@email.com"
 }
 
-### Delete User
+### DELETE User
 DELETE {{adress}}/{{user}}
 Authorization: Bearer {{token}}

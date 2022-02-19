@@ -1,6 +1,6 @@
 @HOST = http://localhost:3001/admin
-@dishId = 123456123456123456123456
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik5vcm1hbCBVc2VyIiwic3ViIjoiNjIwZjhiMWFhMWUwM2Y1MTFlOTU3NjQwIiwiaWF0IjoxNjQ1MTkwNjU3LCJleHAiOjE2NDUyMjY2NTd9.tmXfwvmRnS_hbyoOY28bScNJ7hZD1rjdD0z0w_Y_5r8
+@dishId = 621022b409b4e5218160914f
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik5vcm1hbCBVc2VyIiwic3ViIjoiNjIxMDJkZGE1ZmFkM2RjYWVlODM1NDYyIiwiaWF0IjoxNjQ1MjI3NDgyLCJleHAiOjE2NDUyNjM0ODJ9.eG7w7EowxvoGFQmOMPt0uG7H_l6jYtMN84AyBFozsQk
 
 ### POST one dish
 POST {{HOST}}/dishes
@@ -8,22 +8,35 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "title": "Isabellana",
+    "title": "Isabellana123",
     "description":
         "Pizza with mortadella and the finest prosciutto crudo from napoli",
     "price": 950,
     "image": "imagelink",
     "isActive": true,
-    "categoryId": "620fe439de4327563cc21f3d",
+    "categoryId": "62103326d5be2b60f7976276",
     "allergenIds": ["aaaaaaaaaaaaaaaaaaaaaaca", "aaaaaaaaaaaaaaaaaaaaaacb"],
     "labelIds": ["aaaaaaaaaaaaaaaaaaaaaada", "aaaaaaaaaaaaaaaaaaaaaadb"]
 }
 
 ### GET all dishes
 GET {{HOST}}/dishes
+Authorization: Bearer {{token}}
 
-### GET dishes by ID
+### GET dish by ID
 GET {{HOST}}/dishes/{{dishId}}
+Authorization: Bearer {{token}}
 
+### PATCH dish by ID
+PATCH {{HOST}}/dishes/{{dishId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
 
+{
+    "title": "Isabellana4",
+    "labelIds": ["aaaaaaaaaaaaaaaaaaaaaada"]
+}
 
+### DELETE dish by ID (type=soft is optional too)
+DELETE {{HOST}}/dishes/{{dishId}}?type=hard
+Authorization: Bearer {{token}}
