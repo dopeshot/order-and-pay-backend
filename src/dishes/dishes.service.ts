@@ -1,5 +1,4 @@
 import {
-    ConflictException,
     Injectable,
     InternalServerErrorException,
     Logger,
@@ -27,13 +26,6 @@ export class DishesService {
             );
             return dish.toObject() as DishDocument;
         } catch (error) {
-            if (error.code == '11000') {
-                this.logger.warn(
-                    `Creating a dish (title = ${createDishDto.title}) failed due to a conflict.`
-                );
-                throw new ConflictException('This dish title already exists');
-            }
-
             /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while creating a new dish (${error})`
@@ -94,13 +86,6 @@ export class DishesService {
                 .findByIdAndUpdate(id, updateDishDto, { new: true })
                 .lean();
         } catch (error) {
-            if (error.code === 11000) {
-                this.logger.warn(
-                    `Updating a dish (title = ${updateDishDto.title}) failed due to a conflict.`
-                );
-                throw new ConflictException('This dish title already exists');
-            }
-
             /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while updating a dish (${error})`

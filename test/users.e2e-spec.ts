@@ -68,7 +68,7 @@ describe('UserModule (e2e)', () => {
 
     describe('User basics', () => {
         describe('/users (GET)', () => {
-            it('/users (GET) should return array', async () => {
+            it('should return array of users', async () => {
                 const user = await getTestAdmin();
                 await userModel.insertMany([user]);
                 const res = await request(app.getHttpServer())
@@ -88,7 +88,7 @@ describe('UserModule (e2e)', () => {
         });
 
         describe('/users/profile (GET)', () => {
-            it('/users/profile (GET) ', async () => {
+            it('should return OK and the users profile', async () => {
                 const user = await getTestUser();
                 await userModel.create(user);
                 const res = await request(app.getHttpServer())
@@ -106,7 +106,7 @@ describe('UserModule (e2e)', () => {
         });
 
         describe('/users/:id (PATCH)', () => {
-            it('/users/:id (PATCH) should patch user', async () => {
+            it('should patch User', async () => {
                 await userModel.create(await getTestUser());
                 const res = await request(app.getHttpServer())
                     .patch('/users/61bb7c9983fdff2f24bf77a8')
@@ -126,7 +126,7 @@ describe('UserModule (e2e)', () => {
                 expect(res.body).toMatchObject(response);
             });
 
-            it('/users/:id (PATCH) should hash patched password', async () => {
+            it('should update password with hashed password', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
                     .patch('/users/61bb7c9983fdff2f24bf77a8')
@@ -144,7 +144,7 @@ describe('UserModule (e2e)', () => {
                 expect(user.password).not.toBe('new password');
             });
 
-            it('/users/:id (PATCH) should fail with invalid user id', async () => {
+            it('should return NOT_FOUND invalid userId', async () => {
                 await userModel.create(await getTestUser());
                 const res = await request(app.getHttpServer())
                     .patch('/users/aaaaaaaaaaaaaaaaaaaaaadb')
@@ -159,7 +159,7 @@ describe('UserModule (e2e)', () => {
                 const user = await userModel.findOne();
             });
 
-            it('/users/:id (PATCH) should fail with duplicate username', async () => {
+            it('should return CONFLICT for duplicate username ', async () => {
                 await userModel.create(await getTestUser());
                 await userModel.create(await getTestAdmin());
                 await request(app.getHttpServer())
@@ -174,7 +174,7 @@ describe('UserModule (e2e)', () => {
                     .expect(HttpStatus.CONFLICT);
             });
 
-            it('/users/:id (PATCH) should fail with duplicate email', async () => {
+            it('should return CONFLICT for duplicate email', async () => {
                 await userModel.create(await getTestUser());
                 await userModel.create(await getTestAdmin());
                 await request(app.getHttpServer())
@@ -191,7 +191,7 @@ describe('UserModule (e2e)', () => {
         });
 
         describe('/users/:id (DELETE)', () => {
-            it('/users/:id (DELETE) should delete user', async () => {
+            it('should delete user and return NO_CONTENT', async () => {
                 const user = await getTestUser();
                 await userModel.create(user);
                 const res = await request(app.getHttpServer())
@@ -204,7 +204,7 @@ describe('UserModule (e2e)', () => {
                 expect((await userModel.find()).length).toBe(0);
             });
 
-            it('/users/:id (DELETE) should fail with invalid id', async () => {
+            it('should return NOT_FOUND with invalid user id', async () => {
                 const user = await getTestUser();
                 await userModel.create(user);
                 const res = await request(app.getHttpServer())

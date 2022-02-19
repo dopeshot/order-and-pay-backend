@@ -27,14 +27,16 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         // If path is public, allow access
 
         if (isPublic) {
-            this.logger.debug('A public path was called');
+            this.logger.debug(
+                `A public path was called. (path: ${req.url}, method: ${req.method})`
+            );
             return null;
         }
 
         // If user provided invalid token or was unauthorized by user validation, throw error
         if (req.authInfo || err?.status === HttpStatus.UNAUTHORIZED) {
             this.logger.warn(
-                `User login failed. The user (${user}) tried to log in but was unauthorized`
+                `User login failed. The user (${user}) tried to log in but was unauthorized. (path: ${req.url}, method: ${req.method})`
             );
             throw new UnauthorizedException(
                 'Your are not allowed to use this service.'
@@ -44,7 +46,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         // Currently users are not used but for the future this will sit here
         req.user = user;
 
-        this.logger.debug('A user authorized successfully');
+        this.logger.debug(
+            `A user authorized successfully. (path: ${req.url}, method: ${req.method})`
+        );
         return user;
     }
 }
