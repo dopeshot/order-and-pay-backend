@@ -1,13 +1,19 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MailModule } from './mail/mail.module';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TableModule } from './table/table.module';
-import { MenuModule } from './menu/menu.module';
-import { DishModule } from './dish/dish.module';
-import { CategoryModule } from './category/category.module';
+import { AdminModule } from './admin/admin.module';
+import { AllergensModule } from './allergens/allergens.module';
+import { AuthModule } from './auth/auth.module';
+import { CategoriesModule } from './categories/categories.module';
+import { ClientModule } from './client/client.module';
+import { DishesModule } from './dishes/dishes.module';
+import { LabelsModule } from './labels/labels.module';
+import { MenusModule } from './menus/menus.module';
+import { OrdersModule } from './orders/orders.module';
+import { SseModule } from './sse/sse.module';
+import { TablesModule } from './tables/tables.module';
+import { UsersModule } from './users/users.module';
+import { QrCodesModule } from './qr-codes/qr-codes.module';
 
 @Module({
     imports: [
@@ -24,13 +30,20 @@ import { CategoryModule } from './category/category.module';
             }),
             inject: [ConfigService]
         }),
+        AdminModule,
+        ClientModule,
+        UsersModule,
         AuthModule,
-        UserModule,
-        MailModule,
-        TableModule,
-        MenuModule,
-        DishModule,
-        CategoryModule
+        MenusModule,
+        CategoriesModule,
+        DishesModule,
+        TablesModule,
+        SseModule,
+        LabelsModule,
+        AllergensModule,
+        OrdersModule,
+        SseModule,
+        QrCodesModule
     ]
 })
 export class AppModule {}

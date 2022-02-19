@@ -1,65 +1,76 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
-import { MailModule } from '../src/mail/mail.module';
 import { ConfigModule } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
-import { DiscordAuthGuard } from '../src/auth/strategies/discord/discord-auth.guard';
-import { FacebookAuthGuard } from '../src/auth/strategies/facebook/facebook-auth.guard';
-import { GoogleAuthGuard } from '../src/auth/strategies/google/google-auth.guard';
-import { UserDocument } from '../src/user/entities/user.entity';
-import { UserStatus } from '../src/user/enums/status.enum';
-import { UserModule } from '../src/user/user.module';
-import { ThirdPartyGuardMock } from './helpers/fakeProvider.strategy';
-import { ProviderGuardFaker } from './helpers/fakeThirdParty.guard';
+import { AuthService } from '../src/auth/auth.service';
+import { JwtAuthGuard } from '../src/auth/strategies/jwt/jwt-auth.guard';
+import { ClientModule } from '../src/client/client.module';
+import { MenuDocument } from '../src/menus/entities/menu.entity';
+import { MenusModule } from '../src/menus/menus.module';
+import { TableDocument } from '../src/tables/entities/table.entity';
+import { TablesModule } from '../src/tables/tables.module';
+import { UserDocument } from '../src/users/entities/user.entity';
+import { UserStatus } from '../src/users/enums/status.enum';
+import { UsersModule } from '../src/users/users.module';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
-import { getJWT, getTestUser } from './__mocks__/userMockData';
+import { getMenuSeeder } from './__mocks__/menus-mock-data';
+import { getSampleTable } from './__mocks__/tables-mock-data';
+import { getJWT, getTestAdmin, getTestUser } from './__mocks__/users-mock-data';
 const { mock } = require('nodemailer');
 
-describe('AuthController (e2e)', () => {
+describe('AuthMdoule (e2e)', () => {
     let app: INestApplication;
     let connection: Connection;
     let userModel: Model<UserDocument>;
+    let tableModel: Model<TableDocument>;
+    let menuModel: Model<MenuDocument>;
+    let authService: AuthService;
+    let reflector: Reflector;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
             imports: [
                 rootMongooseTestModule(),
-                UserModule,
                 AuthModule,
-                MailModule,
+                MenusModule,
+                UsersModule,
+                ClientModule,
+                TablesModule,
                 ConfigModule.forRoot({
                     envFilePath: ['.env', '.development.env']
                 })
-            ],
-            providers: [ThirdPartyGuardMock]
-        })
-            .overrideGuard(GoogleAuthGuard) // Overwrite guards with mocks that don´t rely on external APIs
-            .useClass(ProviderGuardFaker)
-            .overrideGuard(FacebookAuthGuard)
-            .useClass(ProviderGuardFaker)
-            .overrideGuard(DiscordAuthGuard)
-            .useClass(ProviderGuardFaker)
-            .compile();
+            ]
+        }).compile();
 
         connection = await module.get(getConnectionToken());
+        authService = module.get<AuthService>(AuthService);
         userModel = connection.model('User');
+        tableModel = connection.model('Table');
+        menuModel = connection.model('Menu');
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+        reflector = app.get(Reflector);
+        app.useGlobalGuards(new JwtAuthGuard(reflector));
         await app.init();
     });
 
     // Insert test data
-    beforeEach(async () => {});
+    beforeEach(async () => {
+        userModel.insertMany(await getTestAdmin());
+    });
 
     // Empty the collection from all possible impurities
     afterEach(async () => {
         await userModel.deleteMany();
+        await tableModel.deleteMany();
+        await menuModel.deleteMany();
     });
 
     afterAll(async () => {
@@ -78,6 +89,10 @@ describe('AuthController (e2e)', () => {
                         email: 'fictional@gmail.com',
                         password: '12345678'
                     })
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestAdmin())}`
+                    )
                     .expect(HttpStatus.CREATED);
             });
 
@@ -90,6 +105,10 @@ describe('AuthController (e2e)', () => {
                         email: 'mock@mock.mock',
                         password: 'mensa essen'
                     })
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestAdmin())}`
+                    )
                     .expect(HttpStatus.CONFLICT);
             });
 
@@ -102,114 +121,11 @@ describe('AuthController (e2e)', () => {
                         email: 'notMock@mock.mock',
                         password: 'mensa essen'
                     })
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestAdmin())}`
+                    )
                     .expect(HttpStatus.CONFLICT);
-            });
-        });
-
-        describe('/auth/(third-party-provider) (GET)', () => {
-            it('/auth/google/redirect should create user', async () => {
-                // send data that normally is provided by guard
-                await request(app.getHttpServer())
-                    .get('/auth/google/redirect')
-                    .send({
-                        user: {
-                            username: 'googleman',
-                            email: 'googleuser@google.com',
-                            provider: 'google'
-                        }
-                    })
-                    .expect(HttpStatus.OK);
-                expect(await (await userModel.find()).length).toBe(1);
-            });
-
-            it('/auth/facebook/redirect should create user', async () => {
-                // send data that normally is provided by guard
-                await request(app.getHttpServer())
-                    .get('/auth/facebook/redirect')
-                    .send({
-                        user: {
-                            username: 'meta slave',
-                            email: 'face@book.com',
-                            provider: 'face'
-                        }
-                    })
-                    .expect(HttpStatus.OK);
-                expect(await (await userModel.find()).length).toBe(1);
-            });
-
-            it('/auth/discord/redirect should create user', async () => {
-                // send data that normally is provided by guard
-                await request(app.getHttpServer())
-                    .get('/auth/discord/redirect')
-                    .send({
-                        user: {
-                            username: 'discorduser',
-                            email: 'user@discord.com',
-                            provider: 'discord'
-                        }
-                    })
-                    .expect(HttpStatus.OK);
-                expect(await (await userModel.find()).length).toBe(1);
-            });
-
-            it('/auth/(can be used for login)/redirect can be used for login (given user has provider)', async () => {
-                // add provide to test user
-                let user = await getTestUser();
-                user = { ...user, provider: 'google' };
-                await userModel.create(user);
-                // send data that normally is provided by guard
-                await request(app.getHttpServer())
-                    .get('/auth/discord/redirect')
-                    .send({
-                        user: {
-                            username: 'mock',
-                            email: 'mock@mock.mock',
-                            provider: 'google'
-                        }
-                    })
-                    .expect(HttpStatus.OK);
-                expect(await (await userModel.find()).length).toBe(1);
-            });
-
-            it('/auth/(any third party)/redirect should throw error on duplicate', async () => {
-                // send data that normally is provided by guard
-                await userModel.create(await getTestUser());
-                await request(app.getHttpServer())
-                    .get('/auth/google/redirect')
-                    .send({
-                        user: {
-                            username: 'mock',
-                            email: 'mock@mock.mock',
-                            provider: 'google'
-                        }
-                    })
-                    .expect(HttpStatus.CONFLICT);
-                expect(await (await userModel.find()).length).toBe(1);
-            });
-
-            it('/auth/(any third party)/redirect should throw error on duplicate username', async () => {
-                // send data that normally is provided by guard
-                await userModel.create(await getTestUser());
-                await request(app.getHttpServer())
-                    .get('/auth/google/redirect')
-                    .send({
-                        user: {
-                            username: 'mock',
-                            email: 'not@mock.mock',
-                            provider: 'google'
-                        }
-                    })
-                    .expect(HttpStatus.INTERNAL_SERVER_ERROR);
-                expect(await (await userModel.find()).length).toBe(1);
-            });
-
-            it('/auth/(any third party)/redirect should fail without values', async () => {
-                // send data that normally is provided by guard
-                await userModel.create(await getTestUser());
-                await request(app.getHttpServer())
-                    .get('/auth/google/redirect')
-                    .send({})
-                    .expect(HttpStatus.UNAUTHORIZED);
             });
         });
 
@@ -247,12 +163,10 @@ describe('AuthController (e2e)', () => {
                     .expect(HttpStatus.UNAUTHORIZED);
             });
 
-            it('/auth/login (POST) User uses provider for login', async () => {
-                // add provide to test user
+            it('/auth/login (POST) Banned User', async () => {
                 let user = await getTestUser();
-                user = { ...user, provider: 'google' };
+                user = { ...user, status: UserStatus.BANNED };
                 await userModel.create(user);
-
                 await request(app.getHttpServer())
                     .post('/auth/login')
                     .send({
@@ -268,7 +182,7 @@ describe('AuthController (e2e)', () => {
         describe('JWT Guard', () => {
             it('Guard should block with invalid token', async () => {
                 await request(app.getHttpServer())
-                    .get('/user')
+                    .get('/users')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -276,17 +190,47 @@ describe('AuthController (e2e)', () => {
                     .expect(HttpStatus.UNAUTHORIZED);
             });
 
+            it('Guard should block with no token', async () => {
+                await request(app.getHttpServer())
+                    .get('/users')
+                    .expect(HttpStatus.UNAUTHORIZED);
+            });
+
             it('Guard should block when user is banned ', async () => {
                 let user = await getTestUser();
                 user = { ...user, status: UserStatus.BANNED };
                 await userModel.create(user);
+
                 await request(app.getHttpServer())
-                    .get('/user')
+                    .get('/users')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
                     )
                     .expect(HttpStatus.UNAUTHORIZED);
+            });
+
+            describe('Allowed Endpoints', () => {
+                it('Guard should allow if @Public() decorator is used ', async () => {
+                    await menuModel.insertMany(getMenuSeeder()[0]);
+                    await request(app.getHttpServer())
+                        .get('/client/menu')
+                        .expect(HttpStatus.OK);
+                });
+
+                it('Guard should allow if @Public() decorator is used ', async () => {
+                    await tableModel.insertMany(getSampleTable());
+                    await request(app.getHttpServer())
+                        .post('/client/order')
+                        .send({
+                            tableNumber: getSampleTable().tableNumber,
+                            items: [],
+                            price: 0
+                        })
+                        .expect(HttpStatus.CREATED);
+                });
+
+                // The public endpoint auth/login is already tested above
             });
         });
     });

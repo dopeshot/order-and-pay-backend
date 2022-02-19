@@ -1,0 +1,31 @@
+@HOST =  http://localhost:3001/admin/tables
+@tableId = 61aa455b55d8a7728cd5c1bd
+### Create table
+POST {{HOST}}
+Content-Type: application/json
+
+{
+    "tableNumber": "1A",
+    "capacity": 1
+}
+
+### Get all tables
+GET {{HOST}}
+
+### Get table by id
+GET {{HOST}}/{{tableId}}
+
+### Patch table information
+PATCH  {{HOST}}/{{tableId}}
+Content-Type: application/json
+
+{
+    "tableNumber": "5",
+    "capacity": 1
+}
+
+### Delete table by id
+DELETE {{HOST}}/{{tableId}}
+
+### Migrate data
+POST {{HOST}}/migrate

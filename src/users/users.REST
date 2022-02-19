@@ -1,0 +1,25 @@
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik5vcm1hbCBVc2VyIiwic3ViIjoiNjIwZjhiMWFhMWUwM2Y1MTFlOTU3NjQwIiwiaWF0IjoxNjQ1MTg1ODI3LCJleHAiOjE2NDUyMjE4Mjd9.2xYkuyqLZE0n2jx4pOJOk0o9VKmHThhCLPjuUB_PddA
+@user = 61ddde6cfe895e091cf3fbb3
+@adress = http://localhost:3001/admin/users
+### Get current User
+GET {{adress}}/profile
+Authorization: Bearer {{token}}
+
+### Get all User (Protected Route for Testing Reasons, access only with admin role)
+GET {{adress}}
+Authorization: Bearer {{token}}
+
+### Patch user by id 
+PATCH {{adress}}/{{user}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "role": "d",
+    "username": "Haha",
+    "email": "45@email.com"
+}
+
+### Delete User
+DELETE {{adress}}/{{user}}
+Authorization: Bearer {{token}}

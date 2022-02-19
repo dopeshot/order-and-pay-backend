@@ -1,0 +1,27 @@
+<head>
+    <script type="text/javascript">
+
+        const evtSource = new EventSource("http://localhost:3001/admin/subscribable/orders");
+        evtSource.onmessage = function (event) {
+            console.log(event);
+            const newElement = document.createElement("li");
+            const eventList = document.getElementById("list");
+
+            newElement.textContent = "message: " + event.data;
+            eventList.appendChild(newElement);
+        }
+    </script>
+    <link href="https://www.fontzip.com/storage/2008/10/30/commo/webfonts/Commo-Monospaced.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            ;
+            color: #404000
+        }
+    </style>
+</head>
+
+<body bgcolor=#c1c100>
+    <h1>SSE Tester</h1>
+    <button onclick="fetch('http://localhost:3001/subscribable/test',{method: 'GET'});">Trigger SSE event</button>
+    <ul id="list">

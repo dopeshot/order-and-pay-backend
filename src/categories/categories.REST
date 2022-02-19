@@ -1,0 +1,116 @@
+@HOST = http://localhost:3001
+@categoryId = 61f01b2d7b82bb3d86f9035b
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik5vcm1hbCBVc2VyIiwic3ViIjoiNjIwZjhiMWFhMWUwM2Y1MTFlOTU3NjQwIiwiaWF0IjoxNjQ1MTkwNjU3LCJleHAiOjE2NDUyMjY2NTd9.tmXfwvmRnS_hbyoOY28bScNJ7hZD1rjdD0z0w_Y_5r8
+
+### POST one category
+POST {{HOST}}/admin/categories
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "Pizza3",
+    "description": "Loaf with stuff on it",
+    "icon": "pizza",
+    "image": "pizza",
+    "menuId": "620fb2538cf136e85618e17c",
+    "choices": [{
+        "id": 0,
+        "title": "size",
+        "default": 1,
+        "type": "radio",
+        "options": [{
+            "id": 0,
+            "name": "small",
+            "price": -200
+        },{
+            "id": 1,
+            "name": "normal",
+            "price": 0
+        },{
+            "id": 2,
+            "name": "large",
+            "price": 200
+        }]
+
+    },{
+        "id": 1,
+        "title": "toppings",
+        "type": "checkbox",
+        "options": [{
+            "id": 0,
+            "name": "salami",
+            "price": 100
+        },{
+            "id": 1,
+            "name": "prosciutto",
+            "price": 100
+        },{
+            "id": 2,
+            "name": "olives",
+            "price": 200
+        }]
+
+    }]
+}
+
+### GET all categories
+GET {{HOST}}/admin/categories
+
+### GET one category
+GET {{HOST}}/admin/categories/{{categoryId}}
+
+### GET one categories refs
+GET {{HOST}}/admin/categories/{{categoryId}}/refs
+
+### PATCH one category
+PATCH {{HOST}}/admin/categories
+Content-Type: application/json
+
+{
+    "title": "Pizza",
+    "description": "Loaf with stuff on it",
+    "icon": "pizza",
+    "image": "pizza",
+    "menu": "aaaaaaaaaaaaaaaaaaaaaaaa",
+    "choices": [{
+        "id": 0,
+        "title": "size",
+        "default": 1,
+        "type": "radio",
+        "options": [{
+            "id": 0,
+            "name": "small",
+            "price": -200
+        },{
+            "id": 1,
+            "name": "normal",
+            "price": 0
+        },{
+            "id": 2,
+            "name": "large",
+            "price": 200
+        }]
+
+    },{
+        "id": 1,
+        "title": "toppings",
+        "type": "checkbox",
+        "options": [{
+            "id": 0,
+            "name": "salami",
+            "price": 100
+        },{
+            "id": 1,
+            "name": "prosciutto",
+            "price": 100
+        },{
+            "id": 2,
+            "name": "olives",
+            "price": 200
+        }]
+
+    }]
+}
+
+### DELETE one category
+DELETE {{HOST}}/admin/categories/{{categoryId}}?type=hard
