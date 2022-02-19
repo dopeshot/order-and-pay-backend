@@ -26,7 +26,7 @@ async function bootstrap() {
         exclude: [
             'client',
             { path: 'client/order', method: RequestMethod.POST },
-            { path: 'client/menu', method: RequestMethod.POST }
+            { path: 'client/menu', method: RequestMethod.GET }
         ]
     });
 

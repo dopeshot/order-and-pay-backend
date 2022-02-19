@@ -1,12 +1,4 @@
-import {
-    ClassSerializerInterceptor,
-    Controller,
-    Get,
-    Param,
-    Res,
-    SerializeOptions,
-    UseInterceptors
-} from '@nestjs/common';
+import { Controller, Get, Param, Res } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';

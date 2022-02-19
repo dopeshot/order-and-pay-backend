@@ -1,8 +1,11 @@
 @host = http://localhost:3001
-@allergenId = 620bbd085ea9f3527497f13c
+@allergenId = 62101e0809b4e521816090ce
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik5vcm1hbCBVc2VyIiwic3ViIjoiNjIxMDJkZGE1ZmFkM2RjYWVlODM1NDYyIiwiaWF0IjoxNjQ1MjI3NDgyLCJleHAiOjE2NDUyNjM0ODJ9.eG7w7EowxvoGFQmOMPt0uG7H_l6jYtMN84AyBFozsQk
+
 ### POST one allergen
 POST {{host}}/admin/allergens
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "title": "Isabelle",
@@ -11,16 +14,20 @@ Content-Type: application/json
 
 ### GET all allergens
 GET {{host}}/admin/allergens
+Authorization: Bearer {{token}}
 
 ### GET one allergen
 GET {{host}}/admin/allergens/{{allergenId}}
+Authorization: Bearer {{token}}
 
 ### GET refs in dishes of allergen
 GET {{host}}/admin/allergens/{{allergenId}}/refs
+Authorization: Bearer {{token}}
 
 ### PATCH one allergen
 PATCH {{host}}/admin/allergens/{{allergenId}}
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "title": "Muck",
@@ -29,3 +36,4 @@ Content-Type: application/json
 
 ### Delete Allergen and recursively remove from Dishes
 DELETE {{host}}/admin/allergens/{{allergenId}}
+Authorization: Bearer {{token}}
