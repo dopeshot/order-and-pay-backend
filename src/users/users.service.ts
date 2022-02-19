@@ -137,11 +137,16 @@ export class UsersService {
                 })
                 .lean();
         } catch (error) {
-            if (error.code === 11000) {
+            if (error.code === 11000 && error.keyPattern.username) {
                 this.logger.warn(
                     `Updating a user (username = ${updateUserDto.username}) failed due to a conflict.`
                 );
                 throw new ConflictException('Username is already taken.');
+            } else if (error.code === 11000 && error.keyPattern.email) {
+                this.logger.warn(
+                    `Updating a user (email = ${updateUserDto.email}) failed due to a conflict.`
+                );
+                throw new ConflictException('Email is already taken.');
             }
             // This should not occur under normal conditions
             else {

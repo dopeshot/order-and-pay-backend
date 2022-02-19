@@ -159,7 +159,7 @@ describe('UserModule (e2e)', () => {
                 const user = await userModel.findOne();
             });
 
-            it('/users/:id (PATCH) should fail with duplicate', async () => {
+            it('/users/:id (PATCH) should fail with duplicate username', async () => {
                 await userModel.create(await getTestUser());
                 await userModel.create(await getTestAdmin());
                 await request(app.getHttpServer())
@@ -169,7 +169,22 @@ describe('UserModule (e2e)', () => {
                         `Bearer ${await getJWT(await getTestUser())}`
                     )
                     .send({
-                        username: 'admin'
+                        username: await (await getTestAdmin()).username
+                    })
+                    .expect(HttpStatus.CONFLICT);
+            });
+
+            it('/users/:id (PATCH) should fail with duplicate email', async () => {
+                await userModel.create(await getTestUser());
+                await userModel.create(await getTestAdmin());
+                await request(app.getHttpServer())
+                    .patch('/users/61bb7c9983fdff2f24bf77a8')
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestUser())}`
+                    )
+                    .send({
+                        email: await (await getTestAdmin()).email
                     })
                     .expect(HttpStatus.CONFLICT);
             });
