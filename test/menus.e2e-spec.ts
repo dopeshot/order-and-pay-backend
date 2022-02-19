@@ -219,11 +219,30 @@ describe('MenuController (e2e)', () => {
                 );
             });
 
+            it('should not return soft deleted dishes', async () => {
+                const dishes = getDishesSeeder().map((dish) => ({
+                    ...dish,
+                    status: Status.DELETED
+                }));
+                await dishModel.insertMany(dishes);
+                await allergenModel.insertMany(getAllergensForDishesSeeder());
+                await categoryModel.insertMany(getCategoriesSeeder());
+                await labelModel.insertMany(getLabelsForDishesSeeder());
+                const res = await request(app.getHttpServer())
+                    .get('/menus/' + getMenuSeeder()[0]._id + '/editor')
+                    .expect(HttpStatus.OK);
+
+                res.body.categories.forEach((category) => {
+                    expect(category.dishes.length).toBe(0);
+                });
+            });
+
             // TODO: @Coffe this test does not check for anything empty, nor has it /editor at the end?
             it('should return empty with an empty menu', async () => {
                 const res = await request(app.getHttpServer())
-                    .get('/menus/' + getMenuSeeder()[0]._id)
+                    .get('/menus/' + getMenuSeeder()[0]._id + '/editor')
                     .expect(HttpStatus.OK);
+                expect(res.body.categories.length).toBe(0);
             });
 
             it('should return NOT_FOUND with wrong Id', async () => {

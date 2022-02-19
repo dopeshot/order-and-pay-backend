@@ -200,10 +200,11 @@ export class MenusService {
 
         const populated: CategoryPopulated[] = await Promise.all(
             categories.map(async (category) => {
-                const dishes: DishPopulated[] =
+                const dishes: DishPopulated[] = await (
                     await this.dishesService.findByCategoryAndPopulate(
                         category._id
-                    );
+                    )
+                ).filter((dish) => dish.status !== Status.DELETED);
                 return { ...category, dishes };
             })
         );
