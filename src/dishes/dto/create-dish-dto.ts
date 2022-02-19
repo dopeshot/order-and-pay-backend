@@ -26,7 +26,7 @@ export class CreateDishDto {
 
     @IsOptional()
     @IsString()
-    @Length(0, 100) // Also allow to have an empty string to "overwrite" a previous image to be "empty"
+    @Length(0, 200) // Also allow to have an empty string to "overwrite" a previous image to be "empty"
     image: string;
 
     @IsOptional()
