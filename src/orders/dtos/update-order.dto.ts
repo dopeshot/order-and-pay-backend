@@ -9,9 +9,9 @@ export class UpdateOrderDto extends PartialType(
 ) {
     @IsOptional()
     @IsEnum(PaymentStatus)
-    PaymentStatus: PaymentStatus;
+    paymentStatus: PaymentStatus;
 
     @IsOptional()
     @IsEnum(OrderStatus)
-    Status: OrderStatus;
+    status: OrderStatus;
 }

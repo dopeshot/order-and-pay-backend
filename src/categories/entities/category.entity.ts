@@ -26,7 +26,7 @@ export class Option {
     @Prop()
     @IsString()
     @Length(2, 32)
-    name: string; //MC: Why is this name? and not title?
+    title: string;
 
     @Expose()
     @Prop()

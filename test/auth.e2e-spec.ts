@@ -8,7 +8,6 @@ import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
 import { AuthService } from '../src/auth/auth.service';
 import { JwtAuthGuard } from '../src/auth/strategies/jwt/jwt-auth.guard';
-import { ChoiceType } from '../src/categories/enums/choice-type';
 import { ClientModule } from '../src/client/client.module';
 import { MenuDocument } from '../src/menus/entities/menu.entity';
 import { MenusModule } from '../src/menus/menus.module';
@@ -253,7 +252,6 @@ describe('AuthMdoule (e2e)', () => {
                                     pickedChoices: [
                                         {
                                             id: 1,
-                                            type: ChoiceType.CHECKBOX,
                                             valueId: [1, 2]
                                         }
                                     ]

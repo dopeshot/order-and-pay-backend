@@ -6,8 +6,27 @@ Content-Type: application/json
 
 {
     "tableNumber": "1A",
-    "items": [],
-    "price": 0
+    "items": [
+            {
+                "dishId": "62112aca9465d72c51a3acce",
+                "count": 2,
+                "note": "my note",
+                "pickedChoices": [{
+                    "id": 1,
+                    "valueId": [1, 2, 3]
+                }]
+            },
+            {
+                "dishId": "6211302e9465d72c51a3acdb",
+                "count": 1,
+                "note": "your note",
+                "pickedChoices": [{
+                    "id": 0,
+                    "valueId": [2]
+                }]
+            }
+        ],
+    "price": 4650
 }
 
 ### Get the current menu 
