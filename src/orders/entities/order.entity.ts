@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose, Transform, Type } from 'class-transformer';
 import {
     IsArray,
-    IsEnum,
+    IsEmpty,
     IsMongoId,
     IsNotEmpty,
     IsNumber,
@@ -13,7 +13,7 @@ import {
 } from 'class-validator';
 import { Document, ObjectId, SchemaTypes } from 'mongoose';
 import { Dish } from '../../dishes/entities/dish.entity';
-import { Table } from '../../tables/entities/table.entity';
+import { OrderTable } from '../../tables/entities/table.entity';
 import { ChoiceType } from '../enums/choice-type.enum';
 import { OrderStatus } from '../enums/order-status.enum';
 import { PaymentStatus } from '../enums/payment-status.enum';
@@ -26,15 +26,24 @@ export class PickedChoices {
     id: number;
 
     @Expose()
-    @IsEnum(ChoiceType)
+    @IsEmpty()
+    @Prop({ required: true })
+    title = '';
+
+    @Expose()
+    @IsEmpty()
     @Prop()
     type: ChoiceType;
 
-    @Expose()
     @Prop()
     @IsArray()
     @IsNumber({}, { each: true })
     valueId: number[];
+
+    @Expose()
+    @Prop({ default: [], required: true })
+    @IsEmpty()
+    optionNames: string[] = [];
 }
 
 export class Item {
@@ -71,9 +80,9 @@ export class Order {
     _id: ObjectId;
 
     @Expose()
-    @Transform((params) => params.obj.tableId.toString())
-    @Prop({ type: SchemaTypes.ObjectId, ref: Table.name, required: true })
-    tableId: Table;
+    @Type(() => OrderTable)
+    @Prop({ type: OrderTable, required: true })
+    table: OrderTable;
 
     @Expose()
     @Prop({ required: true })

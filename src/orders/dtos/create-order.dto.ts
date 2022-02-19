@@ -1,4 +1,3 @@
-import { OmitType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 import {
     ArrayNotEmpty,
@@ -10,15 +9,7 @@ import {
     MinLength,
     ValidateNested
 } from 'class-validator';
-import { Item, PickedChoices } from '../entities/order.entity';
-
-// remove Type from orders
-class PickedChoicesDto extends OmitType(PickedChoices, ['type']) {}
-class ItemDto extends OmitType(Item, ['pickedChoices']) {
-    @ValidateNested()
-    @Type(() => PickedChoicesDto)
-    pickedChoices: PickedChoicesDto[];
-}
+import { Item } from '../entities/order.entity';
 
 export class CreateOrderDto {
     @IsString()
@@ -29,8 +20,8 @@ export class CreateOrderDto {
     @IsArray()
     @ValidateNested({ each: true })
     @ArrayNotEmpty()
-    @Type(() => ItemDto)
-    items: ItemDto[];
+    @Type(() => Item)
+    items: Item[];
 
     @IsNumber()
     @Min(0)

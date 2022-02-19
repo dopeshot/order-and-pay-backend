@@ -20,7 +20,9 @@ async function bootstrap() {
 
     app.setBaseViewsDir(join(__dirname, '..', 'views'));
     app.setViewEngine('ejs');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+    app.useGlobalPipes(
+        new ValidationPipe({ whitelist: true, transform: true })
+    );
     app.useGlobalGuards(new JwtAuthGuard(reflector));
     app.setGlobalPrefix('admin', {
         exclude: [

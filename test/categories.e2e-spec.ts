@@ -283,7 +283,7 @@ describe('CategoriesController (e2e)', () => {
                             ...getSampleCategory().choices,
                             options: {
                                 ...getSampleCategory().choices[0].options,
-                                name: undefined
+                                title: undefined
                             }
                         }
                     })

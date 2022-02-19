@@ -12,7 +12,6 @@ import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
 import { UpdateOrderDto } from './dtos/update-order.dto';
 import { Order } from './entities/order.entity';
 import { OrdersService } from './orders.service';
-import { readableOrder } from './responses/readable-order.response';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -40,10 +39,7 @@ export class OrdersController {
         type: Order
     })
     async getActive() {
-        return plainToClass(
-            readableOrder,
-            await this.orderService.findActive()
-        );
+        return plainToClass(Order, await this.orderService.findActive());
     }
 
     @Patch(':id')

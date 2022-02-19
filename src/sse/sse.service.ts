@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter } from 'events';
 import { fromEvent, Observable } from 'rxjs';
-import { readableOrder } from '../orders/responses/readable-order.response';
+import { Order } from '../orders/entities/order.entity';
 import { OrderEventType } from './enums/events.enum';
 
 @Injectable()
@@ -25,11 +25,10 @@ export class SseService {
         this.emitter.emit(event, { data });
     }
 
-    async emitOrderEvent(type: OrderEventType, payload: readableOrder) {
+    async emitOrderEvent(type: OrderEventType, payload: Order) {
         const data = {
             payload: {
                 ...payload,
-                tableId: payload.tableId.toString(),
                 _id: payload._id.toString()
             },
             type: type
