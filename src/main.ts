@@ -24,14 +24,13 @@ async function bootstrap() {
     app.useGlobalGuards(new JwtAuthGuard(reflector));
     app.setGlobalPrefix('admin', {
         exclude: [
-            'client',
             { path: 'client/order', method: RequestMethod.POST },
             { path: 'client/menu', method: RequestMethod.GET }
         ]
     });
 
     const config = new DocumentBuilder()
-        .setVersion('0.1')
+        .setVersion('0.5')
         .setTitle('Order and Pay')
         .setDescription('Solution for restaurants')
         .addTag('sse', 'all sse endpoints')

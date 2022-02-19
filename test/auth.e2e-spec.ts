@@ -85,8 +85,8 @@ describe('AuthMdoule (e2e)', () => {
                 await request(app.getHttpServer())
                     .post('/auth/register')
                     .send({
-                        username: 'fictional user',
-                        email: 'fictional@gmail.com',
+                        username: (await getTestUser()).username,
+                        email: (await getTestUser()).email,
                         password: '12345678'
                     })
                     .set(
@@ -102,7 +102,7 @@ describe('AuthMdoule (e2e)', () => {
                     .post('/auth/register')
                     .send({
                         username: 'a mock user',
-                        email: 'mock@mock.mock',
+                        email: (await getTestUser()).email,
                         password: 'mensa essen'
                     })
                     .set(
@@ -117,7 +117,7 @@ describe('AuthMdoule (e2e)', () => {
                 await request(app.getHttpServer())
                     .post('/auth/register')
                     .send({
-                        username: 'mock',
+                        username: (await getTestUser()).username,
                         email: 'notMock@mock.mock',
                         password: 'mensa essen'
                     })
@@ -135,7 +135,7 @@ describe('AuthMdoule (e2e)', () => {
                 await request(app.getHttpServer())
                     .post('/auth/login')
                     .send({
-                        email: 'mock@mock.mock',
+                        email: (await getTestUser()).email,
                         password: 'mock password'
                     })
                     .expect(HttpStatus.CREATED);
@@ -146,7 +146,7 @@ describe('AuthMdoule (e2e)', () => {
                 await request(app.getHttpServer())
                     .post('/auth/login')
                     .send({
-                        email: 'mock@mock.mock',
+                        email: (await getTestUser()).email,
                         password: 'my grandmas birthday'
                     })
                     .expect(HttpStatus.UNAUTHORIZED);
@@ -157,7 +157,7 @@ describe('AuthMdoule (e2e)', () => {
                 await request(app.getHttpServer())
                     .post('/auth/login')
                     .send({
-                        email: 'peter@mock.mock',
+                        email: 'notavalidemail@scam.org',
                         password: 'mock password'
                     })
                     .expect(HttpStatus.UNAUTHORIZED);
@@ -170,7 +170,7 @@ describe('AuthMdoule (e2e)', () => {
                 await request(app.getHttpServer())
                     .post('/auth/login')
                     .send({
-                        email: 'mock@mock.mock',
+                        email: user.email,
                         password: 'mock password'
                     })
                     .expect(HttpStatus.UNAUTHORIZED);
