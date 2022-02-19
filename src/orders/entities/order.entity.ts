@@ -27,8 +27,8 @@ export class PickedChoices {
 
     @Expose()
     @IsEmpty()
-    @Prop({ required: true })
-    title = '';
+    @Prop({ required: true, default: '' })
+    title: string;
 
     @Expose()
     @IsEmpty()
