@@ -41,7 +41,7 @@ export class OrdersService {
     async findActive(): Promise<OrderDocument[]> {
         return await this.orderModel
             .find({
-                Status: {
+                status: {
                     $nin: [OrderStatus.FINISHED, OrderStatus.CANCELLED]
                 }
             })
@@ -114,6 +114,8 @@ export class OrdersService {
                 );
                 throw new UnprocessableEntityException();
             }
+
+            order.items[dishIndex].dishName = dish.title;
 
             // Calculate dish price
             baseprice += dish.price * orderItem.count;
@@ -191,7 +193,7 @@ export class OrdersService {
             const newOrder = await this.orderModel.create({
                 ...order,
                 table: table,
-                PaymentStatus: PaymentStatus.RECEIVED
+                paymentStatus: PaymentStatus.RECEIVED
             });
 
             receivedOrder = newOrder.toObject() as OrderDocument;
@@ -257,11 +259,11 @@ export class OrdersService {
 
         // Send SSE event to restaurant
         this.logger.debug(
-            `Order ${id} has been updated to ${updateData.Status}`
+            `Order ${id} has been updated to ${updateData.status}`
         );
         if (
-            updateData.Status === OrderStatus.FINISHED ||
-            updateData.Status === OrderStatus.CANCELLED
+            updateData.status === OrderStatus.FINISHED ||
+            updateData.status === OrderStatus.CANCELLED
         ) {
             this.sseService.emitOrderEvent(OrderEventType.close, order);
         } else {

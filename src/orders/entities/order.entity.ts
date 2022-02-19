@@ -54,6 +54,11 @@ export class Item {
     dishId: Dish;
 
     @Expose()
+    @IsEmpty()
+    @Prop({ required: true })
+    dishName: string;
+
+    @Expose()
     @Prop()
     @IsNumber()
     @IsNotEmpty()
@@ -91,11 +96,11 @@ export class Order {
 
     @Expose()
     @Prop({ required: true })
-    PaymentStatus: PaymentStatus;
+    paymentStatus: PaymentStatus;
 
     @Expose()
     @Prop({ default: OrderStatus.RECEIVED })
-    Status: OrderStatus;
+    status: OrderStatus;
 
     @Expose()
     @Prop({ required: true })

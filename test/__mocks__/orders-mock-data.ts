@@ -7,8 +7,8 @@ export const getUniqueOrder = () => ({
     _id: 'aaaaaaaaaaaaaaaaaaaaaa69',
     table: getTablesSeeder()[0],
     items: [],
-    PaymentStatus: PaymentStatus.PENDING,
-    Status: OrderStatus.FINISHED,
+    paymentStatus: PaymentStatus.PENDING,
+    status: OrderStatus.FINISHED,
     price: 0
 });
 
@@ -129,8 +129,8 @@ export const getOrdersSeeder = () => [
         _id: 'aaaaaaaaaaaaaaaaaaaaaaa0',
         table: getTablesSeeder()[0],
         items: [],
-        Status: OrderStatus.FINISHED,
-        PaymentStatus: PaymentStatus.RECEIVED,
+        status: OrderStatus.FINISHED,
+        paymentStatus: PaymentStatus.RECEIVED,
         price: 0
     },
     {
@@ -162,32 +162,32 @@ export const getOrdersSeeder = () => [
                 ]
             }
         ],
-        Status: OrderStatus.IN_PROGRESS,
-        PaymentStatus: PaymentStatus.RECEIVED,
+        status: OrderStatus.IN_PROGRESS,
+        paymentStatus: PaymentStatus.RECEIVED,
         price: 0
     },
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaa2',
         table: getTablesSeeder()[2],
         items: [],
-        Status: OrderStatus.RECEIVED,
-        PaymentStatus: PaymentStatus.CANCELED,
+        status: OrderStatus.RECEIVED,
+        paymentStatus: PaymentStatus.CANCELED,
         price: 0
     },
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaa3',
         table: getTablesSeeder()[3],
         items: [],
-        Status: OrderStatus.RETURNED,
-        PaymentStatus: PaymentStatus.PENDING,
+        status: OrderStatus.RETURNED,
+        paymentStatus: PaymentStatus.PENDING,
         price: 0
     },
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaa4',
         table: getTablesSeeder()[0],
         items: [],
-        Status: OrderStatus.RECEIVED,
-        PaymentStatus: PaymentStatus.RECEIVED,
+        status: OrderStatus.RECEIVED,
+        paymentStatus: PaymentStatus.RECEIVED,
         price: 0
     }
 ];
@@ -195,8 +195,8 @@ export const getOrdersSeeder = () => [
 export const getActiveOrders = () => {
     return getOrdersSeeder().filter(
         (order) =>
-            order.Status === OrderStatus.RECEIVED ||
-            order.Status === OrderStatus.IN_PROGRESS ||
-            order.Status === OrderStatus.RETURNED
+            order.status === OrderStatus.RECEIVED ||
+            order.status === OrderStatus.IN_PROGRESS ||
+            order.status === OrderStatus.RETURNED
     );
 };

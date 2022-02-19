@@ -98,6 +98,10 @@ describe('Ordercontroller (e2e)', () => {
 
             expect(res.body.table).toMatchObject(getTablesSeeder()[0]);
 
+            expect(getDishesForOrdersSeeder().map((o) => o.title)).toContain(
+                res.body.items[0].dishName
+            );
+
             expect(
                 getCategoryForOrdersSeeder().choices.map((o) => o.title)
             ).toContain(res.body.items[0].pickedChoices[0].title);
@@ -111,7 +115,7 @@ describe('Ordercontroller (e2e)', () => {
             ).toContain(res.body.items[0].pickedChoices[0].optionNames[0]);
 
             // Check if paid order passes
-            expect(res.body.PaymentStatus).toBe(PaymentStatus.RECEIVED);
+            expect(res.body.paymentStatus).toBe(PaymentStatus.RECEIVED);
 
             // Test response type
             expect(res.body).toMatchObject(
@@ -297,8 +301,8 @@ describe('Ordercontroller (e2e)', () => {
             // Make all orders inactive
             const orders = getOrdersSeeder().map((order) => ({
                 ...order,
-                Status: OrderStatus.CANCELLED,
-                PaymentStatus: PaymentStatus.CANCELED
+                status: OrderStatus.CANCELLED,
+                paymentStatus: PaymentStatus.CANCELED
             }));
             await orderModel.insertMany(orders);
             const res = await request(app.getHttpServer())
@@ -315,13 +319,13 @@ describe('Ordercontroller (e2e)', () => {
             const res = await request(app.getHttpServer())
                 .patch('/orders/' + order._id.toString())
                 .send({
-                    PaymentStatus: PaymentStatus.RECEIVED,
-                    Status: OrderStatus.IN_PROGRESS
+                    paymentStatus: PaymentStatus.RECEIVED,
+                    status: OrderStatus.IN_PROGRESS
                 })
                 .expect(HttpStatus.OK);
 
-            expect(res.body.Status).toBe(OrderStatus.IN_PROGRESS);
-            expect(res.body.PaymentStatus).toBe(PaymentStatus.RECEIVED);
+            expect(res.body.status).toBe(OrderStatus.IN_PROGRESS);
+            expect(res.body.paymentStatus).toBe(PaymentStatus.RECEIVED);
         });
 
         it('should send an sse event (close)', async () => {
@@ -332,7 +336,7 @@ describe('Ordercontroller (e2e)', () => {
             await request(app.getHttpServer())
                 .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
-                    Status: OrderStatus.CANCELLED
+                    status: OrderStatus.CANCELLED
                 })
                 .expect(HttpStatus.OK);
             expect(helper.calls).toBe(1);
@@ -360,7 +364,7 @@ describe('Ordercontroller (e2e)', () => {
             await request(app.getHttpServer())
                 .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
-                    Status: OrderStatus.RETURNED
+                    status: OrderStatus.RETURNED
                 })
                 .expect(HttpStatus.NOT_FOUND);
         });
@@ -370,7 +374,7 @@ describe('Ordercontroller (e2e)', () => {
             await request(app.getHttpServer())
                 .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
-                    Status: 'no value'
+                    status: 'no value'
                 })
                 .expect(HttpStatus.BAD_REQUEST);
         });
@@ -381,7 +385,7 @@ describe('Ordercontroller (e2e)', () => {
             await request(app.getHttpServer())
                 .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
-                    PaymentStatus: 'no value'
+                    paymentStatus: 'no value'
                 })
                 .expect(HttpStatus.BAD_REQUEST);
         });
