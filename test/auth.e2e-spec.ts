@@ -81,7 +81,7 @@ describe('AuthMdoule (e2e)', () => {
 
     describe('Auth basics', () => {
         describe('/auth/register (POST)', () => {
-            it('/auth/register (POST)', async () => {
+            it('should create an user', async () => {
                 await request(app.getHttpServer())
                     .post('/auth/register')
                     .send({
@@ -96,7 +96,27 @@ describe('AuthMdoule (e2e)', () => {
                     .expect(HttpStatus.CREATED);
             });
 
-            it('/auth/register (POST) duplicate mail', async () => {
+            it('should create user with status active', async () => {
+                await request(app.getHttpServer())
+                    .post('/auth/register')
+                    .send({
+                        username: (await getTestUser()).username,
+                        email: (await getTestUser()).email,
+                        password: '12345678'
+                    })
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestAdmin())}`
+                    )
+                    .expect(HttpStatus.CREATED);
+
+                const user = userModel.findOne({
+                    username: (await getTestUser()).username
+                });
+                expect((await user).status).toBe(UserStatus.ACTIVE);
+            });
+
+            it('should fail with duplicate mail', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
                     .post('/auth/register')
@@ -112,7 +132,7 @@ describe('AuthMdoule (e2e)', () => {
                     .expect(HttpStatus.CONFLICT);
             });
 
-            it('/auth/register (POST) duplicate username', async () => {
+            it('should fail with duplicate username', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
                     .post('/auth/register')
@@ -130,7 +150,7 @@ describe('AuthMdoule (e2e)', () => {
         });
 
         describe('/auth/login (POST)', () => {
-            it('/auth/login (POST)', async () => {
+            it('should return CREATED with valid data', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
                     .post('/auth/login')
@@ -141,7 +161,7 @@ describe('AuthMdoule (e2e)', () => {
                     .expect(HttpStatus.CREATED);
             });
 
-            it('/auth/login (POST) Wrong Password', async () => {
+            it('should fail with wrong password', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
                     .post('/auth/login')
@@ -152,7 +172,7 @@ describe('AuthMdoule (e2e)', () => {
                     .expect(HttpStatus.UNAUTHORIZED);
             });
 
-            it('/auth/login (POST) Wrong Email', async () => {
+            it('should fail with invalid email', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
                     .post('/auth/login')
@@ -163,7 +183,7 @@ describe('AuthMdoule (e2e)', () => {
                     .expect(HttpStatus.UNAUTHORIZED);
             });
 
-            it('/auth/login (POST) Banned User', async () => {
+            it('should fail for banned users', async () => {
                 let user = await getTestUser();
                 user = { ...user, status: UserStatus.BANNED };
                 await userModel.create(user);

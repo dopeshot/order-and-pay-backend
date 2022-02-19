@@ -11,7 +11,6 @@ import { Model, ObjectId } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
-import { UserStatus } from './enums/status.enum';
 
 @Injectable()
 export class UsersService {
@@ -36,7 +35,6 @@ export class UsersService {
             const hash = await this.hashPassword(credentials.password);
             const user = new this.userModel({
                 ...credentials,
-                status: UserStatus.UNVERIFIED,
                 password: hash
             });
 
