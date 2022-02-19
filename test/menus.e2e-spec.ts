@@ -382,9 +382,11 @@ describe('MenuController (e2e)', () => {
                 expect(res.body.isActive).toBe(true);
 
                 const menus = await menuModel.find();
-                // Check if all endpoints have been disabled
+                // Check if all menus have been disabled
                 previousActive.forEach(async (m) => {
-                    const menu = menus.find((menu) => m._id === menu._id);
+                    const menu = menus.find(
+                        (menu) => m._id === menu._id.toString()
+                    );
                     expect(menu.isActive).toBe(false);
                 });
             });
