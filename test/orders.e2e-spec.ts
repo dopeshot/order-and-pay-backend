@@ -134,14 +134,41 @@ describe('Ordercontroller (e2e)', () => {
         });
 
         it('should send a sse message (with valid input)', async () => {
+            await dishModel.insertMany(getDishesForOrdersSeeder());
+            await categoryModel.create(getCategoryForOrdersSeeder());
             const eventSource = sseService.subscribe('order');
             const helper = new SSEHelper(eventSource);
             await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
-                    price: 0,
+                    price: 12700,
                     tableNumber: getTablesSeeder()[0].tableNumber,
-                    items: []
+                    items: [
+                        {
+                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+                            count: 2,
+                            note: 'my note',
+                            pickedChoices: [
+                                {
+                                    id: 1,
+                                    type: ChoiceType.CHECKBOX,
+                                    valueId: [1, 2]
+                                }
+                            ]
+                        },
+                        {
+                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa1',
+                            count: 1,
+                            note: 'your note',
+                            pickedChoices: [
+                                {
+                                    id: 0,
+                                    type: ChoiceType.RADIO,
+                                    valueId: [2]
+                                }
+                            ]
+                        }
+                    ]
                 })
                 .expect(HttpStatus.CREATED);
 
@@ -294,12 +321,37 @@ describe('Ordercontroller (e2e)', () => {
 
         it('should fail with invalid tableNumber', async () => {
             await tableModel.deleteMany();
-            await request(app.getHttpServer())
+            const res = await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
+                    price: 12700,
                     tableNumber: getTablesSeeder()[0].tableNumber,
-                    items: [],
-                    price: 0
+                    items: [
+                        {
+                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+                            count: 2,
+                            note: 'my note',
+                            pickedChoices: [
+                                {
+                                    id: 1,
+                                    type: ChoiceType.CHECKBOX,
+                                    valueId: [1, 2]
+                                }
+                            ]
+                        },
+                        {
+                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa1',
+                            count: 1,
+                            note: 'your note',
+                            pickedChoices: [
+                                {
+                                    id: 0,
+                                    type: ChoiceType.RADIO,
+                                    valueId: [2]
+                                }
+                            ]
+                        }
+                    ]
                 })
                 .expect(HttpStatus.UNPROCESSABLE_ENTITY);
         });
