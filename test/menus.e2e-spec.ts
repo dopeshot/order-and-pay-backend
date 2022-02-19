@@ -175,7 +175,6 @@ describe('MenuController (e2e)', () => {
 
                 res.body.categories.forEach((category) => {
                     expect(
-                        // TODO: @Coffe c is not a naming convention we use! (This does not have to be in this forEach)
                         res.body.categories.find(
                             (c) => c._id === expectedCategories[0]._id
                         )
@@ -237,7 +236,6 @@ describe('MenuController (e2e)', () => {
                 });
             });
 
-            // TODO: @Coffe this test does not check for anything empty, nor has it /editor at the end?
             it('should return empty with an empty menu', async () => {
                 const res = await request(app.getHttpServer())
                     .get('/menus/' + getMenuSeeder()[0]._id + '/editor')
