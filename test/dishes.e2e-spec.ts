@@ -146,13 +146,6 @@ describe('DishController (e2e)', () => {
                 .expect(HttpStatus.CREATED);
         });
 
-        it('should return CONFLICT with duplicate title', async () => {
-            await request(app.getHttpServer())
-                .post(`${path}`)
-                .send(getDishSeeder())
-                .expect(HttpStatus.CONFLICT);
-        });
-
         describe('dto tests for dish', () => {
             it('should return BAD_REQUEST with no data in body ', async () => {
                 await request(app.getHttpServer())
@@ -389,14 +382,6 @@ describe('DishController (e2e)', () => {
             await request(app.getHttpServer())
                 .patch(`${path}/${getWrongId()}`)
                 .expect(HttpStatus.NOT_FOUND);
-        });
-
-        it('should return CONFLICT with duplicate title', async () => {
-            await dishModel.insertMany(getSampleDish());
-            await request(app.getHttpServer())
-                .patch(`${path}/${getDishSeeder()._id}`)
-                .send({ title: getSampleDish().title })
-                .expect(HttpStatus.CONFLICT);
         });
     });
 
