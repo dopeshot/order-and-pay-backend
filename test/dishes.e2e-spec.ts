@@ -244,7 +244,7 @@ describe('DishController (e2e)', () => {
                     .post(`${path}`)
                     .send({
                         ...getSampleDish(),
-                        image: getStringOfLength(101)
+                        image: getStringOfLength(201)
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
