@@ -22,7 +22,13 @@ import {
 } from './helpers/MongoMemoryHelpers';
 import { getMenuSeeder } from './__mocks__/menus-mock-data';
 import { getSampleTable } from './__mocks__/tables-mock-data';
-import { getJWT, getTestAdmin, getTestUser } from './__mocks__/users-mock-data';
+import {
+    getJWT,
+    getJWTMockExpiry,
+    getJWTMockSecret,
+    getTestAdmin,
+    getTestUser
+} from './__mocks__/users-mock-data';
 const { mock } = require('nodemailer');
 
 describe('AuthMdoule (e2e)', () => {
@@ -35,6 +41,8 @@ describe('AuthMdoule (e2e)', () => {
     let reflector: Reflector;
 
     beforeAll(async () => {
+        process.env.JWT_SECRET = getJWTMockSecret();
+        process.env.JWT_EXPIRESIN = getJWTMockExpiry();
         const module: TestingModule = await Test.createTestingModule({
             imports: [
                 rootMongooseTestModule(),
