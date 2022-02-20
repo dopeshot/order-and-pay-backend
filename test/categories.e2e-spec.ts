@@ -36,8 +36,8 @@ describe('CategoriesController (e2e)', () => {
         }).compile();
 
         connection = await module.get(getConnectionToken());
-        categoryModel = connection.model('Category');
-        dishModel = connection.model('Dish');
+        categoryModel = connection.model(Category.name);
+        dishModel = connection.model(Dish.name);
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();
@@ -76,6 +76,29 @@ describe('CategoriesController (e2e)', () => {
 
             // Expect default status
             expect(res.body.status).toBe(Status.ACTIVE);
+        });
+
+        it('should set a default for radio', async () => {
+            const res = await request(app.getHttpServer())
+                .post(`${path}`)
+                .send({
+                    ...getSampleCategory(),
+                    choices: [
+                        {
+                            ...getSampleCategory().choices[0],
+                            isDefault: null
+                        }
+                    ]
+                })
+                .expect(HttpStatus.CREATED);
+
+            expect(
+                await (
+                    await categoryModel.findById(res.body._id)
+                ).choices[0].isDefault
+            ).toBe(0);
+
+            expect(res.body.choices[0].isDefault).toBe(0);
         });
 
         it('should create a category without icon', async () => {
@@ -283,7 +306,7 @@ describe('CategoriesController (e2e)', () => {
                             ...getSampleCategory().choices,
                             options: {
                                 ...getSampleCategory().choices[0].options,
-                                name: undefined
+                                title: undefined
                             }
                         }
                     })

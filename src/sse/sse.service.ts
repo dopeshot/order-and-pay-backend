@@ -29,7 +29,6 @@ export class SseService {
         const data = {
             payload: {
                 ...payload,
-                tableId: payload.tableId.toString(),
                 _id: payload._id.toString()
             },
             type: type

@@ -5,12 +5,14 @@ import { plainToClass } from 'class-transformer';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import {
+    Allergen,
     AllergenDocument,
     AllergenSchema
 } from '../src/allergens/entities/allergen.entity';
 import { DishesModule } from '../src/dishes/dishes.module';
 import { Dish, DishDocument } from '../src/dishes/entities/dish.entity';
 import {
+    Label,
     LabelDocument,
     LabelSchema
 } from '../src/labels/entities/label.entity';
@@ -41,18 +43,18 @@ describe('DishController (e2e)', () => {
                 rootMongooseTestModule(),
                 DishesModule,
                 MongooseModule.forFeature([
-                    { name: 'Allergen', schema: AllergenSchema }
+                    { name: Allergen.name, schema: AllergenSchema }
                 ]),
                 MongooseModule.forFeature([
-                    { name: 'Label', schema: LabelSchema }
+                    { name: Label.name, schema: LabelSchema }
                 ])
             ]
         }).compile();
 
         connection = await module.get(getConnectionToken());
-        dishModel = connection.model('Dish');
-        allergyModel = connection.model('Allergen');
-        labelModel = connection.model('Label');
+        dishModel = connection.model(Dish.name);
+        allergyModel = connection.model(Allergen.name);
+        labelModel = connection.model(Label.name);
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();
@@ -144,13 +146,6 @@ describe('DishController (e2e)', () => {
                 .post(`${path}`)
                 .send({ ...getSampleDish(), image: '' })
                 .expect(HttpStatus.CREATED);
-        });
-
-        it('should return CONFLICT with duplicate title', async () => {
-            await request(app.getHttpServer())
-                .post(`${path}`)
-                .send(getDishSeeder())
-                .expect(HttpStatus.CONFLICT);
         });
 
         describe('dto tests for dish', () => {
@@ -251,7 +246,7 @@ describe('DishController (e2e)', () => {
                     .post(`${path}`)
                     .send({
                         ...getSampleDish(),
-                        image: getStringOfLength(101)
+                        image: getStringOfLength(201)
                     })
                     .expect(HttpStatus.BAD_REQUEST);
             });
@@ -389,14 +384,6 @@ describe('DishController (e2e)', () => {
             await request(app.getHttpServer())
                 .patch(`${path}/${getWrongId()}`)
                 .expect(HttpStatus.NOT_FOUND);
-        });
-
-        it('should return CONFLICT with duplicate title', async () => {
-            await dishModel.insertMany(getSampleDish());
-            await request(app.getHttpServer())
-                .patch(`${path}/${getDishSeeder()._id}`)
-                .send({ title: getSampleDish().title })
-                .expect(HttpStatus.CONFLICT);
         });
     });
 

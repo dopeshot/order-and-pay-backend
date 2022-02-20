@@ -20,15 +20,15 @@ Authorization: Bearer {{token}}
         "type": "radio",
         "options": [{
             "id": 0,
-            "name": "small",
+            "title": "small",
             "price": -200
         },{
             "id": 1,
-            "name": "normal",
+            "title": "normal",
             "price": 0
         },{
             "id": 2,
-            "name": "large",
+            "title": "large",
             "price": 200
         }]
 
@@ -38,15 +38,15 @@ Authorization: Bearer {{token}}
         "type": "checkbox",
         "options": [{
             "id": 0,
-            "name": "salami",
+            "title": "salami",
             "price": 100
         },{
             "id": 1,
-            "name": "prosciutto",
+            "title": "prosciutto",
             "price": 100
         },{
             "id": 2,
-            "name": "olives",
+            "title": "olives",
             "price": 200
         }]
 
@@ -83,15 +83,15 @@ Authorization: Bearer {{token}}
         "type": "radio",
         "options": [{
             "id": 0,
-            "name": "small",
+            "title": "small",
             "price": -200
         },{
             "id": 1,
-            "name": "normal",
+            "title": "normal",
             "price": 0
         },{
             "id": 2,
-            "name": "large",
+            "title": "large",
             "price": 200
         }]
 
@@ -101,15 +101,15 @@ Authorization: Bearer {{token}}
         "type": "checkbox",
         "options": [{
             "id": 0,
-            "name": "salami",
+            "title": "salami",
             "price": 100
         },{
             "id": 1,
-            "name": "prosciutto",
+            "title": "prosciutto",
             "price": 100
         },{
             "id": 2,
-            "name": "olives",
+            "title": "olives",
             "price": 200
         }]
 

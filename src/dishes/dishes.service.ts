@@ -1,5 +1,4 @@
 import {
-    ConflictException,
     Injectable,
     InternalServerErrorException,
     Logger,
@@ -11,13 +10,15 @@ import { Status } from '../menus/enums/status.enum';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { CreateDishDto } from './dto/create-dish-dto';
 import { UpdateDishDto } from './dto/update-dish-dto';
-import { DishDocument, DishPopulated } from './entities/dish.entity';
+import { Dish, DishDocument, DishPopulated } from './entities/dish.entity';
 
 @Injectable()
 export class DishesService {
     private readonly logger = new Logger(DishesService.name);
 
-    constructor(@InjectModel('Dish') private dishModel: Model<DishDocument>) {}
+    constructor(
+        @InjectModel(Dish.name) private dishModel: Model<DishDocument>
+    ) {}
 
     async create(createDishDto: CreateDishDto): Promise<DishDocument> {
         try {
@@ -27,13 +28,6 @@ export class DishesService {
             );
             return dish.toObject() as DishDocument;
         } catch (error) {
-            if (error.code == '11000') {
-                this.logger.warn(
-                    `Creating a dish (title = ${createDishDto.title}) failed due to a conflict.`
-                );
-                throw new ConflictException('This dish title already exists');
-            }
-
             /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while creating a new dish (${error})`
@@ -94,13 +88,6 @@ export class DishesService {
                 .findByIdAndUpdate(id, updateDishDto, { new: true })
                 .lean();
         } catch (error) {
-            if (error.code === 11000) {
-                this.logger.warn(
-                    `Updating a dish (title = ${updateDishDto.title}) failed due to a conflict.`
-                );
-                throw new ConflictException('This dish title already exists');
-            }
-
             /* istanbul ignore next */
             this.logger.error(
                 `An error has occured while updating a dish (${error})`

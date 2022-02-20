@@ -7,13 +7,19 @@ import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { AdminModule } from '../src/admin/admin.module';
 import { AllergensModule } from '../src/allergens/allergens.module';
-import { AllergenDocument } from '../src/allergens/entities/allergen.entity';
+import {
+    Allergen,
+    AllergenDocument
+} from '../src/allergens/entities/allergen.entity';
 import { CategoriesModule } from '../src/categories/categories.module';
-import { CategoryDocument } from '../src/categories/entities/category.entity';
+import {
+    Category,
+    CategoryDocument
+} from '../src/categories/entities/category.entity';
 import { ClientModule } from '../src/client/client.module';
 import { DishesModule } from '../src/dishes/dishes.module';
-import { DishDocument } from '../src/dishes/entities/dish.entity';
-import { LabelDocument } from '../src/labels/entities/label.entity';
+import { Dish, DishDocument } from '../src/dishes/entities/dish.entity';
+import { Label, LabelDocument } from '../src/labels/entities/label.entity';
 import { LabelsModule } from '../src/labels/labels.module';
 import {
     Menu,
@@ -70,11 +76,11 @@ describe('MenuController (e2e)', () => {
         }).compile();
 
         connection = await module.get(getConnectionToken());
-        menuModel = connection.model('Menu');
-        dishModel = connection.model('Dish');
-        labelModel = connection.model('Label');
-        allergenModel = connection.model('Allergen');
-        categoryModel = connection.model('Category');
+        menuModel = connection.model(Menu.name);
+        dishModel = connection.model(Dish.name);
+        labelModel = connection.model(Label.name);
+        allergenModel = connection.model(Allergen.name);
+        categoryModel = connection.model(Category.name);
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();
@@ -381,9 +387,12 @@ describe('MenuController (e2e)', () => {
                 expect(res.body).toMatchObject(plainToClass(Menu, res.body));
                 expect(res.body.isActive).toBe(true);
 
-                // Check if all endpoints have been disabled
+                const menus = await menuModel.find();
+                // Check if all menus have been disabled
                 previousActive.forEach(async (m) => {
-                    const menu = await menuModel.findById(m._id);
+                    const menu = menus.find(
+                        (menu) => m._id === menu._id.toString()
+                    );
                     expect(menu.isActive).toBe(false);
                 });
             });

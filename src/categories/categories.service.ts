@@ -10,6 +10,7 @@ import { Model, ObjectId } from 'mongoose';
 import { DishesService } from '../dishes/dishes.service';
 import { Dish } from '../dishes/entities/dish.entity';
 import { Status } from '../menus/enums/status.enum';
+import { ChoiceType } from '../orders/enums/choice-type.enum';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -28,6 +29,12 @@ export class CategoriesService {
         createCategoryDto: CreateCategoryDto
     ): Promise<CategoryDocument> {
         try {
+            createCategoryDto.choices.map((choice) => {
+                // set default value for radio selections
+                if (choice.type === ChoiceType.RADIO && !choice.isDefault) {
+                    choice.isDefault = 0;
+                }
+            });
             const category = await this.categoryModel.create(createCategoryDto);
             this.logger.debug(
                 `The Category (id = ${category._id}) has been created successfully.`

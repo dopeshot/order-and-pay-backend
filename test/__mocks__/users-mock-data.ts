@@ -30,13 +30,13 @@ const admin = {
 };
 
 export const getTestUser = async () => {
-    // This ensures that altering the hashing algorith does not interfer with unit tests
+    // This ensures that altering the hashing algorithm does not interfer with unit tests
     const pw = await userService.hashPassword('mock password');
     return { ...user, password: pw };
 };
 
 export const getTestAdmin = async () => {
-    // This ensures that altering the hashing algorith does not interfer with unit tests
+    // This ensures that altering the hashing algorithm does not interfer with unit tests
     const pw = await userService.hashPassword('mock password');
     return { ...admin, password: pw };
 };

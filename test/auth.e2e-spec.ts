@@ -9,11 +9,11 @@ import { AuthModule } from '../src/auth/auth.module';
 import { AuthService } from '../src/auth/auth.service';
 import { JwtAuthGuard } from '../src/auth/strategies/jwt/jwt-auth.guard';
 import { ClientModule } from '../src/client/client.module';
-import { MenuDocument } from '../src/menus/entities/menu.entity';
+import { Menu, MenuDocument } from '../src/menus/entities/menu.entity';
 import { MenusModule } from '../src/menus/menus.module';
-import { TableDocument } from '../src/tables/entities/table.entity';
+import { Table, TableDocument } from '../src/tables/entities/table.entity';
 import { TablesModule } from '../src/tables/tables.module';
-import { UserDocument } from '../src/users/entities/user.entity';
+import { User, UserDocument } from '../src/users/entities/user.entity';
 import { UserStatus } from '../src/users/enums/status.enum';
 import { UsersModule } from '../src/users/users.module';
 import {
@@ -51,9 +51,9 @@ describe('AuthMdoule (e2e)', () => {
 
         connection = await module.get(getConnectionToken());
         authService = module.get<AuthService>(AuthService);
-        userModel = connection.model('User');
-        tableModel = connection.model('Table');
-        menuModel = connection.model('Menu');
+        userModel = connection.model(User.name);
+        tableModel = connection.model(Table.name);
+        menuModel = connection.model(Menu.name);
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         reflector = app.get(Reflector);
@@ -81,12 +81,12 @@ describe('AuthMdoule (e2e)', () => {
 
     describe('Auth basics', () => {
         describe('/auth/register (POST)', () => {
-            it('/auth/register (POST)', async () => {
+            it('should create an user', async () => {
                 await request(app.getHttpServer())
                     .post('/auth/register')
                     .send({
-                        username: 'fictional user',
-                        email: 'fictional@gmail.com',
+                        username: (await getTestUser()).username,
+                        email: (await getTestUser()).email,
                         password: '12345678'
                     })
                     .set(
@@ -96,13 +96,33 @@ describe('AuthMdoule (e2e)', () => {
                     .expect(HttpStatus.CREATED);
             });
 
-            it('/auth/register (POST) duplicate mail', async () => {
+            it('should create user with status active', async () => {
+                await request(app.getHttpServer())
+                    .post('/auth/register')
+                    .send({
+                        username: (await getTestUser()).username,
+                        email: (await getTestUser()).email,
+                        password: '12345678'
+                    })
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestAdmin())}`
+                    )
+                    .expect(HttpStatus.CREATED);
+
+                const user = userModel.findOne({
+                    username: (await getTestUser()).username
+                });
+                expect((await user).status).toBe(UserStatus.ACTIVE);
+            });
+
+            it('should fail with duplicate mail', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
                     .post('/auth/register')
                     .send({
                         username: 'a mock user',
-                        email: 'mock@mock.mock',
+                        email: (await getTestUser()).email,
                         password: 'mensa essen'
                     })
                     .set(
@@ -112,12 +132,12 @@ describe('AuthMdoule (e2e)', () => {
                     .expect(HttpStatus.CONFLICT);
             });
 
-            it('/auth/register (POST) duplicate username', async () => {
+            it('should fail with duplicate username', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
                     .post('/auth/register')
                     .send({
-                        username: 'mock',
+                        username: (await getTestUser()).username,
                         email: 'notMock@mock.mock',
                         password: 'mensa essen'
                     })
@@ -130,47 +150,47 @@ describe('AuthMdoule (e2e)', () => {
         });
 
         describe('/auth/login (POST)', () => {
-            it('/auth/login (POST)', async () => {
+            it('should return CREATED with valid data', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
                     .post('/auth/login')
                     .send({
-                        email: 'mock@mock.mock',
+                        email: (await getTestUser()).email,
                         password: 'mock password'
                     })
                     .expect(HttpStatus.CREATED);
             });
 
-            it('/auth/login (POST) Wrong Password', async () => {
+            it('should fail with wrong password', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
                     .post('/auth/login')
                     .send({
-                        email: 'mock@mock.mock',
+                        email: (await getTestUser()).email,
                         password: 'my grandmas birthday'
                     })
                     .expect(HttpStatus.UNAUTHORIZED);
             });
 
-            it('/auth/login (POST) Wrong Email', async () => {
+            it('should fail with invalid email', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
                     .post('/auth/login')
                     .send({
-                        email: 'peter@mock.mock',
+                        email: 'notavalidemail@scam.org',
                         password: 'mock password'
                     })
                     .expect(HttpStatus.UNAUTHORIZED);
             });
 
-            it('/auth/login (POST) Banned User', async () => {
+            it('should fail for banned users', async () => {
                 let user = await getTestUser();
                 user = { ...user, status: UserStatus.BANNED };
                 await userModel.create(user);
                 await request(app.getHttpServer())
                     .post('/auth/login')
                     .send({
-                        email: 'mock@mock.mock',
+                        email: user.email,
                         password: 'mock password'
                     })
                     .expect(HttpStatus.UNAUTHORIZED);
@@ -224,10 +244,24 @@ describe('AuthMdoule (e2e)', () => {
                         .post('/client/order')
                         .send({
                             tableNumber: getSampleTable().tableNumber,
-                            items: [],
+                            items: [
+                                {
+                                    dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+                                    count: 2,
+                                    note: 'my note',
+                                    pickedChoices: [
+                                        {
+                                            id: 1,
+                                            valueId: [1, 2]
+                                        }
+                                    ]
+                                }
+                            ],
                             price: 0
                         })
-                        .expect(HttpStatus.CREATED);
+                        // Technically an error code, but in this case it means we got to business logic
+                        // The alternative would be to double the amount of needed models in this tests
+                        .expect(HttpStatus.UNPROCESSABLE_ENTITY);
                 });
 
                 // The public endpoint auth/login is already tested above

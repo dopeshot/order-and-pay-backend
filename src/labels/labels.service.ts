@@ -11,13 +11,14 @@ import { DishesService } from '../dishes/dishes.service';
 import { DishDocument } from '../dishes/entities/dish.entity';
 import { CreateLabelDto } from './dto/create-label.dto';
 import { UpdateLabelDto } from './dto/update-label.dto';
-import { LabelDocument } from './entities/label.entity';
+import { Label, LabelDocument } from './entities/label.entity';
 
 @Injectable()
 export class LabelsService {
     private readonly logger = new Logger(LabelsService.name);
     constructor(
-        @InjectModel('Label') private readonly labelModel: Model<LabelDocument>,
+        @InjectModel(Label.name)
+        private readonly labelModel: Model<LabelDocument>,
         private readonly dishesService: DishesService
     ) {}
 

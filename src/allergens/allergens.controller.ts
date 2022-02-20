@@ -129,6 +129,6 @@ export class AllergensController {
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     async remove(@Param() { id }: MongoIdDto) {
-        return await this.allergensService.remove(id);
+        await this.allergensService.remove(id);
     }
 }
