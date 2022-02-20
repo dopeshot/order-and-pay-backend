@@ -2,7 +2,7 @@ version: "3.7"
 services:
   oap-backend:
     container_name: oap-backend
-    image: coffeemakingtoaster/oap-backend:latest
+    build: .
     restart: always
     ports:
       - "4001:3001"
