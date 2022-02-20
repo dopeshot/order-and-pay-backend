@@ -20,6 +20,8 @@ Hierbei hat das Backend direkt eine vollständige Beispieldatenbank. Die Verbind
 Für den unwahrscheinlichen Fall, dass es zu Fehlern mit dieser db kommt, dann kann dies behoben werden, indem der Data ordner gelöscht und das docker voluem gelöscht wird.
 Daraufhin kann die Datenbank anhand der JSON files im backup-db ordner neu befüllt werden.
 
+(Im Deployment nutzen wir mongodump zum Backupen und Restoren der Datenbank)
+
 **Normal mit npm**:
 
     npm i
