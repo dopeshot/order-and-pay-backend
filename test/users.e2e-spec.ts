@@ -16,7 +16,13 @@ import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/MongoMemoryHelpers';
-import { getJWT, getTestAdmin, getTestUser } from './__mocks__/users-mock-data';
+import {
+    getJWT,
+    getJWTMockExpiry,
+    getJWTMockSecret,
+    getTestAdmin,
+    getTestUser
+} from './__mocks__/users-mock-data';
 const { mock } = require('nodemailer');
 
 describe('UserModule (e2e)', () => {
@@ -26,6 +32,8 @@ describe('UserModule (e2e)', () => {
     let reflector: Reflector;
 
     beforeAll(async () => {
+        process.env.JWT_SECRET = getJWTMockSecret();
+        process.env.JWT_EXPIRESIN = getJWTMockExpiry();
         const module: TestingModule = await Test.createTestingModule({
             imports: [
                 rootMongooseTestModule(),

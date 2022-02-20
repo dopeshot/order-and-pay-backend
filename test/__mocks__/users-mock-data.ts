@@ -4,10 +4,14 @@ import { UserStatus } from '../../src/users/enums/status.enum';
 // There may be a better way of doing this, but for now this will work
 import { UsersService } from '../../src/users/users.service';
 
+export const getJWTMockSecret = () => 'secretkey';
+
+export const getJWTMockExpiry = () => '10h';
+
 const jwtService: JwtService = new JwtService({
-    secret: 'secretkey',
+    secret: getJWTMockSecret(),
     signOptions: {
-        expiresIn: '10h'
+        expiresIn: getJWTMockExpiry()
     }
 });
 const userService: UsersService = new UsersService(null);
