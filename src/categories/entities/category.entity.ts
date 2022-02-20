@@ -83,8 +83,8 @@ export class Category {
     icon: string;
 
     @Expose()
-    @Prop()
-    @Type(() => Choice) // MD: Is this needed?
+    @Prop({ required: true })
+    @Type(() => Choice)
     choices: Choice[];
 
     @Expose()
