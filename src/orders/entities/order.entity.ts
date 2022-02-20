@@ -68,6 +68,7 @@ export class Item {
     @Prop()
     @ValidateNested()
     @Type(() => PickedChoices)
+    @IsArray()
     pickedChoices: PickedChoices[];
 
     @Expose()
