@@ -1,5 +1,5 @@
 @adress = http://localhost:3001/admin/auth
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik5vcm1hbCBVc2VyIiwic3ViIjoiNjIxMDI2ZGVkZGZhZGQwMTc2Y2U1MjI2IiwiaWF0IjoxNjQ1MjI1NzE2LCJleHAiOjE2NDUyNjE3MTZ9.1j9k5uqCYc-W0XUATbxy8LjXK6Y27Fy9JbPz4j1_5lQ
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik5vcm1hbCBVc2VyIiwic3ViIjoiNjIxMGY2ODNlMWQ5ZDYyNjdmMTA0OTg2IiwiaWF0IjoxNjQ1Mjc4ODUxLCJleHAiOjE2NDUzMTQ4NTF9.bZGH9WrQosawPVVlWEXFmCYygsHQbs46IjBiT1HpwNc
 
 ### Register User
 POST {{adress}}/register
@@ -7,9 +7,9 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "username": "Normal User",
-    "email": "normaluser@gmail.de",
-    "password": "adsdfhjngegra"
+    "username": "New User",
+    "email": "newuser@gmail.de",
+    "password": "newuserpw"
 }
 
 ### Login User

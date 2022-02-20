@@ -36,8 +36,8 @@ describe('CategoriesController (e2e)', () => {
         }).compile();
 
         connection = await module.get(getConnectionToken());
-        categoryModel = connection.model('Category');
-        dishModel = connection.model('Dish');
+        categoryModel = connection.model(Category.name);
+        dishModel = connection.model(Dish.name);
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();
@@ -283,7 +283,7 @@ describe('CategoriesController (e2e)', () => {
                             ...getSampleCategory().choices,
                             options: {
                                 ...getSampleCategory().choices[0].options,
-                                name: undefined
+                                title: undefined
                             }
                         }
                     })

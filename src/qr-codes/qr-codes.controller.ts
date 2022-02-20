@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Res } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, Res } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { MongoIdDto } from '../shared/global-validation/mongoId.dto';
@@ -12,11 +12,11 @@ export class QrCodesController {
     @Get(':id')
     @ApiOperation({ summary: 'Endpoint to get the QR code for a table' })
     @ApiResponse({
-        status: 200,
+        status: HttpStatus.OK,
         description: 'The qr code has been generated and rendered'
     })
     @ApiResponse({
-        status: 404,
+        status: HttpStatus.NOT_FOUND,
         description: 'No table with this Id'
     })
     async getQRCode(@Param() { id }: MongoIdDto, @Res() res: Response) {

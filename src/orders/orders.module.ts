@@ -4,7 +4,7 @@ import { CategoriesModule } from '../categories/categories.module';
 import { DishesModule } from '../dishes/dishes.module';
 import { SseModule } from '../sse/sse.module';
 import { TablesModule } from '../tables/tables.module';
-import { OrderSchema } from './entities/order.entity';
+import { Order, OrderSchema } from './entities/order.entity';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
 
@@ -13,7 +13,7 @@ import { OrdersService } from './orders.service';
     providers: [OrdersService],
     imports: [
         SseModule,
-        MongooseModule.forFeature([{ name: 'Order', schema: OrderSchema }]),
+        MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
         TablesModule,
         DishesModule,
         CategoriesModule

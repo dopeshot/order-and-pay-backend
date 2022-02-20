@@ -24,7 +24,7 @@ describe('TableController (e2e)', () => {
         }).compile();
 
         connection = await module.get(getConnectionToken());
-        tableModel = connection.model('Table');
+        tableModel = connection.model(Table.name);
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();

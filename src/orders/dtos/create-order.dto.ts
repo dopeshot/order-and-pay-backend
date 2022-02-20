@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+    ArrayNotEmpty,
     IsArray,
     IsNumber,
     IsString,
@@ -18,6 +19,7 @@ export class CreateOrderDto {
 
     @IsArray()
     @ValidateNested({ each: true })
+    @ArrayNotEmpty()
     @Type(() => Item)
     items: Item[];
 

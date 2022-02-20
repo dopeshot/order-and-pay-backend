@@ -1,14 +1,44 @@
 import { ChoiceType } from '../../src/categories/enums/choice-type';
 import { OrderStatus } from '../../src/orders/enums/order-status.enum';
 import { PaymentStatus } from '../../src/orders/enums/payment-status.enum';
+import { getTablesSeeder } from './tables-mock-data';
 
 export const getUniqueOrder = () => ({
     _id: 'aaaaaaaaaaaaaaaaaaaaaa69',
-    tableId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+    table: getTablesSeeder()[0],
     items: [],
-    PaymentStatus: PaymentStatus.PENDING,
-    Status: OrderStatus.FINISHED,
+    paymentStatus: PaymentStatus.PENDING,
+    status: OrderStatus.FINISHED,
     price: 0
+});
+
+export const getProperOrder = () => ({
+    price: 12700,
+    tableNumber: getTablesSeeder()[0].tableNumber,
+    items: [
+        {
+            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+            count: 2,
+            note: 'my note',
+            pickedChoices: [
+                {
+                    id: 1,
+                    valueId: [1, 2]
+                }
+            ]
+        },
+        {
+            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa1',
+            count: 1,
+            note: 'your note',
+            pickedChoices: [
+                {
+                    id: 0,
+                    valueId: [2]
+                }
+            ]
+        }
+    ]
 });
 
 export const getCategoryForOrdersSeeder = () => ({
@@ -27,17 +57,17 @@ export const getCategoryForOrdersSeeder = () => ({
             options: [
                 {
                     id: 0,
-                    name: 'small',
+                    title: 'small',
                     price: -200
                 },
                 {
                     id: 1,
-                    name: 'normal',
+                    title: 'normal',
                     price: 0
                 },
                 {
                     id: 2,
-                    name: 'large',
+                    title: 'large',
                     price: 200
                 }
             ]
@@ -49,17 +79,17 @@ export const getCategoryForOrdersSeeder = () => ({
             options: [
                 {
                     id: 0,
-                    name: 'lettuce',
+                    title: 'lettuce',
                     price: 100
                 },
                 {
                     id: 1,
-                    name: 'cucumber',
+                    title: 'cucumber',
                     price: 100
                 },
                 {
                     id: 2,
-                    name: 'pickle',
+                    title: 'pickle',
                     price: 200
                 }
             ]
@@ -97,63 +127,67 @@ export const getDishesForOrdersSeeder = () => [
 export const getOrdersSeeder = () => [
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaa0',
-        tableId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+        table: getTablesSeeder()[0],
         items: [],
-        Status: OrderStatus.FINISHED,
-        PaymentStatus: PaymentStatus.RECEIVED,
+        status: OrderStatus.FINISHED,
+        paymentStatus: PaymentStatus.RECEIVED,
         price: 0
     },
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaa1',
-        tableId: 'aaaaaaaaaaaaaaaaaaaaaaa2',
+        table: getTablesSeeder()[2],
         items: [
             {
                 dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
                 count: 2,
                 note: 'my note',
-                pickedChoices: {
-                    id: 1,
-                    type: ChoiceType.CHECKBOX,
-                    valueId: [1, 2, 3]
-                }
+                pickedChoices: [
+                    {
+                        id: 1,
+                        type: ChoiceType.CHECKBOX,
+                        valueId: [1, 2, 3]
+                    }
+                ]
             },
             {
                 dishId: 'aaaaaaaaaaaaaaaaaaaaaaa1',
                 count: 1,
                 note: 'your note',
-                pickedChoices: {
-                    id: 0,
-                    type: ChoiceType.RADIO,
-                    valueId: [2]
-                }
+                pickedChoices: [
+                    {
+                        id: 0,
+                        type: ChoiceType.RADIO,
+                        valueId: [2]
+                    }
+                ]
             }
         ],
-        Status: OrderStatus.IN_PROGRESS,
-        PaymentStatus: PaymentStatus.RECEIVED,
+        status: OrderStatus.IN_PROGRESS,
+        paymentStatus: PaymentStatus.RECEIVED,
         price: 0
     },
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaa2',
-        tableId: 'aaaaaaaaaaaaaaaaaaaaaaa2',
+        table: getTablesSeeder()[2],
         items: [],
-        Status: OrderStatus.RECEIVED,
-        PaymentStatus: PaymentStatus.CANCELED,
+        status: OrderStatus.RECEIVED,
+        paymentStatus: PaymentStatus.CANCELED,
         price: 0
     },
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaa3',
-        tableId: 'aaaaaaaaaaaaaaaaaaaaaaa3',
+        table: getTablesSeeder()[3],
         items: [],
-        Status: OrderStatus.RETURNED,
-        PaymentStatus: PaymentStatus.PENDING,
+        status: OrderStatus.RETURNED,
+        paymentStatus: PaymentStatus.PENDING,
         price: 0
     },
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaa4',
-        tableId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
+        table: getTablesSeeder()[0],
         items: [],
-        Status: OrderStatus.RECEIVED,
-        PaymentStatus: PaymentStatus.RECEIVED,
+        status: OrderStatus.RECEIVED,
+        paymentStatus: PaymentStatus.RECEIVED,
         price: 0
     }
 ];
@@ -161,8 +195,8 @@ export const getOrdersSeeder = () => [
 export const getActiveOrders = () => {
     return getOrdersSeeder().filter(
         (order) =>
-            order.Status === OrderStatus.RECEIVED ||
-            order.Status === OrderStatus.IN_PROGRESS ||
-            order.Status === OrderStatus.RETURNED
+            order.status === OrderStatus.RECEIVED ||
+            order.status === OrderStatus.IN_PROGRESS ||
+            order.status === OrderStatus.RETURNED
     );
 };

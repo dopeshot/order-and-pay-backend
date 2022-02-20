@@ -18,8 +18,6 @@ export class User {
     @Prop({ required: true, unique: true })
     email: string;
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     @Prop({ required: true })
     password: string;
 

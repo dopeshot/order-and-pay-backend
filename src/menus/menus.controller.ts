@@ -156,6 +156,6 @@ export class MenusController {
         @Param() { id }: MongoIdDto,
         @Query('type') type: DeleteType
     ): Promise<void> {
-        return await this.menuService.deleteMenu(id, type);
+        await this.menuService.deleteMenu(id, type);
     }
 }

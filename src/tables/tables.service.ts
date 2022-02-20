@@ -16,7 +16,8 @@ import { Table, TableDocument } from './entities/table.entity';
 export class TablesService {
     private readonly logger = new Logger(TablesService.name);
     constructor(
-        @InjectModel('Table') private readonly tableModel: Model<TableDocument>
+        @InjectModel(Table.name)
+        private readonly tableModel: Model<TableDocument>
     ) {}
 
     async create(createTableDto: CreateTableDto): Promise<TableDocument> {

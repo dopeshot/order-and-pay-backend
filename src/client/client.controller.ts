@@ -62,6 +62,10 @@ export class ClientController {
         status: HttpStatus.NOT_FOUND,
         description: 'Dish was requested that might not be on the menu anymore'
     })
+    @ApiResponse({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        description: 'Order contains invalid data'
+    })
     async createOrder(@Body() order: CreateOrderDto) {
         return plainToClass(Order, await this.orderService.create(order));
     }
