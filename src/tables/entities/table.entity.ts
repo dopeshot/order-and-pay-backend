@@ -22,6 +22,8 @@ export class Table {
     updatedAt: Date;
 }
 
+// Needs to be an extra class since Table has a unique prop and this would not allow multiple orders on that unique tablenNumber
+// The order is supposed to contain the table state during the order, means populating on requests is not an option and the table is saved as whole
 export class OrderTable extends OmitType(Table, ['tableNumber']) {
     @Expose()
     @Prop({ required: true })
