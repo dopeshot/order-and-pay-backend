@@ -148,8 +148,7 @@ modules.xml
 
 
 # Docker
-# DB is included in submission branch
-#data/
+data/
 docker.env
 
 .eslintcache
