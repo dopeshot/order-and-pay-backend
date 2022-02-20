@@ -28,6 +28,7 @@ Daraufhin kann die Datenbank anhand der JSON files im backup-db ordner neu befü
     npm run start
 
 Das Backend ist dann erreichbar auf Port [3001](http://localhost:3001)
+(die Live-Version kann natürlich von der Submission-Version abweichen)
 
 **Tests:**  
 (Umfasst unit und e2e tests)
