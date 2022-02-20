@@ -21,7 +21,7 @@ lerna-debug.log*
 /test/coverage
 
 # Secrets
-.env
+#.env
 
 # IDEs and editors
 /.idea
@@ -150,7 +150,9 @@ modules.xml
 
 
 # Docker
-data/
+
+#Submission ships with data folder
+#data/
 docker.env
 
 .eslintcache

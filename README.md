@@ -1,23 +1,35 @@
+# Backend
+
 ## Overview
 
 [![codecov](https://codecov.io/gh/dopeshot/order-and-pay-backend/branch/main/graph/badge.svg?token=RI1XZPSHEV)](https://codecov.io/gh/dopeshot/order-and-pay-backend)
 
-This is the backend for the order and pay app.
-## Content
-The only file a dev needs is the .env file. This can be found on discord in the corresponding channel.
-To test and understand the provided endpoints .REST files are included in the project. These can be used to send requests to the localhost using Rest Client extension for VSC (humao.rest-client).
-## Usage
-To start the project use 
+Das Backend verbindet Frontend client und Frontend admin. Zudem werden hier die Daten des Restaurants gespeichert und verwaltet.
 
+## Das Projekt starten
+
+**Im Docker**:
+
+    docker-compose up
+
+Das Backend ist dann erreichbar auf Port [4001](http://localhost:4001)
+Hierbei hat das Backend direkt eine vollständige Beispieldatenbank. Die Verbindung zur MongoDb kann hergestellt werden mit dem MongoDB Compass und dieser URI:
+
+    mongodb://OrderAndPay:UedD8WR2U8Amv3t2@host.docker.internal:27018/Order-and-Pay?authSource=admin
+
+**Normal mit npm**:
+
+    npm i
     npm run start
-or for development:
 
-    npm run start:dev
+Das Backend ist dann erreichbar auf Port [3001](http://localhost:3001)
 
-to run end to end tests locally:
+**Tests:**  
+(Umfasst unit und e2e tests)
+    
+    npm run test
 
-    npm run test:e2e
+## Deploy
 
-The current pipeline runs end2end test (in a very basic scope) and builds the software.
+Das gehostete Backend ist [hier](https://api.dopeshot.coffee/) erreichbar
 
-To develop from within a container to avoid having to install external dependencies (such as mongodb, npm, ...) it is recommended to clone this repository into a remote container with the vsc extension. 
