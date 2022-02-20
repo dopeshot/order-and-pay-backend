@@ -5,10 +5,13 @@ import { plainToClass } from 'class-transformer';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { CategoriesModule } from '../src/categories/categories.module';
-import { CategoryDocument } from '../src/categories/entities/category.entity';
+import {
+    Category,
+    CategoryDocument
+} from '../src/categories/entities/category.entity';
 import { ClientModule } from '../src/client/client.module';
 import { DishesModule } from '../src/dishes/dishes.module';
-import { DishDocument } from '../src/dishes/entities/dish.entity';
+import { Dish, DishDocument } from '../src/dishes/entities/dish.entity';
 import { Order, OrderDocument } from '../src/orders/entities/order.entity';
 import { ChoiceType } from '../src/orders/enums/choice-type.enum';
 import { OrderStatus } from '../src/orders/enums/order-status.enum';
@@ -17,7 +20,7 @@ import { OrdersModule } from '../src/orders/orders.module';
 import { OrderEventType } from '../src/sse/enums/events.enum';
 import { SseModule } from '../src/sse/sse.module';
 import { SseService } from '../src/sse/sse.service';
-import { TableDocument } from '../src/tables/entities/table.entity';
+import { Table, TableDocument } from '../src/tables/entities/table.entity';
 import { TablesModule } from '../src/tables/tables.module';
 import {
     closeInMongodConnection,
@@ -56,10 +59,10 @@ describe('Ordercontroller (e2e)', () => {
         }).compile();
 
         connection = await module.get(getConnectionToken());
-        orderModel = connection.model('Order');
-        tableModel = connection.model('Table');
-        dishModel = connection.model('Dish');
-        categoryModel = connection.model('Category');
+        orderModel = connection.model(Order.name);
+        tableModel = connection.model(Table.name);
+        dishModel = connection.model(Dish.name);
+        categoryModel = connection.model(Category.name);
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         sseService = module.get<SseService>(SseService);

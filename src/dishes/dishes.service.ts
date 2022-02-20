@@ -10,13 +10,15 @@ import { Status } from '../menus/enums/status.enum';
 import { DeleteType } from '../shared/enums/delete-type.enum';
 import { CreateDishDto } from './dto/create-dish-dto';
 import { UpdateDishDto } from './dto/update-dish-dto';
-import { DishDocument, DishPopulated } from './entities/dish.entity';
+import { Dish, DishDocument, DishPopulated } from './entities/dish.entity';
 
 @Injectable()
 export class DishesService {
     private readonly logger = new Logger(DishesService.name);
 
-    constructor(@InjectModel('Dish') private dishModel: Model<DishDocument>) {}
+    constructor(
+        @InjectModel(Dish.name) private dishModel: Model<DishDocument>
+    ) {}
 
     async create(createDishDto: CreateDishDto): Promise<DishDocument> {
         try {

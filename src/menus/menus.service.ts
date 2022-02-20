@@ -21,7 +21,7 @@ import { Status } from './enums/status.enum';
 export class MenusService {
     private readonly logger = new Logger(MenusService.name);
     constructor(
-        @InjectModel('Menu') private menuModel: Model<MenuDocument>,
+        @InjectModel(Menu.name) private menuModel: Model<MenuDocument>,
         private readonly categoriesService: CategoriesService,
         private readonly dishesService: DishesService
     ) {}

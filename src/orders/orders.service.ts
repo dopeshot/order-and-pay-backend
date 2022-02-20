@@ -18,7 +18,7 @@ import { Table } from '../tables/entities/table.entity';
 import { TablesService } from '../tables/tables.service';
 import { CreateOrderDto } from './dtos/create-order.dto';
 import { UpdateOrderDto } from './dtos/update-order.dto';
-import { OrderDocument } from './entities/order.entity';
+import { Order, OrderDocument } from './entities/order.entity';
 import { ChoiceType } from './enums/choice-type.enum';
 import { OrderStatus } from './enums/order-status.enum';
 import { PaymentStatus } from './enums/payment-status.enum';
@@ -27,7 +27,8 @@ export class OrdersService {
     private readonly logger = new Logger(OrdersService.name);
     constructor(
         private readonly sseService: SseService,
-        @InjectModel('Order') private readonly orderModel: Model<OrderDocument>,
+        @InjectModel(Order.name)
+        private readonly orderModel: Model<OrderDocument>,
         private readonly dishesService: DishesService,
         private readonly tablesService: TablesService
     ) {}

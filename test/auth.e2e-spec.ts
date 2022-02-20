@@ -10,11 +10,11 @@ import { AuthService } from '../src/auth/auth.service';
 import { JwtAuthGuard } from '../src/auth/strategies/jwt/jwt-auth.guard';
 import { ChoiceType } from '../src/categories/enums/choice-type';
 import { ClientModule } from '../src/client/client.module';
-import { MenuDocument } from '../src/menus/entities/menu.entity';
+import { Menu, MenuDocument } from '../src/menus/entities/menu.entity';
 import { MenusModule } from '../src/menus/menus.module';
-import { TableDocument } from '../src/tables/entities/table.entity';
+import { Table, TableDocument } from '../src/tables/entities/table.entity';
 import { TablesModule } from '../src/tables/tables.module';
-import { UserDocument } from '../src/users/entities/user.entity';
+import { User, UserDocument } from '../src/users/entities/user.entity';
 import { UserStatus } from '../src/users/enums/status.enum';
 import { UsersModule } from '../src/users/users.module';
 import {
@@ -52,9 +52,9 @@ describe('AuthMdoule (e2e)', () => {
 
         connection = await module.get(getConnectionToken());
         authService = module.get<AuthService>(AuthService);
-        userModel = connection.model('User');
-        tableModel = connection.model('Table');
-        menuModel = connection.model('Menu');
+        userModel = connection.model(User.name);
+        tableModel = connection.model(Table.name);
+        menuModel = connection.model(Menu.name);
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         reflector = app.get(Reflector);

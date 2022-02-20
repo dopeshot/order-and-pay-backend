@@ -36,8 +36,8 @@ describe('AllergensController (e2e)', () => {
         }).compile();
 
         connection = await module.get(getConnectionToken());
-        allergenModel = connection.model('Allergen');
-        dishModel = connection.model('Dish');
+        allergenModel = connection.model(Allergen.name);
+        dishModel = connection.model(Dish.name);
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();

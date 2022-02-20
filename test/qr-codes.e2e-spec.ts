@@ -6,7 +6,7 @@ import { Connection, Model } from 'mongoose';
 import { join } from 'path';
 import * as request from 'supertest';
 import { QrCodesModule } from '../src/qr-codes/qr-codes.module';
-import { TableDocument } from '../src/tables/entities/table.entity';
+import { Table, TableDocument } from '../src/tables/entities/table.entity';
 import { TablesModule } from '../src/tables/tables.module';
 import {
     closeInMongodConnection,
@@ -26,7 +26,7 @@ describe('QrCodeController (e2e)', () => {
         }).compile();
 
         connection = await module.get(getConnectionToken());
-        tableModel = connection.model('Table');
+        tableModel = connection.model(Table.name);
         app = module.createNestApplication<NestExpressApplication>();
         app.setBaseViewsDir(join(__dirname, '..', 'views'));
         app.setViewEngine('ejs');
