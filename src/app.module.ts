@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AdminModule } from './admin/admin.module';
 import { AllergensModule } from './allergens/allergens.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
@@ -10,10 +9,10 @@ import { DishesModule } from './dishes/dishes.module';
 import { LabelsModule } from './labels/labels.module';
 import { MenusModule } from './menus/menus.module';
 import { OrdersModule } from './orders/orders.module';
+import { QrCodesModule } from './qr-codes/qr-codes.module';
 import { SseModule } from './sse/sse.module';
 import { TablesModule } from './tables/tables.module';
 import { UsersModule } from './users/users.module';
-import { QrCodesModule } from './qr-codes/qr-codes.module';
 
 @Module({
     imports: [
@@ -30,7 +29,6 @@ import { QrCodesModule } from './qr-codes/qr-codes.module';
             }),
             inject: [ConfigService]
         }),
-        AdminModule,
         ClientModule,
         UsersModule,
         AuthModule,

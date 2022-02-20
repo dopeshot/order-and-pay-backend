@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { plainToClass } from 'class-transformer';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
-import { AdminModule } from '../src/admin/admin.module';
 import { AllergensModule } from '../src/allergens/allergens.module';
 import {
     Allergen,
@@ -66,7 +65,6 @@ describe('MenuController (e2e)', () => {
             imports: [
                 rootMongooseTestModule(),
                 MenusModule,
-                AdminModule,
                 DishesModule,
                 LabelsModule,
                 ClientModule,
