@@ -47,7 +47,7 @@ export class Choice {
     @Prop({ required: true })
     title: string;
 
-    @Expose({ name: 'default' })
+    @Expose()
     @IsOptional()
     @Prop()
     isDefault?: number;

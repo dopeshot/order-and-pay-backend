@@ -86,7 +86,7 @@ describe('CategoriesController (e2e)', () => {
                     choices: [
                         {
                             ...getSampleCategory().choices[0],
-                            isDefault: undefined
+                            isDefault: null
                         }
                     ]
                 })
@@ -98,7 +98,7 @@ describe('CategoriesController (e2e)', () => {
                 ).choices[0].isDefault
             ).toBe(0);
 
-            expect(res.body.choices[0].default).toBe(0);
+            expect(res.body.choices[0].isDefault).toBe(0);
         });
 
         it('should create a category without icon', async () => {
