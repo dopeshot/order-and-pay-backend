@@ -78,6 +78,29 @@ describe('CategoriesController (e2e)', () => {
             expect(res.body.status).toBe(Status.ACTIVE);
         });
 
+        it('should set a default for radio', async () => {
+            const res = await request(app.getHttpServer())
+                .post(`${path}`)
+                .send({
+                    ...getSampleCategory(),
+                    choices: [
+                        {
+                            ...getSampleCategory().choices[0],
+                            isDefault: null
+                        }
+                    ]
+                })
+                .expect(HttpStatus.CREATED);
+
+            expect(
+                await (
+                    await categoryModel.findById(res.body._id)
+                ).choices[0].isDefault
+            ).toBe(0);
+
+            expect(res.body.choices[0].isDefault).toBe(0);
+        });
+
         it('should create a category without icon', async () => {
             const res = await request(app.getHttpServer())
                 .post(`${path}`)
