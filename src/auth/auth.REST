@@ -17,6 +17,6 @@ POST {{adress}}/login
 Content-Type: application/json
 
 {
-    "email": "normaluser@gmail.de",
+    "email": "kobibenotet@gmail.de",
     "password": "adsdfhjngegra"
 }
