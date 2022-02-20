@@ -2,11 +2,11 @@ version: "3.7"
 services:
   oap-backend:
     container_name: oap-backend
-    build: 
+    build:
       context: .
       args:
-      - target=submission
-      
+        - target=submission
+
     entrypoint:
       - /bin/bash
       - ./start-backend.sh
@@ -18,7 +18,7 @@ services:
       - oap-mongo
     depends_on:
       - oap-mongo
-    
+
   oap-mongo:
     container_name: oap-backend-db
     image: mongo:5
@@ -33,5 +33,3 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=OrderAndPay
       - MONGO_INITDB_ROOT_PASSWORD=UedD8WR2U8Amv3t2
       - MONGO_INITDB_DATABASE=wop
-    logging:
-      driver: "none"
