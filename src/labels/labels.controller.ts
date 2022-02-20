@@ -128,6 +128,6 @@ export class LabelsController {
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     async remove(@Param() { id }: MongoIdDto) {
-        return await this.labelsService.remove(id);
+        await this.labelsService.remove(id);
     }
 }

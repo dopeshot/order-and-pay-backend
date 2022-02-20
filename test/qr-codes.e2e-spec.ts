@@ -56,7 +56,7 @@ describe('QrCodeController (e2e)', () => {
                 .expect(HttpStatus.OK);
         });
 
-        it('should return a 404 if the table does not exist', async () => {
+        it('should return a NOT_FOUND if the table does not exist', async () => {
             await tableModel.deleteMany();
             await request(app.getHttpServer())
                 .get(`${path}/${getWrongId()}`)

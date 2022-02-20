@@ -127,6 +127,6 @@ export class CategoriesController {
     @HttpCode(HttpStatus.NO_CONTENT)
     @Delete(':id')
     async remove(@Param() { id }: MongoIdDto, @Query('type') type: DeleteType) {
-        return await this.categoriesService.remove(id, type);
+        await this.categoriesService.remove(id, type);
     }
 }

@@ -81,7 +81,7 @@ export class UsersController {
         status: HttpStatus.NOT_FOUND,
         description: 'No user with this id'
     })
-    @HttpCode(204)
+    @HttpCode(HttpStatus.NO_CONTENT)
     async remove(@Param('id') id: ObjectId): Promise<void> {
         await this.usersService.remove(id);
     }
