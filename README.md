@@ -13,6 +13,9 @@ Das Backend verbindet Frontend client und Frontend admin. Zudem werden hier die 
     docker-compose up
 
 Das Backend ist dann erreichbar auf Port [4001](http://localhost:4001)
+Hierbei hat das Backend direkt eine vollständige Beispieldatenbank. Die Verbindung zur MongoDb kann hergestellt werden mit dem MongoDB Compass und dieser URI:
+
+    mongodb://OrderAndPay:UedD8WR2U8Amv3t2@host.docker.internal:27018/Order-and-Pay?authSource=admin
 
 **Normal mit npm**:
 
