@@ -6,7 +6,12 @@ WORKDIR /home/node/oap-backend
 
 EXPOSE 3000
 
-FROM dev as full
+FROM dev as submission
+
+# install netcat for waiter
+# running this here allows the container to be run as a non-root user
+RUN apt-get update && apt-get install -y netcat
+
 
 #copy package.json and package-lock.json
 COPY --chown=node:node package*.json ./
@@ -20,5 +25,7 @@ COPY --chown=node:node . .
 USER node
 
 RUN npm run build
+
+FROM submission as full
 
 CMD ["npm", "run", "start:prod"]
