@@ -17,17 +17,17 @@ export const getCategoriesSeeder = () => [
                 options: [
                     {
                         id: 0,
-                        name: 'small',
+                        title: 'small',
                         price: -200
                     },
                     {
                         id: 1,
-                        name: 'normal',
+                        title: 'normal',
                         price: 0
                     },
                     {
                         id: 2,
-                        name: 'large',
+                        title: 'large',
                         price: 200
                     }
                 ]
@@ -39,17 +39,17 @@ export const getCategoriesSeeder = () => [
                 options: [
                     {
                         id: 0,
-                        name: 'lettuce',
+                        title: 'lettuce',
                         price: 100
                     },
                     {
                         id: 1,
-                        name: 'cucumber',
+                        title: 'cucumber',
                         price: 100
                     },
                     {
                         id: 2,
-                        name: 'pickle',
+                        title: 'pickle',
                         price: 200
                     }
                 ]
@@ -72,12 +72,12 @@ export const getCategoriesSeeder = () => [
                 options: [
                     {
                         id: 1,
-                        name: 'extra large',
+                        title: 'extra large',
                         price: 300
                     },
                     {
                         id: 2,
-                        name: 'large',
+                        title: 'large',
                         price: 200
                     }
                 ]
@@ -101,17 +101,17 @@ export const getSampleCategory = () => ({
             options: [
                 {
                     id: 0,
-                    name: 'small',
+                    title: 'small',
                     price: -200
                 },
                 {
                     id: 1,
-                    name: 'normal',
+                    title: 'normal',
                     price: 0
                 },
                 {
                     id: 2,
-                    name: 'large',
+                    title: 'large',
                     price: 200
                 }
             ]
@@ -123,17 +123,17 @@ export const getSampleCategory = () => ({
             options: [
                 {
                     id: 0,
-                    name: 'salami',
+                    title: 'salami',
                     price: 100
                 },
                 {
                     id: 1,
-                    name: 'prosciutto',
+                    title: 'prosciutto',
                     price: 100
                 },
                 {
                     id: 2,
-                    name: 'olives',
+                    title: 'olives',
                     price: 200
                 }
             ]

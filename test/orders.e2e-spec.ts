@@ -13,7 +13,6 @@ import { ClientModule } from '../src/client/client.module';
 import { DishesModule } from '../src/dishes/dishes.module';
 import { Dish, DishDocument } from '../src/dishes/entities/dish.entity';
 import { Order, OrderDocument } from '../src/orders/entities/order.entity';
-import { ChoiceType } from '../src/orders/enums/choice-type.enum';
 import { OrderStatus } from '../src/orders/enums/order-status.enum';
 import { PaymentStatus } from '../src/orders/enums/payment-status.enum';
 import { OrdersModule } from '../src/orders/orders.module';
@@ -32,8 +31,10 @@ import {
     getCategoryForOrdersSeeder,
     getDishesForOrdersSeeder,
     getOrdersSeeder,
+    getProperOrder,
     getUniqueOrder
 } from './__mocks__/orders-mock-data';
+import { getWrongId } from './__mocks__/shared-mock-data';
 import { getTablesSeeder } from './__mocks__/tables-mock-data';
 
 describe('Ordercontroller (e2e)', () => {
@@ -93,42 +94,31 @@ describe('Ordercontroller (e2e)', () => {
             await categoryModel.create(getCategoryForOrdersSeeder());
             const res = await request(app.getHttpServer())
                 .post('/client/order')
-                .send({
-                    price: 12700,
-                    tableNumber: getTablesSeeder()[0].tableNumber,
-                    items: [
-                        {
-                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
-                            count: 2,
-                            note: 'my note',
-                            pickedChoices: [
-                                {
-                                    id: 1,
-                                    type: ChoiceType.CHECKBOX,
-                                    valueId: [1, 2]
-                                }
-                            ]
-                        },
-                        {
-                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa1',
-                            count: 1,
-                            note: 'your note',
-                            pickedChoices: [
-                                {
-                                    id: 0,
-                                    type: ChoiceType.RADIO,
-                                    valueId: [2]
-                                }
-                            ]
-                        }
-                    ]
-                })
+                .send(getProperOrder())
                 .expect(HttpStatus.CREATED);
 
             expect((await orderModel.find()).length).toBe(1);
 
+            expect(res.body.table).toMatchObject(getTablesSeeder()[0]);
+
+            expect(getDishesForOrdersSeeder().map((o) => o.title)).toContain(
+                res.body.items[0].dishName
+            );
+
+            expect(
+                getCategoryForOrdersSeeder().choices.map((o) => o.title)
+            ).toContain(res.body.items[0].pickedChoices[0].title);
+
+            expect(
+                [].concat(
+                    ...getCategoryForOrdersSeeder().choices.map((o) =>
+                        o.options.map((i) => i.title)
+                    )
+                )
+            ).toContain(res.body.items[0].pickedChoices[0].optionNames[0]);
+
             // Check if paid order passes
-            expect(res.body.PaymentStatus).toBe(PaymentStatus.RECEIVED);
+            expect(res.body.paymentStatus).toBe(PaymentStatus.RECEIVED);
 
             // Test response type
             expect(res.body).toMatchObject(
@@ -143,36 +133,7 @@ describe('Ordercontroller (e2e)', () => {
             const helper = new SSEHelper(eventSource);
             await request(app.getHttpServer())
                 .post('/client/order')
-                .send({
-                    price: 12700,
-                    tableNumber: getTablesSeeder()[0].tableNumber,
-                    items: [
-                        {
-                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
-                            count: 2,
-                            note: 'my note',
-                            pickedChoices: [
-                                {
-                                    id: 1,
-                                    type: ChoiceType.CHECKBOX,
-                                    valueId: [1, 2]
-                                }
-                            ]
-                        },
-                        {
-                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa1',
-                            count: 1,
-                            note: 'your note',
-                            pickedChoices: [
-                                {
-                                    id: 0,
-                                    type: ChoiceType.RADIO,
-                                    valueId: [2]
-                                }
-                            ]
-                        }
-                    ]
-                })
+                .send(getProperOrder())
                 .expect(HttpStatus.CREATED);
 
             // Check if eventlistener on clientside has been called once
@@ -180,62 +141,54 @@ describe('Ordercontroller (e2e)', () => {
             expect(helper.messages[0].data.type).toBe(OrderEventType.new);
         });
 
+        it('should fail with dish pointing to invalid category id', async () => {
+            await dishModel.insertMany(getDishesForOrdersSeeder());
+            const eventSource = sseService.subscribe('order');
+            const helper = new SSEHelper(eventSource);
+            await request(app.getHttpServer())
+                .post('/client/order')
+                .send(getProperOrder())
+                .expect(HttpStatus.UNPROCESSABLE_ENTITY);
+        });
+
         it('should fail with mismatched price', async () => {
             await dishModel.insertMany(getDishesForOrdersSeeder());
             await categoryModel.create(getCategoryForOrdersSeeder());
-            const res = await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .post('/client/order')
-                .send({
-                    price: 105,
-                    tableNumber: getTablesSeeder()[0].tableNumber,
-                    items: [
-                        {
-                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
-                            count: 2,
-                            note: 'my note',
-                            pickedChoices: [
-                                {
-                                    id: 1,
-                                    type: ChoiceType.CHECKBOX,
-                                    valueId: [1, 2]
-                                }
-                            ]
-                        },
-                        {
-                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa1',
-                            count: 1,
-                            note: 'your note',
-                            pickedChoices: [
-                                {
-                                    id: 0,
-                                    type: ChoiceType.RADIO,
-                                    valueId: [2]
-                                }
-                            ]
-                        }
-                    ]
-                })
+                .send({ ...getProperOrder(), price: 105 })
                 .expect(HttpStatus.NOT_ACCEPTABLE);
         });
 
         it('should fail with invalid dish id', async () => {
             await dishModel.insertMany(getDishesForOrdersSeeder());
             await categoryModel.create(getCategoryForOrdersSeeder());
-            const res = await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
-                    price: 12700,
-                    tableNumber: getTablesSeeder()[0].tableNumber,
+                    ...getProperOrder(),
+                    items: [
+                        { ...getProperOrder().items[0], dishId: getWrongId() }
+                    ]
+                })
+                .expect(HttpStatus.UNPROCESSABLE_ENTITY);
+        });
+
+        it('should fail with invalid choices id', async () => {
+            await dishModel.insertMany(getDishesForOrdersSeeder());
+            await categoryModel.create(getCategoryForOrdersSeeder());
+            await request(app.getHttpServer())
+                .post('/client/order')
+                .send({
+                    ...getProperOrder(),
                     items: [
                         {
-                            dishId: 'aaaaaaaaaaaaaaacaacaaaa0',
-                            count: 2,
-                            note: 'my note',
+                            ...getProperOrder().items[0],
                             pickedChoices: [
                                 {
-                                    id: 1,
-                                    type: ChoiceType.CHECKBOX,
-                                    valueId: [1, 2]
+                                    ...getProperOrder().items[0]
+                                        .pickedChoices[0],
+                                    id: 99
                                 }
                             ]
                         }
@@ -247,47 +200,18 @@ describe('Ordercontroller (e2e)', () => {
         it('should fail with invalid option id', async () => {
             await dishModel.insertMany(getDishesForOrdersSeeder());
             await categoryModel.create(getCategoryForOrdersSeeder());
-            const res = await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
-                    price: 12700,
-                    tableNumber: getTablesSeeder()[0].tableNumber,
+                    ...getProperOrder(),
                     items: [
                         {
-                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
-                            count: 2,
-                            note: 'my note',
+                            ...getProperOrder().items[0],
                             pickedChoices: [
                                 {
-                                    id: 1,
-                                    type: ChoiceType.CHECKBOX,
-                                    valueId: [1, 2, 99]
-                                }
-                            ]
-                        }
-                    ]
-                })
-                .expect(HttpStatus.UNPROCESSABLE_ENTITY);
-        });
-
-        it('should fail with invalid choices id', async () => {
-            await dishModel.insertMany(getDishesForOrdersSeeder());
-            await categoryModel.create(getCategoryForOrdersSeeder());
-            const res = await request(app.getHttpServer())
-                .post('/client/order')
-                .send({
-                    price: 12700,
-                    tableNumber: getTablesSeeder()[0].tableNumber,
-                    items: [
-                        {
-                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
-                            count: 2,
-                            note: 'my note',
-                            pickedChoices: [
-                                {
-                                    id: 99,
-                                    type: ChoiceType.CHECKBOX,
-                                    valueId: [1, 2]
+                                    ...getProperOrder().items[0]
+                                        .pickedChoices[0],
+                                    valueId: [1, 99]
                                 }
                             ]
                         }
@@ -299,21 +223,18 @@ describe('Ordercontroller (e2e)', () => {
         it('should fail with invalid choices amount', async () => {
             await dishModel.insertMany(getDishesForOrdersSeeder());
             await categoryModel.create(getCategoryForOrdersSeeder());
-            const res = await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .post('/client/order')
                 .send({
-                    price: 12700,
-                    tableNumber: getTablesSeeder()[0].tableNumber,
+                    ...getProperOrder(),
                     items: [
                         {
-                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
-                            count: 2,
-                            note: 'my note',
+                            ...getProperOrder().items[1],
                             pickedChoices: [
                                 {
-                                    id: 0,
-                                    type: ChoiceType.RADIO,
-                                    valueId: [0, 1]
+                                    ...getProperOrder().items[1]
+                                        .pickedChoices[0],
+                                    valueId: [1, 2]
                                 }
                             ]
                         }
@@ -324,38 +245,9 @@ describe('Ordercontroller (e2e)', () => {
 
         it('should fail with invalid tableNumber', async () => {
             await tableModel.deleteMany();
-            const res = await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .post('/client/order')
-                .send({
-                    price: 12700,
-                    tableNumber: getTablesSeeder()[0].tableNumber,
-                    items: [
-                        {
-                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa0',
-                            count: 2,
-                            note: 'my note',
-                            pickedChoices: [
-                                {
-                                    id: 1,
-                                    type: ChoiceType.CHECKBOX,
-                                    valueId: [1, 2]
-                                }
-                            ]
-                        },
-                        {
-                            dishId: 'aaaaaaaaaaaaaaaaaaaaaaa1',
-                            count: 1,
-                            note: 'your note',
-                            pickedChoices: [
-                                {
-                                    id: 0,
-                                    type: ChoiceType.RADIO,
-                                    valueId: [2]
-                                }
-                            ]
-                        }
-                    ]
-                })
+                .send(getProperOrder())
                 .expect(HttpStatus.UNPROCESSABLE_ENTITY);
         });
 
@@ -390,6 +282,8 @@ describe('Ordercontroller (e2e)', () => {
 
     describe('/orders/current (GET)', () => {
         it('should return all active orders', async () => {
+            await dishModel.insertMany(getDishesForOrdersSeeder());
+            await categoryModel.create(getCategoryForOrdersSeeder());
             await orderModel.insertMany(getOrdersSeeder());
             const res = await request(app.getHttpServer())
                 .get('/orders/current')
@@ -410,8 +304,8 @@ describe('Ordercontroller (e2e)', () => {
             // Make all orders inactive
             const orders = getOrdersSeeder().map((order) => ({
                 ...order,
-                Status: OrderStatus.CANCELLED,
-                PaymentStatus: PaymentStatus.CANCELED
+                status: OrderStatus.CANCELLED,
+                paymentStatus: PaymentStatus.CANCELED
             }));
             await orderModel.insertMany(orders);
             const res = await request(app.getHttpServer())
@@ -428,13 +322,13 @@ describe('Ordercontroller (e2e)', () => {
             const res = await request(app.getHttpServer())
                 .patch('/orders/' + order._id.toString())
                 .send({
-                    PaymentStatus: PaymentStatus.RECEIVED,
-                    Status: OrderStatus.IN_PROGRESS
+                    paymentStatus: PaymentStatus.RECEIVED,
+                    status: OrderStatus.IN_PROGRESS
                 })
                 .expect(HttpStatus.OK);
 
-            expect(res.body.Status).toBe(OrderStatus.IN_PROGRESS);
-            expect(res.body.PaymentStatus).toBe(PaymentStatus.RECEIVED);
+            expect(res.body.status).toBe(OrderStatus.IN_PROGRESS);
+            expect(res.body.paymentStatus).toBe(PaymentStatus.RECEIVED);
         });
 
         it('should send an sse event (close)', async () => {
@@ -445,7 +339,7 @@ describe('Ordercontroller (e2e)', () => {
             await request(app.getHttpServer())
                 .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
-                    Status: OrderStatus.CANCELLED
+                    status: OrderStatus.CANCELLED
                 })
                 .expect(HttpStatus.OK);
             expect(helper.calls).toBe(1);
@@ -473,7 +367,7 @@ describe('Ordercontroller (e2e)', () => {
             await request(app.getHttpServer())
                 .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
-                    Status: OrderStatus.RETURNED
+                    status: OrderStatus.RETURNED
                 })
                 .expect(HttpStatus.NOT_FOUND);
         });
@@ -483,7 +377,7 @@ describe('Ordercontroller (e2e)', () => {
             await request(app.getHttpServer())
                 .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
-                    Status: 'no value'
+                    status: 'no value'
                 })
                 .expect(HttpStatus.BAD_REQUEST);
         });
@@ -494,7 +388,7 @@ describe('Ordercontroller (e2e)', () => {
             await request(app.getHttpServer())
                 .patch('/orders/' + getOrdersSeeder()[0]._id)
                 .send({
-                    PaymentStatus: 'no value'
+                    paymentStatus: 'no value'
                 })
                 .expect(HttpStatus.BAD_REQUEST);
         });

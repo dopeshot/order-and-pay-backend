@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
+import { CategoriesService } from '../categories/categories.service';
 import { DishesService } from '../dishes/dishes.service';
 import { DishDocument } from '../dishes/entities/dish.entity';
 import { OrderEventType } from '../sse/enums/events.enum';
@@ -30,7 +31,8 @@ export class OrdersService {
         @InjectModel(Order.name)
         private readonly orderModel: Model<OrderDocument>,
         private readonly dishesService: DishesService,
-        private readonly tablesService: TablesService
+        private readonly tablesService: TablesService,
+        private readonly categoryService: CategoriesService
     ) {}
 
     async findAll(): Promise<OrderDocument[]> {
@@ -40,7 +42,7 @@ export class OrdersService {
     async findActive(): Promise<OrderDocument[]> {
         return await this.orderModel
             .find({
-                Status: {
+                status: {
                     $nin: [OrderStatus.FINISHED, OrderStatus.CANCELLED]
                 }
             })
@@ -107,6 +109,15 @@ export class OrdersService {
                 throw new InternalServerErrorException();
             }
 
+            if (!dish.categoryId) {
+                this.logger.warn(
+                    `Order contained dish with invalid categoryId.`
+                );
+                throw new UnprocessableEntityException();
+            }
+
+            order.items[dishIndex].dishName = dish.title;
+
             // Calculate dish price
             baseprice += dish.price * orderItem.count;
 
@@ -128,6 +139,9 @@ export class OrdersService {
                     throw new UnprocessableEntityException();
                 }
 
+                order.items[dishIndex].pickedChoices[choiceIndex].title =
+                    selectedChoice.title;
+
                 if (
                     selectedChoice.type === ChoiceType.RADIO &&
                     orderChoice.valueId.length !== 1
@@ -138,6 +152,8 @@ export class OrdersService {
                     throw new UnprocessableEntityException();
                 }
 
+                order.items[dishIndex].pickedChoices[choiceIndex].optionNames =
+                    [];
                 // Choices (checkbox) can have multiple values, so loop over this as well
                 for (
                     let optionsIndex = 0;
@@ -157,6 +173,10 @@ export class OrdersService {
                         throw new UnprocessableEntityException();
                     }
 
+                    order.items[dishIndex].pickedChoices[
+                        choiceIndex
+                    ].optionNames.push(selectedOption.title);
+
                     choicesPrice += selectedOption.price * orderItem.count;
                 }
             }
@@ -173,8 +193,8 @@ export class OrdersService {
         try {
             const newOrder = await this.orderModel.create({
                 ...order,
-                tableId: table._id,
-                PaymentStatus: PaymentStatus.RECEIVED
+                table: table,
+                paymentStatus: PaymentStatus.RECEIVED
             });
 
             receivedOrder = newOrder.toObject() as OrderDocument;
@@ -240,11 +260,11 @@ export class OrdersService {
 
         // Send SSE event to restaurant
         this.logger.debug(
-            `Order ${id} has been updated to ${updateData.Status}`
+            `Order ${id} has been updated to ${updateData.status}`
         );
         if (
-            updateData.Status === OrderStatus.FINISHED ||
-            updateData.Status === OrderStatus.CANCELLED
+            updateData.status === OrderStatus.FINISHED ||
+            updateData.status === OrderStatus.CANCELLED
         ) {
             this.sseService.emitOrderEvent(OrderEventType.close, order);
         } else {

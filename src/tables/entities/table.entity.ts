@@ -1,3 +1,4 @@
+import { OmitType } from '@nestjs/mapped-types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose, Transform } from 'class-transformer';
 import { Document, ObjectId } from 'mongoose';
@@ -19,6 +20,12 @@ export class Table {
 
     @Expose()
     updatedAt: Date;
+}
+
+export class OrderTable extends OmitType(Table, ['tableNumber']) {
+    @Expose()
+    @Prop({ required: true })
+    tableNumber: string;
 }
 
 export type TableDocument = Table & Document & Timestamps;
