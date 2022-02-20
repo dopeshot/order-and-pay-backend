@@ -1,0 +1,17 @@
+[
+  {
+    "_id": {
+      "$oid": "6210fa786226cf4a61bdd4fa"
+    },
+    "isActive": true,
+    "status": "active",
+    "title": "Mittagstisch",
+    "createdAt": {
+      "$date": "2022-02-19T14:11:04.523Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T14:11:04.523Z"
+    },
+    "__v": 0
+  }
+]

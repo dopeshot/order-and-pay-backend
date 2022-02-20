@@ -1,0 +1,221 @@
+[
+  {
+    "_id": {
+      "$oid": "6210fabe6226cf4a61bdd4ff"
+    },
+    "menuId": {
+      "$oid": "6210fa786226cf4a61bdd4fa"
+    },
+    "status": "active",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Pizza_Margherita_stu_spivack.jpg/330px-Pizza_Margherita_stu_spivack.jpg",
+    "choices": [
+      {
+        "id": 0,
+        "title": "Größe",
+        "type": "radio",
+        "isDefault": 1,
+        "options": [
+          {
+            "id": 0,
+            "title": "Klein",
+            "price": -200
+          },
+          {
+            "id": 1,
+            "title": "Mittel",
+            "price": 0
+          },
+          {
+            "id": 2,
+            "title": "Groß",
+            "price": 200
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "title": "Beläge",
+        "type": "checkbox",
+        "options": [
+          {
+            "id": 0,
+            "title": "Salami",
+            "price": 100
+          },
+          {
+            "id": 1,
+            "title": "Schinken",
+            "price": 100
+          },
+          {
+            "id": 2,
+            "title": "Oliven",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "icon": "pizza-slice",
+    "description": "Teig mit Zeugs drauf",
+    "title": "Pizza",
+    "createdAt": {
+      "$date": "2022-02-19T14:12:14.099Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T14:12:14.099Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "621128629465d72c51a3acc1"
+    },
+    "menuId": {
+      "$oid": "6210fa786226cf4a61bdd4fa"
+    },
+    "status": "active",
+    "image": "https://image.essen-und-trinken.de/11943256/t/jM/v10/w1440/r1.7778/-/beef-burger-fuer-thermomix-jpg--60340-.jpg",
+    "choices": [
+      {
+        "id": 0,
+        "title": "Garstufen",
+        "type": "radio",
+        "isDefault": 1,
+        "options": [
+          {
+            "id": 0,
+            "title": "Rare",
+            "price": 0
+          },
+          {
+            "id": 1,
+            "title": "Medium-Rare",
+            "price": 0
+          },
+          {
+            "id": 2,
+            "title": "Medium",
+            "price": 0
+          },
+          {
+            "id": 3,
+            "title": "Medium-Well",
+            "price": 0
+          },
+          {
+            "id": 4,
+            "title": "Well",
+            "price": 0
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "title": "Beläge",
+        "type": "checkbox",
+        "options": [
+          {
+            "id": 0,
+            "title": "Zwiebel",
+            "price": 100
+          },
+          {
+            "id": 1,
+            "title": "Salat",
+            "price": 100
+          },
+          {
+            "id": 2,
+            "title": "Ei",
+            "price": 200
+          },
+          {
+            "id": 3,
+            "title": "Bacon",
+            "price": 200
+          },
+          {
+            "id": 4,
+            "title": "Käse",
+            "price": 100
+          },
+          {
+            "id": 5,
+            "title": "Saure Gurken",
+            "price": 100
+          },
+          {
+            "id": 6,
+            "title": "Tomaten",
+            "price": 100
+          },
+          {
+            "id": 7,
+            "title": "Geröstete Zwiebel",
+            "price": 200
+          }
+        ]
+      }
+    ],
+    "icon": "hamburger",
+    "description": "Zwei Teig mit Zeug dazwischen",
+    "title": "Burger",
+    "createdAt": {
+      "$date": "2022-02-19T17:26:58.625Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T17:26:58.625Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "62112f689465d72c51a3acd6"
+    },
+    "menuId": {
+      "$oid": "6210fa786226cf4a61bdd4fa"
+    },
+    "status": "active",
+    "image": "https://cdn.punchng.com/wp-content/uploads/2017/03/29201341/soft-drinks.png",
+    "choices": [
+      {
+        "id": 0,
+        "title": "Größe",
+        "type": "radio",
+        "isDefault": 1,
+        "options": [
+          {
+            "id": 0,
+            "title": "Klein",
+            "price": -200
+          },
+          {
+            "id": 1,
+            "title": "Mittel",
+            "price": 0
+          },
+          {
+            "id": 2,
+            "title": "Groß",
+            "price": 200
+          },
+          {
+            "id": 3,
+            "title": "Riesig",
+            "price": 400
+          }
+        ]
+      }
+    ],
+    "icon": "wine-glass",
+    "description": "Behälter mit Flüssigkeit drin",
+    "title": "Getränke",
+    "createdAt": {
+      "$date": "2022-02-19T17:56:56.104Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T17:56:56.104Z"
+    },
+    "__v": 0
+  }
+]

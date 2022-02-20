@@ -1,0 +1,72 @@
+[
+  {
+    "_id": {
+      "$oid": "6211216e6226cf4a61bdd517"
+    },
+    "icon": "leaf",
+    "title": "Vegan",
+    "createdAt": {
+      "$date": "2022-02-19T16:57:18.419Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T16:57:18.419Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "621121c66226cf4a61bdd51b"
+    },
+    "icon": "seedling",
+    "title": "Glutenfrei",
+    "createdAt": {
+      "$date": "2022-02-19T16:58:46.527Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T16:58:46.527Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "621121f86226cf4a61bdd51f"
+    },
+    "icon": "whiskey-glass",
+    "title": "Laktosefrei",
+    "createdAt": {
+      "$date": "2022-02-19T16:59:36.321Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T16:59:36.321Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6211224f6226cf4a61bdd523"
+    },
+    "icon": "bacon",
+    "title": "Halal",
+    "createdAt": {
+      "$date": "2022-02-19T17:01:03.068Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T17:01:03.068Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "621122626226cf4a61bdd527"
+    },
+    "icon": "martini-glass-citrus",
+    "title": "Alkoholisch",
+    "createdAt": {
+      "$date": "2022-02-19T17:01:22.914Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T17:02:05.637Z"
+    },
+    "__v": 0
+  }
+]

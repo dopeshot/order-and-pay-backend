@@ -1,0 +1,44 @@
+[
+  {
+    "_id": {
+      "$oid": "6210f9e16226cf4a61bdd4e9"
+    },
+    "capacity": 4,
+    "tableNumber": "1",
+    "createdAt": {
+      "$date": "2022-02-19T14:08:33.734Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T14:08:33.734Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6210f9f06226cf4a61bdd4ed"
+    },
+    "capacity": 3,
+    "tableNumber": "2A",
+    "createdAt": {
+      "$date": "2022-02-19T14:08:48.522Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T14:08:48.522Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6210f9fa6226cf4a61bdd4f1"
+    },
+    "capacity": 8,
+    "tableNumber": "3A",
+    "createdAt": {
+      "$date": "2022-02-19T14:08:58.018Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T14:08:58.018Z"
+    },
+    "__v": 0
+  }
+]

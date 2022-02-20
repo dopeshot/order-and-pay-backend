@@ -1,0 +1,291 @@
+[
+  {
+    "_id": {
+      "$oid": "6211233a6226cf4a61bdd52e"
+    },
+    "labelIds": [],
+    "allergenIds": [
+      {
+        "$oid": "62111dea6226cf4a61bdd50b"
+      },
+      {
+        "$oid": "6211212a6226cf4a61bdd50f"
+      }
+    ],
+    "categoryId": {
+      "$oid": "6210fabe6226cf4a61bdd4ff"
+    },
+    "isAvailable": true,
+    "image": "https://www.gutekueche.ch/upload/rezept/12049/pizza-prosciutto-e-fungi.jpg",
+    "status": "active",
+    "price": 1150,
+    "description": "Pizza mit Morzarella und dem feinsten Schinken aus Neapel.",
+    "title": "Schinken",
+    "createdAt": {
+      "$date": "2022-02-19T17:04:58.492Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T17:04:58.492Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "621124a99465d72c51a3aca6"
+    },
+    "labelIds": [
+      {
+        "$oid": "6211224f6226cf4a61bdd523"
+      }
+    ],
+    "allergenIds": [
+      {
+        "$oid": "62111dea6226cf4a61bdd50b"
+      },
+      {
+        "$oid": "6211212a6226cf4a61bdd50f"
+      }
+    ],
+    "categoryId": {
+      "$oid": "6210fabe6226cf4a61bdd4ff"
+    },
+    "isAvailable": true,
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Pizza_Margherita_stu_spivack.jpg/330px-Pizza_Margherita_stu_spivack.jpg",
+    "status": "active",
+    "price": 850,
+    "description": "Normale Pizza für Leute die gar nichts mögen.",
+    "title": "Margherita",
+    "createdAt": {
+      "$date": "2022-02-19T17:11:05.233Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T17:11:05.233Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "621125249465d72c51a3acae"
+    },
+    "labelIds": [
+      {
+        "$oid": "6211224f6226cf4a61bdd523"
+      }
+    ],
+    "allergenIds": [
+      {
+        "$oid": "62111dea6226cf4a61bdd50b"
+      },
+      {
+        "$oid": "6211212a6226cf4a61bdd50f"
+      }
+    ],
+    "categoryId": {
+      "$oid": "6210fabe6226cf4a61bdd4ff"
+    },
+    "isAvailable": true,
+    "image": "https://img.chefkoch-cdn.de/rezepte/2652081416580443/bilder/1379341/crop-960x540/pizza-quattro-formaggi-pizza-bianca.jpg",
+    "status": "active",
+    "price": 1200,
+    "description": "Normale Pizza mit 4 Sorten an Käse",
+    "title": "Quadro Formaggi",
+    "createdAt": {
+      "$date": "2022-02-19T17:13:08.513Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T17:13:08.513Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "62112a609465d72c51a3acc6"
+    },
+    "labelIds": [
+      {
+        "$oid": "6211224f6226cf4a61bdd523"
+      }
+    ],
+    "allergenIds": [
+      {
+        "$oid": "62111dea6226cf4a61bdd50b"
+      },
+      {
+        "$oid": "6211212a6226cf4a61bdd50f"
+      }
+    ],
+    "categoryId": {
+      "$oid": "621128629465d72c51a3acc1"
+    },
+    "isAvailable": true,
+    "image": "https://www.swrfernsehen.de/kaffee-oder-tee/rezepte/1600206064015,image-swr-281716~_v-23x10@2dM_-89ad2f435b0c63e533f249d4b0ac1f956e12b097.jpg",
+    "status": "active",
+    "price": 950,
+    "description": "Mutter aller Burger, mit Zwiebeln und Käse",
+    "title": "Klassiker",
+    "createdAt": {
+      "$date": "2022-02-19T17:35:28.577Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T17:35:28.577Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "62112aca9465d72c51a3acce"
+    },
+    "labelIds": [
+      {
+        "$oid": "6211224f6226cf4a61bdd523"
+      }
+    ],
+    "allergenIds": [
+      {
+        "$oid": "62111dea6226cf4a61bdd50b"
+      },
+      {
+        "$oid": "6211212a6226cf4a61bdd50f"
+      }
+    ],
+    "categoryId": {
+      "$oid": "621128629465d72c51a3acc1"
+    },
+    "isAvailable": true,
+    "image": "https://image.essen-und-trinken.de/11943256/t/jM/v10/w1440/r1.7778/-/beef-burger-fuer-thermomix-jpg--60340-.jpg",
+    "status": "active",
+    "price": 1150,
+    "description": "Der gute alte Nordschwedische Burger mit Hühnchen und Ei",
+    "title": "Vikinger Fraß",
+    "createdAt": {
+      "$date": "2022-02-19T17:37:14.241Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T17:37:14.241Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6211302e9465d72c51a3acdb"
+    },
+    "labelIds": [],
+    "allergenIds": [],
+    "categoryId": {
+      "$oid": "62112f689465d72c51a3acd6"
+    },
+    "isAvailable": true,
+    "image": "https://i.natgeofe.com/n/d794859c-86e7-4662-8d48-5aa132039a76/01-waterbottlesun_20190719_0023_2x3.jpg",
+    "status": "active",
+    "price": 1150,
+    "description": "Das lebenswichtige Zeug",
+    "title": "Wasser",
+    "createdAt": {
+      "$date": "2022-02-19T18:00:14.678Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T18:00:14.678Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "621130789465d72c51a3ace1"
+    },
+    "labelIds": [],
+    "allergenIds": [],
+    "categoryId": {
+      "$oid": "62112f689465d72c51a3acd6"
+    },
+    "isAvailable": true,
+    "image": "https://topcarbonateddrinks.com/wp-content/uploads/2018/07/sprite1_can.jpg",
+    "status": "active",
+    "price": 450,
+    "description": "Das lebenswichtige Zeug mit Zucker und Kohlensäure",
+    "title": "Sprite",
+    "createdAt": {
+      "$date": "2022-02-19T18:01:28.559Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T18:01:28.559Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "621130d69465d72c51a3ace7"
+    },
+    "labelIds": [],
+    "allergenIds": [],
+    "categoryId": {
+      "$oid": "62112f689465d72c51a3acd6"
+    },
+    "isAvailable": true,
+    "image": "https://us.coca-cola.com/store/media/catalog/product/1/6/16181_squeeze-ko-can-maria-2.png",
+    "status": "active",
+    "price": 666,
+    "description": "Schwarze teuflische Flüssigkeit",
+    "title": "Coca-Cola",
+    "createdAt": {
+      "$date": "2022-02-19T18:03:02.029Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T18:03:02.029Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6211313c9465d72c51a3aced"
+    },
+    "labelIds": [
+      {
+        "$oid": "621122626226cf4a61bdd527"
+      }
+    ],
+    "allergenIds": [],
+    "categoryId": {
+      "$oid": "62112f689465d72c51a3acd6"
+    },
+    "isAvailable": true,
+    "image": "https://previews.123rf.com/images/scanrail/scanrail1108/scanrail110800014/10311101-lattine-di-birra-isolato-su-bianco-progettazione-fondo-delle-lattine-%C3%A8-mia-e-tutte-le-etichette-test.jpg",
+    "status": "active",
+    "price": 450,
+    "description": "A frisch zapfds Bier",
+    "title": "Bier",
+    "createdAt": {
+      "$date": "2022-02-19T18:04:44.769Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T18:04:44.769Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "621131939465d72c51a3acf3"
+    },
+    "labelIds": [
+      {
+        "$oid": "621122626226cf4a61bdd527"
+      }
+    ],
+    "allergenIds": [],
+    "categoryId": {
+      "$oid": "62112f689465d72c51a3acd6"
+    },
+    "isAvailable": true,
+    "image": "https://m.media-amazon.com/images/I/712uoOgj9vL._AC_SS300_.jpg",
+    "status": "active",
+    "price": 550,
+    "description": "Russiches Wasser",
+    "title": "Wodka",
+    "createdAt": {
+      "$date": "2022-02-19T18:06:11.368Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T18:06:11.368Z"
+    },
+    "__v": 0
+  }
+]

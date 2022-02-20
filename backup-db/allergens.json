@@ -1,0 +1,44 @@
+[
+  {
+    "_id": {
+      "$oid": "62111dea6226cf4a61bdd50b"
+    },
+    "icon": "seedling",
+    "title": "Gluten",
+    "createdAt": {
+      "$date": "2022-02-19T16:42:18.829Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T16:42:18.829Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6211212a6226cf4a61bdd50f"
+    },
+    "icon": "egg",
+    "title": "Ei",
+    "createdAt": {
+      "$date": "2022-02-19T16:56:10.401Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T16:56:10.401Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "621121306226cf4a61bdd513"
+    },
+    "icon": "fish",
+    "title": "Fisch",
+    "createdAt": {
+      "$date": "2022-02-19T16:56:16.597Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T16:56:16.597Z"
+    },
+    "__v": 0
+  }
+]

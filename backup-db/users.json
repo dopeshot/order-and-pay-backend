@@ -1,0 +1,18 @@
+[
+  {
+    "_id": {
+      "$oid": "6210f683e1d9d6267f104986"
+    },
+    "status": "unverified",
+    "password": "$2b$12$XpnYOL0kyehfdQmDJvH9IePYu.UpPQ/9M9HgsgLCK.ioNclVXL4Ha",
+    "email": "kobibenotet@gmail.de",
+    "username": "Kobi Kuhn",
+    "createdAt": {
+      "$date": "2022-02-19T13:54:11.736Z"
+    },
+    "updatedAt": {
+      "$date": "2022-02-19T13:54:11.736Z"
+    },
+    "__v": 0
+  }
+]
