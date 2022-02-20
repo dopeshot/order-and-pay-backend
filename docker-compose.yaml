@@ -6,11 +6,9 @@ services:
       context: .
       args:
         - target=submission
-
     entrypoint:
       - /bin/bash
       - ./start-backend.sh
-
     restart: always
     ports:
       - "4001:3001"
