@@ -1,4 +1,4 @@
-@HOST=http://localhost:3001/client
+@HOST=http://localhost:4001/client
 
 ### Create new order
 POST {{HOST}}/order

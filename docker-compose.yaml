@@ -2,7 +2,15 @@ version: "3.7"
 services:
   oap-backend:
     container_name: oap-backend
-    build: .
+    build: 
+      context: .
+      args:
+      - target=submission
+      
+    entrypoint:
+      - /bin/bash
+      - ./start-backend.sh
+
     restart: always
     ports:
       - "4001:3001"
